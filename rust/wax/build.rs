@@ -19,7 +19,8 @@ fn main() {
     // script across the repo crate and the `cargo package` verify copy, so a
     // compile-time path would leak from one into the other.
     let manifest_dir = PathBuf::from(
-        std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR set by cargo"),
+        std::env::var("CARGO_MANIFEST_DIR")
+            .expect("CARGO_MANIFEST_DIR set by cargo"),
     );
     let repo_root = manifest_dir
         .ancestors()

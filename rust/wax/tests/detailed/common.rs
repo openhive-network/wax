@@ -13,7 +13,10 @@ use serde_json::{Value, json};
 
 use beekeeper::{api::BeekeeperApi, options::BeekeeperOptions};
 use wax::proto::{self, operation::Value as OperationValue};
-use wax::{WaxFoundation, WaxOptions, create_wax_foundation};
+use wax::{
+    HiveChain, HiveChainOptions, WaxFoundation, WaxOptions, create_hive_chain,
+    create_wax_foundation,
+};
 
 pub struct WaxTestCtx {
     pub base: WaxFoundation,
@@ -365,4 +368,73 @@ pub fn account_update2_value(
         posting_json_metadata: "".into(),
         extensions: Vec::new(),
     })
+}
+
+// ---------------------------------------------------------------------------
+// Routing JSON-RPC server
+// ---------------------------------------------------------------------------
+
+/// Serves JSON-RPC requests forever (until process exit), dispatching each to
+/// `route(method, params)`. The route returns the full response body except
+/// `id`, which is patched in from the request — so canned `error` envelopes
+/// and empty (result-less) envelopes are expressible, like in the TS mock.
+pub fn spawn_routing_server(
+    route: impl Fn(&str, &Value) -> Value + Send + 'static,
+) -> String {
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let url = format!("http://{}", listener.local_addr().unwrap());
+
+    thread::spawn(move || {
+        while let Ok((mut stream, _)) = listener.accept() {
+            let mut raw = Vec::new();
+            let mut buf = [0u8; 4096];
+
+            let head_end = loop {
+                let n = stream.read(&mut buf).unwrap();
+                raw.extend_from_slice(&buf[..n]);
+
+                if let Some(pos) = raw.windows(4).position(|w| w == b"\r\n\r\n")
+                {
+                    break pos + 4;
+                }
+            };
+
+            let head = String::from_utf8_lossy(&raw[..head_end]).to_lowercase();
+            let content_length = head
+                .lines()
+                .find_map(|line| line.strip_prefix("content-length:"))
+                .map_or(0, |value| value.trim().parse::<usize>().unwrap());
+
+            while raw.len() < head_end + content_length {
+                let n = stream.read(&mut buf).unwrap();
+                raw.extend_from_slice(&buf[..n]);
+            }
+
+            let request: Value =
+                serde_json::from_slice(&raw[head_end..]).unwrap();
+            let method = request["method"].as_str().unwrap_or_default();
+
+            let mut body = route(method, &request["params"]);
+            body["jsonrpc"] = json!("2.0");
+            body["id"] = request["id"].clone();
+
+            let body = body.to_string();
+            let response = format!(
+                "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\n\
+                 content-length: {}\r\nconnection: close\r\n\r\n{body}",
+                body.len(),
+            );
+            stream.write_all(response.as_bytes()).unwrap();
+        }
+    });
+
+    url
+}
+
+pub fn chain_at(endpoint: String) -> HiveChain {
+    create_hive_chain(HiveChainOptions {
+        api_endpoint: endpoint,
+        ..Default::default()
+    })
+    .unwrap()
 }

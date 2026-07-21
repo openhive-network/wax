@@ -2,12 +2,8 @@
 //!
 //! Mirrors `ResourceCreditsOperation` from
 //! `ts/wasm/lib/detailed/hive_apps_operations/rc.ts` and Python
-//! `wax/wax/hive_apps_operations/rc.py`. Builds one `custom_json_operation`
-//! per `authorize` call from any staged `delegate_rc` entries, with `id="rc"`.
-//!
-//! Lives under `complex_operations` rather than its own `hive_apps_operations`
-//! module per the precedent set in `formatters::data` — the parser side is
-//! already there.
+//! `wax/wax/hive_apps_operations/rc.py`. On `authorize`, builds one
+//! `custom_json_operation` per staged `delegate_rc` entry, with `id="rc"`.
 
 use crate::core::proto;
 use serde::Serialize;

@@ -7,7 +7,8 @@
 //! per-entry action tags of either `follow` or `reblog`.
 
 use crate::core::proto;
-use serde_json::{Value, json};
+use serde::Serialize;
+use serde_json::Value;
 
 use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
@@ -160,14 +161,15 @@ impl FollowOperation {
             Value::Array(blogs.into_iter().map(Value::String).collect())
         };
 
-        self.base.body.push((
-            FollowOperationActions::Follow.as_str(),
-            json!({
-                "follower": working_account,
-                "following": following,
-                "what": [what.as_str()],
-            }),
-        ));
+        let body = serde_json::to_string(&FollowBody {
+            follower: working_account,
+            following,
+            what: [what.as_str()],
+        })
+        .expect("follow body serialization is infallible");
+        self.base
+            .body
+            .push((FollowOperationActions::Follow.as_str(), body));
 
         Ok(self)
     }
@@ -397,16 +399,36 @@ impl FollowOperation {
         author: impl Into<AccountName>,
         permlink: impl Into<String>,
     ) -> Self {
-        self.base.body.push((
-            FollowOperationActions::Reblog.as_str(),
-            json!({
-                "account": working_account.into(),
-                "author": author.into(),
-                "permlink": permlink.into(),
-            }),
-        ));
+        let body = serde_json::to_string(&ReblogBody {
+            account: working_account.into(),
+            author: author.into(),
+            permlink: permlink.into(),
+        })
+        .expect("reblog body serialization is infallible");
+        self.base
+            .body
+            .push((FollowOperationActions::Reblog.as_str(), body));
         self
     }
+}
+
+// Staged-body shapes. Field order mirrors the TS insertion order —
+// serialized bytes must match `JSON.stringify` exactly, because the payload
+// string is part of the signed operation.
+
+#[derive(Serialize)]
+struct FollowBody {
+    follower: AccountName,
+    /// Bare string for a single blog, array otherwise (TS shape).
+    following: Value,
+    what: [&'static str; 1],
+}
+
+#[derive(Serialize)]
+struct ReblogBody {
+    account: AccountName,
+    author: AccountName,
+    permlink: String,
 }
 
 impl HiveAppsOperation for FollowOperation {

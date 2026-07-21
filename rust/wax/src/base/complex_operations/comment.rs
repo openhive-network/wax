@@ -14,7 +14,7 @@
 //!   into the generated metadata with TS constructor semantics: they
 //!   override the `format`/`app` defaults, and the typed fields (`format`,
 //!   `tags`, `images`, `links`, `alternative_author`, `description`, `app`)
-//!   are applied on top. `app` defaults to `wax/{CARGO_PKG_VERSION}` and
+//!   are applied on top. `app` defaults to `{CARGO_PKG_NAME}/{CARGO_PKG_VERSION}` and
 //!   can be overridden via the `app` field or a `json_metadata` entry
 //!   (mirrors TS's `jsonMetadata.app`).
 //! - The default `comment_options` payload is hard-coded against the
@@ -26,7 +26,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::core::proto;
-use serde::ser::{Serialize, SerializeMap, Serializer};
 use serde_json::Value;
 
 use crate::WaxError;
@@ -34,6 +33,7 @@ use crate::base::constants::{
     DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS, DEFAULT_COMMENT_PERCENT_HBD,
 };
 use crate::base::foundation::WaxFoundation;
+use crate::base::internal::ordered_object::OrderedObject;
 use crate::base::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
 use crate::base::models::basic::AccountName;
 use crate::base::operation::ComplexOperation;
@@ -94,7 +94,7 @@ pub struct ReplyOperation {
     pub alternative_author: Option<AccountName>,
     pub description: Option<String>,
     /// Overrides the `app` tag in `json_metadata`. Defaults to
-    /// `wax/{CARGO_PKG_VERSION}` when `None`.
+    /// `{CARGO_PKG_NAME}/{CARGO_PKG_VERSION}` when `None`.
     pub app: Option<String>,
     /// Arbitrary extra `json_metadata` entries, merged in order over the
     /// `format`/`app` defaults before the typed fields above are applied.
@@ -129,7 +129,7 @@ pub struct BlogPostOperation {
     pub alternative_author: Option<AccountName>,
     pub description: Option<String>,
     /// Overrides the `app` tag in `json_metadata`. Defaults to
-    /// `wax/{CARGO_PKG_VERSION}` when `None`.
+    /// `{CARGO_PKG_NAME}/{CARGO_PKG_VERSION}` when `None`.
     pub app: Option<String>,
     /// Arbitrary extra `json_metadata` entries, merged in order over the
     /// `format`/`app` defaults before the typed fields above are applied.
@@ -385,40 +385,6 @@ fn now_millis() -> u64 {
         .duration_since(UNIX_EPOCH)
         .expect("system clock before unix epoch")
         .as_millis() as u64
-}
-
-/// Represents an insertion-ordered JSON object mirroring JS object key
-/// semantics: setting an existing key updates it in place, a new key is
-/// appended. Serialized entry order therefore matches the TS
-/// `JSON.stringify` output byte-for-byte without enabling `serde_json`'s
-/// crate-wide `preserve_order` feature.
-struct OrderedObject(Vec<(String, Value)>);
-
-impl OrderedObject {
-    fn get(&self, key: &str) -> Option<&Value> {
-        self.0.iter().find(|(k, _)| k == key).map(|(_, v)| v)
-    }
-
-    fn set(&mut self, key: &str, value: Value) {
-        match self.0.iter_mut().find(|(k, _)| k == key) {
-            Some((_, existing)) => *existing = value,
-            None => self.0.push((key.to_string(), value)),
-        }
-    }
-}
-
-impl Serialize for OrderedObject {
-    fn serialize<S: Serializer>(
-        &self,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
-        let mut map = serializer.serialize_map(Some(self.0.len()))?;
-        for (key, value) in &self.0 {
-            map.serialize_entry(key, value)?;
-        }
-
-        map.end()
-    }
 }
 
 /// Reads a metadata key that the typed fields extend (`tags`, `image`,

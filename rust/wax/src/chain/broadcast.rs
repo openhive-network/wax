@@ -17,16 +17,13 @@ use crate::chain::online_transaction::OnlineTransaction;
 pub trait Broadcastable {
     /// Converts the transaction into its API wire form, running the form's
     /// pre-broadcast checks.
-    async fn to_broadcast_form(&self)
-    -> Result<ApiTransaction, WaxChainError>;
+    async fn to_broadcast_form(&self) -> Result<ApiTransaction, WaxChainError>;
 }
 
 /// TS NOTE: an [`ApiTransaction`] (e.g. fetched from the block API) is
 /// broadcast as-is.
 impl Broadcastable for ApiTransaction {
-    async fn to_broadcast_form(
-        &self,
-    ) -> Result<ApiTransaction, WaxChainError> {
+    async fn to_broadcast_form(&self) -> Result<ApiTransaction, WaxChainError> {
         Ok(self.clone())
     }
 }
@@ -34,9 +31,7 @@ impl Broadcastable for ApiTransaction {
 /// TS NOTE: the `"toApiJson" in transaction` branch — an offline transaction
 /// is converted to its HF26 API form, with no on-chain checks.
 impl Broadcastable for Transaction {
-    async fn to_broadcast_form(
-        &self,
-    ) -> Result<ApiTransaction, WaxChainError> {
+    async fn to_broadcast_form(&self) -> Result<ApiTransaction, WaxChainError> {
         api_form(self.to_api()?)
     }
 }
@@ -45,9 +40,7 @@ impl Broadcastable for Transaction {
 /// online transaction additionally runs
 /// [`OnlineTransaction::perform_on_chain_verification`] before broadcast.
 impl Broadcastable for OnlineTransaction {
-    async fn to_broadcast_form(
-        &self,
-    ) -> Result<ApiTransaction, WaxChainError> {
+    async fn to_broadcast_form(&self) -> Result<ApiTransaction, WaxChainError> {
         let form = api_form(self.to_api()?)?;
         self.perform_on_chain_verification().await?;
 

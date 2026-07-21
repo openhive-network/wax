@@ -6,7 +6,8 @@
 // `to_api()` / `to_legacy_api()` route through the same C++ serialization as
 // the TS `toApi()` / `toLegacyApi()`, so the JSON shapes are asserted
 // byte-for-byte — the only deliberate divergence is the comment `app` tag,
-// which is `wax/{CARGO_PKG_VERSION}` here instead of TS's `@hiveio/wax/...`.
+// which is `{CARGO_PKG_NAME}/{CARGO_PKG_VERSION}` (`hiveio-wax/...`) here
+// instead of TS's `@hiveio/wax/...`.
 
 use serde_json::json;
 
@@ -1001,11 +1002,17 @@ fn blog_post_invalid_max_accepted_payout_asset() {
         };
 
         let mut tx = fresh_tx(ctx);
-        let result = tx.push_complex_operation(&ctx.base, op);
-        assert!(
-            result.is_err(),
-            "max_accepted_payout must be HBD; HIVE should be rejected"
-        );
+        let error = match tx.push_complex_operation(&ctx.base, op) {
+            Ok(_) => {
+                panic!("max_accepted_payout must be HBD; HIVE is rejected")
+            }
+            Err(error) => error,
+        };
+
+        // TS NOTE: TS pins its own message ('Invalid asset provided: ...
+        // Expected asset symbol(s): "@@000000013" (HBD)'); the Rust symbol
+        // check reports the mismatch as follows.
+        assert_eq!(error.to_string(), "Nai is not the same as expected.");
     });
 }
 

@@ -18,8 +18,7 @@ use wax::api::{FindAccountsRequest, GetWitnessScheduleRequest};
 use wax::proto::{self, operation::Value as OperationValue};
 use wax::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, HiveChain,
-    HiveChainOptions, ProcessedEntry, create_hive_chain,
-    create_wax_foundation,
+    HiveChainOptions, ProcessedEntry, create_hive_chain, create_wax_foundation,
 };
 
 use wax_signers_beekeeper::BeekeeperSignatureProvider;
@@ -164,6 +163,11 @@ async fn authority_trace_for_direct_multisig_from_existing_transaction() {
     {
         assert!(is_account(entry, name));
         assert!(is_accepted(entry));
+        assert_eq!(entry.processed_role, "posting");
+        assert_eq!(
+            (entry.threshold, entry.weight, entry.recursion_depth),
+            (1, 1, 0)
+        );
         assert!(is_key(&entry.visited_entries[0], key));
     }
 }
@@ -182,8 +186,9 @@ async fn authority_trace_for_direct_sign() {
         .create_wallet("w0", Some("pw"), Some(true))
         .expect("create_wallet");
     let mut wallet = created.wallet;
-    let public_key =
-        wallet.import_key(MIRRORNET_SKELETON_KEY).expect("import_key");
+    let public_key = wallet
+        .import_key(MIRRORNET_SKELETON_KEY)
+        .expect("import_key");
 
     let mut tx = chain.create_transaction(None).await.unwrap();
     tx.push_operation(chain.create_operation(transfer(
@@ -215,7 +220,10 @@ async fn authority_trace_for_direct_sign() {
     assert!(is_account(path, "splinterboost"));
     assert_eq!(path.processed_role, "active");
     assert_eq!((path.threshold, path.weight), (1, 1));
-    assert!(is_key(&path.visited_entries[0], MIRRORNET_SKELETON_PUBLIC_KEY));
+    assert!(is_key(
+        &path.visited_entries[0],
+        MIRRORNET_SKELETON_PUBLIC_KEY
+    ));
 
     // TS NOTE: TS fakes the ever-changing signature before comparing; Rust
     // has the produced signature in scope and compares it directly.
@@ -331,9 +339,15 @@ async fn authority_trace_for_delegated_sign_with_single_nest_level() {
 
     assert_eq!(trace.collected_data.len(), 1);
     let data = &trace.collected_data[0];
+    assert_eq!(data.matching_signatures.len(), 1);
     assert_eq!(
         data.matching_signatures[0].signature_key,
         STEEMAUTO_POSTING_KEY
+    );
+    // The lone matching signature is the transaction's own.
+    assert_eq!(
+        data.matching_signatures[0].signature,
+        "20282d87e22cad745d263ee43fe8552044ecb68ebd274a03421d6e59aaaa891d5a594808c58605828c240b9e498f53d32a8f4f7baec5bfcbc7d391af4e4283366e"
     );
 
     let root = &data.final_authority_path;
@@ -348,6 +362,7 @@ async fn authority_trace_for_delegated_sign_with_single_nest_level() {
 
     for entry in [root, steemauto, key] {
         assert!(is_accepted(entry));
+        assert_eq!(entry.processed_role, "posting");
         assert_eq!((entry.threshold, entry.weight), (1, 1));
     }
 }
@@ -413,8 +428,9 @@ async fn authority_trace_for_insufficient_weight_transaction() {
         .create_wallet("w0", Some("pw"), Some(true))
         .expect("create_wallet");
     let mut wallet = created.wallet;
-    let public_key =
-        wallet.import_key(MIRRORNET_SKELETON_KEY).expect("import_key");
+    let public_key = wallet
+        .import_key(MIRRORNET_SKELETON_KEY)
+        .expect("import_key");
     let provider = BeekeeperSignatureProvider::new(wallet);
 
     // Ensure test accounts exist with the correct authority structure.
@@ -445,6 +461,9 @@ async fn authority_trace_for_insufficient_weight_transaction() {
             has_insufficient_weight: true,
             has_matching_public_key: false,
             has_account_authority_cycle: false,
+            account_authority_processing_depth_exceeded: false,
+            account_authority_count_exceeded: false,
+            account_authority_points_missing_account: false,
             ..
         })
     ));
@@ -540,9 +559,23 @@ async fn authority_trace_root_entries_for_multisig_with_broken_signature() {
                 }
             ));
             assert_eq!(entry.weight, 0);
-        } else {
-            assert!(is_accepted(entry));
         }
+    }
+
+    // The other four voters stay satisfied, in the sorted signer order,
+    // each through its own posting key.
+    let satisfied: Vec<&AuthorityPathEntry> = trace
+        .root_entries
+        .iter()
+        .filter(|entry| !is_account(entry, "ecency"))
+        .collect();
+    assert_eq!(satisfied.len(), 4);
+    for (entry, (name, key, _)) in satisfied.iter().zip(&MULTISIG_SIGNERS[1..])
+    {
+        assert!(is_account(entry, name));
+        assert!(is_accepted(entry));
+        assert_eq!((entry.threshold, entry.weight), (1, 1));
+        assert!(is_key(&entry.visited_entries[0], key));
     }
 
     // The rejected posting path descends ecency's on-chain redirection
@@ -579,8 +612,9 @@ async fn create_account_and_transfer_to_it_in_one_transaction() {
         .create_wallet("w0", Some("pw"), Some(true))
         .expect("create_wallet");
     let mut wallet = created.wallet;
-    let public_key =
-        wallet.import_key(MIRRORNET_SKELETON_KEY).expect("import_key");
+    let public_key = wallet
+        .import_key(MIRRORNET_SKELETON_KEY)
+        .expect("import_key");
 
     let fee = chain
         .api()
@@ -632,8 +666,9 @@ async fn create_and_sign_transaction_using_online_interface() {
         .create_wallet("w0", Some("pw"), Some(true))
         .expect("create_wallet");
     let mut wallet = created.wallet;
-    let public_key =
-        wallet.import_key(MIRRORNET_SKELETON_KEY).expect("import_key");
+    let public_key = wallet
+        .import_key(MIRRORNET_SKELETON_KEY)
+        .expect("import_key");
     assert_eq!(public_key, MIRRORNET_SKELETON_PUBLIC_KEY);
 
     let mut tx = chain.create_transaction(None).await.unwrap();
@@ -664,12 +699,14 @@ async fn create_and_sign_transaction_using_online_interface() {
 /// accounts on demand — see the authority graph on
 /// [`authority_trace_for_insufficient_weight_transaction`] and
 /// `ts/wasm/__tests__/assets/authority_trace_test_accounts.md`.
+/// TS NOTE: the TS helper early-returns when all three accounts already
+/// exist; this port always runs the authority-structure step below, which
+/// re-asserts the expected authorities instead of trusting a previous run.
 async fn ensure_test_accounts_exist(
     chain: &HiveChain,
     signer: &BeekeeperSignatureProvider<'_>,
 ) {
-    let account_names =
-        ["authtracetst1", "authtracetst2", "authtracetst3"];
+    let account_names = ["authtracetst1", "authtracetst2", "authtracetst3"];
 
     let response = chain
         .api()
@@ -710,18 +747,22 @@ async fn ensure_test_accounts_exist(
                 continue;
             }
 
-            broadcast_signed(chain, signer, chain.create_operation(
-                OperationValue::AccountCreateOperation(proto::AccountCreate {
-                    fee: fee.clone(),
-                    creator: ACCOUNT_CREATOR.into(),
-                    new_account_name: name.into(),
-                    owner: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
-                    active: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
-                    posting: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
-                    memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
-                    json_metadata: "{}".into(),
-                }),
-            ))
+            broadcast_signed(
+                chain,
+                signer,
+                chain.create_operation(OperationValue::AccountCreateOperation(
+                    proto::AccountCreate {
+                        fee: fee.clone(),
+                        creator: ACCOUNT_CREATOR.into(),
+                        new_account_name: name.into(),
+                        owner: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
+                        active: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
+                        posting: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
+                        memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
+                        json_metadata: "{}".into(),
+                    },
+                )),
+            )
             .await;
             println!("Created account: {name}");
         }
@@ -729,21 +770,25 @@ async fn ensure_test_accounts_exist(
         // Step 3: authtracetst1 — active delegates to authtracetst2 +
         // authtracetst3, owner uses a different key.
         if !existing.contains("authtracetst1") {
-            broadcast_signed(chain, signer, chain.create_operation(
-                OperationValue::AccountCreateOperation(proto::AccountCreate {
-                    fee: fee.clone(),
-                    creator: ACCOUNT_CREATOR.into(),
-                    new_account_name: "authtracetst1".into(),
-                    owner: key_authority(AUTHTRACETST1_OWNER_PUBLIC_KEY),
-                    active: account_authority(
-                        2,
-                        &[("authtracetst2", 1), ("authtracetst3", 1)],
-                    ),
-                    posting: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
-                    memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
-                    json_metadata: "{}".into(),
-                }),
-            ))
+            broadcast_signed(
+                chain,
+                signer,
+                chain.create_operation(OperationValue::AccountCreateOperation(
+                    proto::AccountCreate {
+                        fee: fee.clone(),
+                        creator: ACCOUNT_CREATOR.into(),
+                        new_account_name: "authtracetst1".into(),
+                        owner: key_authority(AUTHTRACETST1_OWNER_PUBLIC_KEY),
+                        active: account_authority(
+                            2,
+                            &[("authtracetst2", 1), ("authtracetst3", 1)],
+                        ),
+                        posting: key_authority(MIRRORNET_SKELETON_PUBLIC_KEY),
+                        memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
+                        json_metadata: "{}".into(),
+                    },
+                )),
+            )
             .await;
             println!("Created account: authtracetst1");
         }
@@ -767,16 +812,20 @@ async fn ensure_test_accounts_exist(
         .any(|(name, _)| name == "authtracetst1");
 
     if needs_update {
-        broadcast_signed(chain, signer, chain.create_operation(
-            OperationValue::AccountUpdateOperation(proto::AccountUpdate {
-                account: "authtracetst3".into(),
-                owner: None,
-                active: Some(account_authority(1, &[("authtracetst1", 1)])),
-                posting: Some(key_authority(MIRRORNET_SKELETON_PUBLIC_KEY)),
-                memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
-                json_metadata: "{}".into(),
-            }),
-        ))
+        broadcast_signed(
+            chain,
+            signer,
+            chain.create_operation(OperationValue::AccountUpdateOperation(
+                proto::AccountUpdate {
+                    account: "authtracetst3".into(),
+                    owner: None,
+                    active: Some(account_authority(1, &[("authtracetst1", 1)])),
+                    posting: Some(key_authority(MIRRORNET_SKELETON_PUBLIC_KEY)),
+                    memo_key: MIRRORNET_SKELETON_PUBLIC_KEY.into(),
+                    json_metadata: "{}".into(),
+                },
+            )),
+        )
         .await;
         println!(
             "Updated authtracetst3 active authority: cycle to authtracetst1"
@@ -793,7 +842,8 @@ async fn broadcast_signed(
 ) {
     let mut tx = chain.create_transaction(None).await.unwrap();
     tx.push_operation(operation);
-    tx.sign(signer, MIRRORNET_SKELETON_PUBLIC_KEY).expect("sign");
+    tx.sign(signer, MIRRORNET_SKELETON_PUBLIC_KEY)
+        .expect("sign");
 
     chain.broadcast(&tx).await.expect("broadcast");
 }
@@ -833,7 +883,10 @@ fn assert_leak_error(error: &str) {
         "unexpected error: {error}"
     );
     assert!(error.contains("otom"), "unexpected account: {error}");
-    assert!(error.contains("owner"), "unexpected authority role: {error}");
+    assert!(
+        error.contains("owner"),
+        "unexpected authority role: {error}"
+    );
     assert!(
         error.contains(MIRRORNET_SKELETON_PUBLIC_KEY),
         "unexpected matching key: {error}"

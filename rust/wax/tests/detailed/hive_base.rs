@@ -228,10 +228,13 @@ fn invalid_account_names_are_rejected() {
     wax_test(None, |ctx| {
         // Too short.
         assert!(!ctx.base.is_valid_account_name("g"));
-        // Too long. The TS test reads HIVE_MAX_ACCOUNT_NAME_LENGTH from
-        // `base.config`; Rust doesn't expose that config, so we use the
-        // canonical mainnet value of 16.
-        let too_long = "a".repeat(17);
+        // Too long — one over HIVE_MAX_ACCOUNT_NAME_LENGTH, read from the
+        // protocol config like the TS test does.
+        let max_length: usize =
+            ctx.base.config().expect("config")["HIVE_MAX_ACCOUNT_NAME_LENGTH"]
+                .parse()
+                .expect("numeric max account name length");
+        let too_long = "a".repeat(max_length + 1);
         assert!(!ctx.base.is_valid_account_name(&too_long));
         // Invalid sequence.
         assert!(!ctx.base.is_valid_account_name("a..b"));
@@ -239,12 +242,31 @@ fn invalid_account_names_are_rejected() {
 }
 
 // TS line 103: "Should be able to convert VESTS to HP (bug)".
-// TODO: requires the `waxify` template-literal formatter to assert against
-// strings like "4,044,780.037 HIVE". The underlying `vests_to_hp` calculation
-// works; only the formatting layer is missing.
+//
+// TS NOTE: TS additionally pins the waxify-formatted strings
+// ("4,044,780.037 HIVE"); the formatter has no Rust counterpart (see
+// `main.rs`), so this port asserts the underlying satoshi amounts the
+// regression is about.
 #[test]
-#[ignore = "needs the `waxify` formatter"]
-fn vests_to_hp_regression_with_waxify() {}
+fn vests_to_hp_regression_amounts() {
+    wax_test(None, |ctx| {
+        let total_fund = hive_sat(ctx, 182849539607);
+        let total_shares = vests_sat(ctx, 312353953479712805);
+
+        for (vests, expected_satoshis) in [
+            (6909522651976083i64, "4044780037"),
+            (43357485398000965, "25381129821"),
+            (13261033608208, "7762904"),
+        ] {
+            let hp = ctx
+                .base
+                .vests_to_hp(&vests_sat(ctx, vests), &total_fund, &total_shares)
+                .expect("vests_to_hp");
+            assert_eq!(hp.amount, expected_satoshis);
+            assert_eq!(hp.nai, "@@000000021");
+        }
+    });
+}
 
 // TS line 148: "Should be able to generate negative HIVE asset".
 #[test]
@@ -490,6 +512,15 @@ fn bidirectional_json_proto_round_trip() {
             .expect("create_transaction_from_json");
         let api_json = first.to_api().expect("to_api");
 
+        // The emitted API JSON equals the input fixture — the TS test
+        // compares the stringified object directly.
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&api_json)
+                .expect("parse emitted api json"),
+            serde_json::from_str::<serde_json::Value>(TRANSACTION_JSON)
+                .expect("parse fixture"),
+        );
+
         let second = ctx
             .base
             .create_transaction_from_json(&api_json)
@@ -573,7 +604,11 @@ fn create_transaction_using_object_interface() {
         );
 
         let provider = BeekeeperSignatureProvider::new(wallet);
-        tx.sign(&provider, &public_key).expect("sign");
+        let signature = tx.sign(&provider, &public_key).expect("sign");
+        assert_eq!(
+            signature,
+            "1f7f0c3e89e6ccef1ae156a96fb4255e619ca3a73ef3be46746b4b40a66cc4252070eb313cc6308bbee39a0a9fc38ef99137ead3c9b003584c0a1b8f5ca2ff8707"
+        );
 
         let signees = tx.signature_keys().expect("signature_keys");
         assert_eq!(signees, vec![public_key]);
@@ -665,9 +700,9 @@ fn convert_transaction_json_to_binary_form() {
 }
 
 // TS line 404: "Should not be able to convert transaction json to binary
-// form because of invalid input type". The TS test uses `"type": "vote"`
-// instead of `"vote_operation"`; the C++ visitor's static_variant case
-// rejects unknown operation names.
+// form because of invalid input type". The TS fixture's operation is a bare
+// `{"vote": {...}}` object — the legacy-style key without the `{type,
+// value}` envelope — which the API-form parser rejects.
 #[test]
 fn invalid_transaction_json_fails_to_parse() {
     wax_test(None, |ctx| {
@@ -675,8 +710,7 @@ fn invalid_transaction_json_fails_to_parse() {
             "expiration": "2021-12-13T11:31:33",
             "extensions": [],
             "operations": [{
-                "type": "vote",
-                "value": {
+                "vote": {
                     "author": "c0ff33a",
                     "permlink": "ewxhnjbj",
                     "voter": "otom",
@@ -707,15 +741,14 @@ fn convert_binary_transaction_to_json_form() {
             .base
             .deserialize_transaction(&hex)
             .expect("deserialize_transaction");
-        // `deserialize_transaction` emits API JSON (via the C++ side), so
-        // assertions follow the TS `{type, value}` shape.
-        assert!(json.contains("\"type\":\"vote_operation\""));
-        assert!(json.contains("\"voter\":\"otom\""));
-        assert!(json.contains("\"author\":\"c0ff33a\""));
-        assert!(json.contains("\"weight\":2200"));
-        assert!(json.contains("\"ref_block_num\":34559"));
-        assert!(json.contains("\"ref_block_prefix\":1271006404"));
-        assert!(json.contains("\"expiration\":\"2021-12-13T11:31:33\""));
+        // `deserialize_transaction` emits API JSON (via the C++ side); the
+        // whole object equals the fixture, like the TS deep equality.
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&json)
+                .expect("parse deserialized transaction"),
+            serde_json::from_str::<serde_json::Value>(TRANSACTION_JSON)
+                .expect("parse fixture"),
+        );
     });
 }
 
@@ -791,7 +824,9 @@ fn recurrent_transfer_with_extensions() {
         };
         assert_eq!(removal.from_account, "initminer");
         assert_eq!(removal.to_account, "gtg");
+        assert_eq!(removal.memo, "");
         assert_eq!(removal.amount.amount, "0");
+        assert_eq!(removal.amount.precision, 3);
         assert_eq!(removal.amount.nai, "@@000000021");
         assert_eq!(removal.recurrence, 24);
         assert_eq!(removal.executions, 2);
@@ -812,8 +847,14 @@ fn recurrent_transfer_with_extensions() {
                 panic!("expected RecurrentTransferOperation, got {other:?}")
             }
         };
+        assert_eq!(define.from_account, "initminer");
+        assert_eq!(define.to_account, "gtg");
+        assert_eq!(define.memo, "");
         assert_eq!(define.amount.amount, "100");
+        assert_eq!(define.amount.precision, 3);
         assert_eq!(define.amount.nai, "@@000000021");
+        assert_eq!(define.recurrence, 24);
+        assert_eq!(define.executions, 2);
         assert!(define.extensions.is_empty());
     });
 }
@@ -896,10 +937,17 @@ fn invalid_asset_in_update_proposal_fails() {
                 ),
             },
         );
-        assert!(
-            result.is_err(),
-            "expected push_complex_operation to reject a HIVE asset where HBD is required"
-        );
+        // TS NOTE: TS pins its own message ('Invalid asset provided: ...
+        // Expected asset symbol(s): "@@000000013" (HBD) with precision: 3');
+        // the Rust symbol check reports the mismatch as follows.
+        let error = match result {
+            Ok(_) => panic!(
+                "expected push_complex_operation to reject a HIVE asset \
+                 where HBD is required"
+            ),
+            Err(error) => error,
+        };
+        assert_eq!(error.to_string(), "Nai is not the same as expected.");
     });
 }
 
@@ -956,6 +1004,7 @@ fn update_proposal_with_extensions() {
         assert_eq!(with_end.proposal_id, 100);
         assert_eq!(with_end.creator, "initminer");
         assert_eq!(with_end.daily_pay.amount, "0");
+        assert_eq!(with_end.daily_pay.precision, 3);
         assert_eq!(with_end.daily_pay.nai, "@@000000013");
         assert_eq!(with_end.subject, "subject");
         assert_eq!(with_end.permlink, "permlink");
@@ -973,6 +1022,13 @@ fn update_proposal_with_extensions() {
             }
             other => panic!("expected UpdateProposalOperation, got {other:?}"),
         };
+        assert_eq!(without_end.proposal_id, 100);
+        assert_eq!(without_end.creator, "initminer");
+        assert_eq!(without_end.daily_pay.amount, "0");
+        assert_eq!(without_end.daily_pay.precision, 3);
+        assert_eq!(without_end.daily_pay.nai, "@@000000013");
+        assert_eq!(without_end.subject, "subject");
+        assert_eq!(without_end.permlink, "permlink");
         assert!(without_end.extensions.is_empty());
     });
 }
@@ -1589,9 +1645,9 @@ fn estimate_hbd_interest() {
             .base
             .estimate_hbd_interest(
                 2_860_100_980_056_u128,
-                1_764_165_933, // 2025-11-26T16:05:33 UTC
+                1_764_165_933, // 2025-11-26T14:05:33 UTC
                 &hbd_sat(ctx, 46_107_782),
-                1_763_231_274, // 2025-11-15T20:27:54 UTC
+                1_763_231_274, // 2025-11-15T18:27:54 UTC
                 1_500,
             )
             .expect("estimate_hbd_interest");
@@ -1632,8 +1688,14 @@ fn legacy_transaction_to_api_json() {
         let tx =
             create_transaction_from_legacy_json(ctx, LEGACY_TRANSACTION_JSON);
         let api_json = tx.to_api().expect("to_api");
-        assert!(api_json.contains("\"type\":\"transfer_operation\""));
-        assert!(api_json.contains("\"nai\":\"@@000000021\""));
+
+        let parsed: serde_json::Value =
+            serde_json::from_str(&api_json).expect("parse api json");
+        let op = &parsed["operations"][0];
+        assert_eq!(op["type"], "transfer_operation");
+        // TS asserts the `{type, value}` envelope is present.
+        assert!(op["value"].is_object());
+        assert_eq!(op["value"]["amount"]["nai"], "@@000000021");
     });
 }
 

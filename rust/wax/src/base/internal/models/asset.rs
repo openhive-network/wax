@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
 use crate::core::RustJsonAsset;
+use std::str::FromStr;
+
 use rust_decimal::Decimal;
 use rust_decimal::prelude::*;
 
@@ -245,8 +247,10 @@ fn amount_to_decimal(amount: AssetAmount) -> Result<Decimal, WaxError> {
     match amount {
         AssetAmount::Int(v) => Ok(Decimal::from(v)),
         AssetAmount::Decimal(v) => Ok(v),
-        AssetAmount::Float(v) => Decimal::from_f64_retain(v)
-            .ok_or(WaxError::DecimalConversionNotANumber),
+        // NOTE: via the shortest round-trip string — matches the JS
+        // `String(number)` coercion (see `foundation::amount_to_satoshis`).
+        AssetAmount::Float(v) => Decimal::from_str(&v.to_string())
+            .map_err(|_| WaxError::DecimalConversionNotANumber),
     }
 }
 

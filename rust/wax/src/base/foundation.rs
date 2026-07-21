@@ -12,6 +12,7 @@ use crate::core::{RustOperation, RustTransaction, proto};
 
 use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
+use std::str::FromStr;
 
 use crate::WaxError;
 use crate::base::constants::{
@@ -666,6 +667,8 @@ impl WaxFoundation {
         &self,
         json: &str,
     ) -> Result<Transaction, WaxError> {
+        validate_api_transaction_shape(json)?;
+
         let proto_json = rust_protocol()
             .cpp_tx_api_to_proto_json(json)
             .map_err(WaxError::from)?;
@@ -1144,6 +1147,42 @@ fn resolve_expiration(
     Ok(HiveDateTime::new(reference.inner() + delta).serialize())
 }
 
+/// Validates the operation envelopes of API-shape transaction JSON before it
+/// reaches the C++ conversion visitor.
+///
+/// NOTE: the visitor runs against the prebuilt native bundle, which cannot
+/// surface Rust-side panics as errors — a malformed envelope (e.g. a bare
+/// legacy-style `{"vote": {...}}` operation) would abort the process
+/// mid-callback. TS guarantees a thrown error for exactly these inputs (its
+/// parser rejects operations without the `{type, value}` envelope), so this
+/// guard restores that contract at the boundary.
+fn validate_api_transaction_shape(json: &str) -> Result<(), WaxError> {
+    let parsed: serde_json::Value = serde_json::from_str(json)
+        .map_err(|e| WaxError::new(format!("Invalid transaction JSON: {e}")))?;
+
+    let operations = parsed
+        .get("operations")
+        .and_then(serde_json::Value::as_array)
+        .ok_or_else(|| {
+            WaxError::new(
+                "Invalid transaction JSON: `operations` must be an array",
+            )
+        })?;
+
+    for (index, op) in operations.iter().enumerate() {
+        let valid = op.get("type").is_some_and(serde_json::Value::is_string)
+            && op.get("value").is_some_and(serde_json::Value::is_object);
+        if !valid {
+            return Err(WaxError::new(format!(
+                "Invalid operation #{index}: expected an object with a \
+                 string `type` and an object `value`"
+            )));
+        }
+    }
+
+    Ok(())
+}
+
 fn amount_to_satoshis(
     amount: AssetAmount,
     precision: u32,
@@ -1151,8 +1190,14 @@ fn amount_to_satoshis(
     let decimal = match amount {
         AssetAmount::Int(v) => Decimal::from(v),
         AssetAmount::Decimal(v) => v,
-        AssetAmount::Float(v) => Decimal::from_f64_retain(v)
-            .ok_or(WaxError::DecimalConversionNotANumber)?,
+        // NOTE: via the shortest round-trip string, exactly like the JS
+        // `String(number)` coercion TS feeds into its parser. Neither
+        // rust_decimal f64 constructor matches: `from_f64_retain` keeps the
+        // excess binary bits (100.3 → 100.2999…, one satoshi short) and
+        // `from_f64` clamps to 15 significant digits (too few near
+        // Number.MAX_SAFE_INTEGER).
+        AssetAmount::Float(v) => Decimal::from_str(&v.to_string())
+            .map_err(|_| WaxError::DecimalConversionNotANumber)?,
     };
 
     let scaled = decimal * Decimal::from(10_i64.pow(precision));

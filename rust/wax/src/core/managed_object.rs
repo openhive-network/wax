@@ -10,8 +10,10 @@ use prost_reflect::{
 
 use crate::core::proto;
 
-const FILE_DESCRIPTOR_SET: &[u8] =
-    include_bytes!(concat!(env!("CARGO_MANIFEST_DIR"), "/proto/hive.protocol.buffers.bin"));
+const FILE_DESCRIPTOR_SET: &[u8] = include_bytes!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/proto/hive.protocol.buffers.bin"
+));
 
 /// Returns the process-wide protobuf descriptor pool, decoding it from the
 /// embedded `FileDescriptorSet` on first use.

@@ -119,13 +119,12 @@ async fn vote_manabar(
             // powers in range (TS relies on BigInt's unbounded range, Rust on
             // `i64` never being pushed past `i64::MAX / ONE_HUNDRED_PERCENT`).
             let downvote_pool_percent = i64::from(downvote_pool_percent);
-            let max_mana = if vote_power / ONE_HUNDRED_PERCENT
-                > ONE_HUNDRED_PERCENT
-            {
-                (vote_power / ONE_HUNDRED_PERCENT) * downvote_pool_percent
-            } else {
-                (vote_power * downvote_pool_percent) / ONE_HUNDRED_PERCENT
-            };
+            let max_mana =
+                if vote_power / ONE_HUNDRED_PERCENT > ONE_HUNDRED_PERCENT {
+                    (vote_power / ONE_HUNDRED_PERCENT) * downvote_pool_percent
+                } else {
+                    (vote_power * downvote_pool_percent) / ONE_HUNDRED_PERCENT
+                };
 
             Ok((api_account.downvote_manabar, max_mana))
         }

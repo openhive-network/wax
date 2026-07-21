@@ -63,3 +63,74 @@ pub(super) fn stringify(value: &Value) -> String {
 fn encode(value: &str) -> String {
     utf8_percent_encode(value, URI_COMPONENT).to_string()
 }
+
+// TS NOTE: mirrors `ts/wasm/__tests__/detailed/utils.ts` — the query-string
+// utility suite. The TS `undefinedValue: undefined` entry has no JSON
+// counterpart (serde maps cannot hold `undefined`), so the Rust fixture
+// carries only the `null` entry; both are skipped by the TS implementation.
+#[cfg(test)]
+mod tests {
+    use serde_json::{Map, Value, json};
+
+    use super::object_to_query_string;
+
+    fn params(value: Value) -> Map<String, Value> {
+        value.as_object().expect("fixture is an object").clone()
+    }
+
+    fn decode(encoded: &str) -> String {
+        percent_encoding::percent_decode_str(encoded)
+            .decode_utf8()
+            .expect("valid utf-8")
+            .into_owned()
+    }
+
+    // TS line 6: "Should be able to convert empty object to a correct query
+    // string".
+    #[test]
+    fn converts_empty_object() {
+        let querified = object_to_query_string(&params(json!({})));
+
+        assert_eq!(querified, "");
+        assert_eq!(decode(&querified), "");
+    }
+
+    // TS line 17: "Should be able to convert single parameter to a correct
+    // query string".
+    #[test]
+    fn converts_single_parameter() {
+        let querified =
+            object_to_query_string(&params(json!({ "name": "John" })));
+
+        assert_eq!(querified, "name=John");
+        assert_eq!(decode(&querified), "name=John");
+    }
+
+    // TS line 30: "Should be able to convert object with multiple parameters
+    // to a correct query string".
+    //
+    // TS NOTE: TS iterates the params object in insertion order
+    // (`name=John&age=30&...`); `serde_json::Map` sorts keys, so the same
+    // pairs appear alphabetically. Query-string parameter order carries no
+    // meaning, so the encoding itself is what this test pins.
+    #[test]
+    fn converts_multiple_parameters() {
+        let querified = object_to_query_string(&params(json!({
+            "name": "John",
+            "age": 30,
+            "interests": ["music", "movies", "sports"],
+            "location": { "city": "New York", "country": "USA" },
+            "isStudent": false,
+            "nullValue": null,
+        })));
+
+        assert_eq!(
+            querified,
+            "age=30&interests=music,movies,sports&isStudent=false&location=%7B%22city%22%3A%22New%20York%22%2C%22country%22%3A%22USA%22%7D&name=John"
+        );
+        assert_eq!(
+            decode(&querified),
+            r#"age=30&interests=music,movies,sports&isStudent=false&location={"city":"New York","country":"USA"}&name=John"#
+        );
+    }
+}

@@ -9,11 +9,17 @@
 /// Generated Hive protocol buffer types and their `serde` implementations.
 pub mod proto {
     #![allow(clippy::all)]
-    include!(concat!(env!("CARGO_MANIFEST_DIR"), "/proto/hive.protocol.buffers.rs"));
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/proto/hive.protocol.buffers.rs"
+    ));
     // serde::Serialize/Deserialize impls for the prost types above. Emitted
     // into OUT_DIR by `pbjson-build` from this crate's build script, right
     // after the prost output.
-    include!(concat!(env!("CARGO_MANIFEST_DIR"), "/proto/hive.protocol.buffers.serde.rs"));
+    include!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/proto/hive.protocol.buffers.serde.rs"
+    ));
 }
 
 mod asset;

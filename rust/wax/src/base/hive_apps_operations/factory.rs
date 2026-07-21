@@ -7,7 +7,6 @@
 //! trait (`HiveAppsOperation`) with a default `authorize` implementation.
 
 use crate::core::proto;
-use serde_json::Value;
 
 use crate::WaxError;
 use crate::base::models::basic::AccountName;
@@ -19,11 +18,15 @@ use crate::base::models::basic::AccountName;
 /// TS NOTE: mirrors the field set of the abstract `HiveAppsOperation`
 /// class. `body` is `pub(crate)` — the Rust analogue of TS `protected` —
 /// so concrete builders in this crate push staged entries onto it
-/// directly, the way TS subclasses do (`this.body.push([...])`).
+/// directly, the way TS subclasses do (`this.body.push([...])`). Each entry
+/// stages its body pre-serialized: the builders serialize typed structs
+/// whose field order matches the TS insertion order, keeping the payload
+/// bytes identical to `JSON.stringify` (`serde_json`'s `Value` would
+/// reorder keys alphabetically).
 #[derive(Debug, Clone)]
 pub struct HiveAppsOperationBase {
     id: &'static str,
-    pub(crate) body: Vec<(&'static str, Value)>,
+    pub(crate) body: Vec<(&'static str, String)>,
     ops: Vec<proto::CustomJson>,
 }
 
@@ -56,12 +59,14 @@ impl HiveAppsOperationBase {
         for (action, body) in self.body.drain(..) {
             // Wire form is `[tag, body]` — a heterogenous JSON array,
             // matching TS `JSON.stringify(body)` where `body = [action, data]`.
-            let payload = (action, body);
-            let json = serde_json::to_string(&payload).map_err(|e| {
+            // `body` is already valid JSON (serialized at stage time), so
+            // composing the two fragments textually is escape-safe.
+            let action_json = serde_json::to_string(action).map_err(|e| {
                 WaxError::new(format!(
                     "failed to serialize hive-apps action: {e}"
                 ))
             })?;
+            let json = format!("[{action_json},{body}]");
 
             self.ops.push(proto::CustomJson {
                 id: self.id.into(),

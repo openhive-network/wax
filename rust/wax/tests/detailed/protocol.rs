@@ -1,16 +1,19 @@
 // Rust port of `ts/wasm/__tests__/detailed/protocol.ts`.
 //
 // Tests appear in TS source order. Each Rust test has a `// TS line N` comment
-// pointing back to the TS original. The one remaining `#[ignore]` stub covers a
-// case where Rust's eager C++ op-handle construction diverges from TS's
-// validate-time behaviour (see the empty-variant test below).
+// pointing back to the TS original. The empty-variant validation test adapts
+// to Rust's eager C++ op-handle construction (TS defers the failure to
+// validate time); see its own note.
+//
+// TS NOTE: TS line 30 ("Should be able to print author in C++ JS val handle")
+// exercises the embind JS-value bridge and has no Rust counterpart — the
+// cxx bridge passes typed structs, not JS handles.
 
 use std::collections::HashMap;
 
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 
-use wax::core::RustManagedObject;
 use wax::models::asset::NaiAsset;
 use wax::models::basic::HiveDateTime;
 use wax::proto::{
@@ -1714,6 +1717,16 @@ fn proto_to_api_basic_transaction_no_data_loss() {
             .expect("create_transaction_from_proto_json");
 
         let api_json = from_proto.to_api().expect("to_api");
+
+        // The emitted API JSON must equal the API fixture itself, like the
+        // TS `expect(retVal).toEqual(JSON.parse(transaction))`.
+        assert_eq!(
+            serde_json::from_str::<serde_json::Value>(&api_json)
+                .expect("parse emitted api json"),
+            serde_json::from_str::<serde_json::Value>(TRANSACTION_API_JSON)
+                .expect("parse api fixture"),
+        );
+
         let re_parsed = ctx
             .base
             .create_transaction_from_json(&api_json)

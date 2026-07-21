@@ -6,7 +6,7 @@
 //! [`super::factory::HiveAppsOperation`]), with `id="community"`.
 
 use crate::core::proto;
-use serde_json::{Value, json};
+use serde::Serialize;
 
 use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
@@ -158,19 +158,16 @@ impl CommunityOperation {
         }
     }
 
-    /// TS NOTE: trim every top-level string field on the staged body —
-    /// matches the TS `push` guard
-    /// `if(typeof data[key] === "string") data[key] = data[key].trim();`.
-    /// Nested objects (e.g. `props` on `updateProps`) are left untouched,
-    /// as in TS.
-    fn push(&mut self, action: CommunityOperationActions, mut body: Value) {
-        if let Some(obj) = body.as_object_mut() {
-            for v in obj.values_mut() {
-                if let Value::String(s) = v {
-                    *v = Value::String(s.trim().to_string());
-                }
-            }
-        }
+    /// Serializes `body` (typed structs below — field order matches the TS
+    /// insertion order, so the payload bytes equal `JSON.stringify`) and
+    /// stages it under `action`.
+    fn push(
+        &mut self,
+        action: CommunityOperationActions,
+        body: &impl Serialize,
+    ) {
+        let body = serde_json::to_string(body)
+            .expect("community body serialization is infallible");
         self.base.body.push((action.as_str(), body));
     }
 
@@ -184,12 +181,12 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::FlagPost,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "permlink": permlink.into(),
-                "notes": notes.into(),
-            }),
+            &PostNotesBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                permlink: trimmed(permlink),
+                notes: trimmed(notes),
+            },
         );
         self
     }
@@ -203,11 +200,11 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::SetRole,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "role": role.as_str(),
-            }),
+            &RoleBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                role: role.as_str(),
+            },
         );
         self
     }
@@ -221,11 +218,11 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::SetUserTitle,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "title": title.into(),
-            }),
+            &TitleBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                title: trimmed(title),
+            },
         );
         self
     }
@@ -234,7 +231,9 @@ impl CommunityOperation {
     pub fn subscribe(mut self, community: impl Into<String>) -> Self {
         self.push(
             CommunityOperationActions::Subscribe,
-            json!({ "community": community.into() }),
+            &CommunityBody {
+                community: trimmed(community),
+            },
         );
         self
     }
@@ -243,7 +242,9 @@ impl CommunityOperation {
     pub fn unsubscribe(mut self, community: impl Into<String>) -> Self {
         self.push(
             CommunityOperationActions::Unsubscribe,
-            json!({ "community": community.into() }),
+            &CommunityBody {
+                community: trimmed(community),
+            },
         );
         self
     }
@@ -257,11 +258,11 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::PinPost,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "permlink": permlink.into(),
-            }),
+            &PostBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                permlink: trimmed(permlink),
+            },
         );
         self
     }
@@ -275,11 +276,11 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::UnpinPost,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "permlink": permlink.into(),
-            }),
+            &PostBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                permlink: trimmed(permlink),
+            },
         );
         self
     }
@@ -294,22 +295,21 @@ impl CommunityOperation {
         community: impl Into<String>,
         props: CommunityProps,
     ) -> Self {
-        let props_value = json!({
-            "title": props.title,
-            "about": props.about.unwrap_or_default(),
-            "description": props.description.unwrap_or_default(),
-            "flag_text": props.flag_text.unwrap_or_default(),
-            "is_nsfw": props.is_nsfw.unwrap_or(false),
-            "lang": props
-                .lang
-                .unwrap_or_else(|| SupportedLanguages::English.as_str().to_string()),
-        });
         self.push(
             CommunityOperationActions::UpdateProps,
-            json!({
-                "community": community.into(),
-                "props": props_value,
-            }),
+            &UpdatePropsBody {
+                community: trimmed(community),
+                props: UpdatePropsPayload {
+                    title: props.title,
+                    about: props.about.unwrap_or_default(),
+                    description: props.description.unwrap_or_default(),
+                    flag_text: props.flag_text.unwrap_or_default(),
+                    is_nsfw: props.is_nsfw.unwrap_or(false),
+                    lang: props.lang.unwrap_or_else(|| {
+                        SupportedLanguages::English.as_str().to_string()
+                    }),
+                },
+            },
         );
         self
     }
@@ -324,12 +324,12 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::MutePost,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "permlink": permlink.into(),
-                "notes": notes.into(),
-            }),
+            &PostNotesBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                permlink: trimmed(permlink),
+                notes: trimmed(notes),
+            },
         );
         self
     }
@@ -344,15 +344,77 @@ impl CommunityOperation {
     ) -> Self {
         self.push(
             CommunityOperationActions::UnmutePost,
-            json!({
-                "community": community.into(),
-                "account": account.into(),
-                "permlink": permlink.into(),
-                "notes": notes.into(),
-            }),
+            &PostNotesBody {
+                community: trimmed(community),
+                account: trimmed(account),
+                permlink: trimmed(permlink),
+                notes: trimmed(notes),
+            },
         );
         self
     }
+}
+
+// Staged-body shapes. Field order mirrors the TS insertion order —
+// serialized bytes must match `JSON.stringify` exactly, because the payload
+// string is part of the signed operation.
+
+#[derive(Serialize)]
+struct PostNotesBody {
+    community: String,
+    account: AccountName,
+    permlink: String,
+    notes: String,
+}
+
+#[derive(Serialize)]
+struct PostBody {
+    community: String,
+    account: AccountName,
+    permlink: String,
+}
+
+#[derive(Serialize)]
+struct RoleBody {
+    community: String,
+    account: AccountName,
+    role: &'static str,
+}
+
+#[derive(Serialize)]
+struct TitleBody {
+    community: String,
+    account: AccountName,
+    title: String,
+}
+
+#[derive(Serialize)]
+struct CommunityBody {
+    community: String,
+}
+
+#[derive(Serialize)]
+struct UpdatePropsBody {
+    community: String,
+    props: UpdatePropsPayload,
+}
+
+#[derive(Serialize)]
+struct UpdatePropsPayload {
+    title: String,
+    about: String,
+    description: String,
+    flag_text: String,
+    is_nsfw: bool,
+    lang: String,
+}
+
+/// TS NOTE: the TS `push` guard trims every top-level string field of a
+/// staged body (`data[key].trim()`); the typed bodies apply the same trim
+/// per field at construction time. Nested objects (`props`) stay untouched,
+/// as in TS.
+fn trimmed(value: impl Into<String>) -> String {
+    value.into().trim().to_string()
 }
 
 impl HiveAppsOperation for CommunityOperation {
