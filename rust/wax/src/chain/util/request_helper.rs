@@ -16,6 +16,10 @@ use reqwest::{Client, Method, RequestBuilder, Response};
 use serde_json::Value;
 
 use crate::chain::healthchecker::RequestError;
+use crate::chain::interceptor::{
+    ApiCallerKind, InterceptorRequestOptions, RequestInterceptor,
+    ResponseInterceptor,
+};
 
 /// Represents the timing, status, headers and decoded body captured for a
 /// request.
@@ -64,6 +68,13 @@ pub struct RequestOptions {
     pub response_type: Option<ResponseType>,
     /// `X-Wax-Api-Caller` header value for the request.
     pub wax_api_caller: Option<String>,
+    /// Additional headers appended after the built-in ones.
+    ///
+    /// TS NOTE: no TS counterpart — TS interceptors cannot add headers at
+    /// all (only `waxApiCaller` is modeled); this is a deliberate Rust
+    /// extension to serve the auth-header use case of
+    /// [`crate::chain::interceptor`].
+    pub extra_headers: Vec<(String, String)>,
 }
 
 /// Represents the request body payload.
@@ -108,22 +119,49 @@ fn reqwest_error(
 /// the Rust port owns a [`reqwest::Client`] so connections are reused.
 pub struct RequestHelper {
     client: Client,
+    /// Which transport this helper serves; reported to interceptors as
+    /// [`InterceptorRequestOptions::caller`].
+    caller: ApiCallerKind,
+    request_interceptor: Option<RequestInterceptor>,
+    response_interceptor: Option<ResponseInterceptor>,
 }
 
 impl RequestHelper {
-    /// Creates a request helper with a default HTTP client.
-    pub fn new() -> Self {
+    /// Creates a request helper with a default HTTP client and no
+    /// interceptors.
+    pub fn new(caller: ApiCallerKind) -> Self {
         Self {
             client: Client::new(),
+            caller,
+            request_interceptor: None,
+            response_interceptor: None,
+        }
+    }
+
+    /// Creates a request helper invoking the given interceptor callbacks
+    /// around every request (see [`crate::chain::interceptor`]).
+    pub fn with_interceptors(
+        caller: ApiCallerKind,
+        request_interceptor: Option<RequestInterceptor>,
+        response_interceptor: Option<ResponseInterceptor>,
+    ) -> Self {
+        Self {
+            request_interceptor,
+            response_interceptor,
+            ..Self::new(caller)
         }
     }
 
     /// Requests the given resource, recording start/end timings, the HTTP
-    /// status, the response headers and the decoded body.
+    /// status, the response headers and the decoded body. The interceptor
+    /// callbacks (when set) run first on the request options and last on
+    /// the finalized success response.
     pub async fn request(
         &self,
         config: RequestOptions,
     ) -> Result<DetailedResponseData, RequestError> {
+        let config = self.run_request_interceptor(config)?;
+
         let mut state = DetailedResponseData::started();
 
         let method = match Method::from_bytes(config.method.as_bytes()) {
@@ -137,7 +175,7 @@ impl RequestHelper {
             }
         };
 
-        let builder = self.init_bulider(method, &config);
+        let builder = self.init_builder(method, &config);
 
         let response = match builder.send().await {
             Ok(v) => v,
@@ -146,10 +184,69 @@ impl RequestHelper {
 
         let status = Self::fill_status(&response, &mut state).await;
 
-        Self::finalize_response(response, status, config, state).await
+        // Cloned only when the response interceptor needs the request data.
+        let request_copy =
+            self.response_interceptor.is_some().then(|| config.clone());
+        let state =
+            Self::finalize_response(response, status, config, state).await?;
+
+        match request_copy {
+            Some(request) => self.run_response_interceptor(state, request),
+            None => Ok(state),
+        }
     }
 
-    fn init_bulider(
+    /// Runs the request interceptor (when set) on the incoming options; an
+    /// `Err` fails the request before anything is sent, carrying the
+    /// untouched request and blank running data.
+    fn run_request_interceptor(
+        &self,
+        config: RequestOptions,
+    ) -> Result<RequestOptions, RequestError> {
+        let Some(callback) = &self.request_interceptor else {
+            return Ok(config);
+        };
+
+        let original = config.clone();
+        let data = InterceptorRequestOptions {
+            options: config,
+            caller: self.caller,
+        };
+
+        callback(data).map_err(|source| RequestError::Interceptor {
+            request: original,
+            response: DetailedResponseData::started(),
+            source,
+        })
+    }
+
+    /// Runs the response interceptor (when set) on the finalized success
+    /// response; an `Err` discards the response, which is attached in full
+    /// to the error.
+    fn run_response_interceptor(
+        &self,
+        state: DetailedResponseData,
+        request: RequestOptions,
+    ) -> Result<DetailedResponseData, RequestError> {
+        let Some(callback) = &self.response_interceptor else {
+            return Ok(state);
+        };
+
+        let request_data = InterceptorRequestOptions {
+            options: request,
+            caller: self.caller,
+        };
+
+        callback(state.clone(), &request_data).map_err(|source| {
+            RequestError::Interceptor {
+                request: request_data.options,
+                response: state,
+                source,
+            }
+        })
+    }
+
+    fn init_builder(
         &self,
         method: Method,
         config: &RequestOptions,
@@ -172,6 +269,10 @@ impl RequestHelper {
                     RequestData::Json(value) => value.to_string(),
                 },
             );
+        }
+
+        for (name, value) in &config.extra_headers {
+            builder = builder.header(name, value);
         }
 
         builder
@@ -227,12 +328,6 @@ impl RequestHelper {
     }
 }
 
-impl Default for RequestHelper {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     //! TS NOTE: mirrors `ts/wasm/__tests__/detailed/wax_api_caller_header.ts`.
@@ -240,25 +335,47 @@ mod tests {
     //! assert the `waxApiCaller` option is propagated down to the request
     //! layer. Here `RequestOptions` is built directly, so the observable
     //! equivalent at this layer is the `x-wax-api-caller` header that
-    //! `init_bulider` emits from that option (the TS counterpart is
+    //! `init_builder` emits from that option (the TS counterpart is
     //! `request_helper.ts` lines 58-59), captured off the wire by a local
     //! server. The caller-level counterpart (option threaded down from the
     //! REST engine) lives in the `api_caller` tests.
 
+    use std::sync::{Arc, Mutex};
+
     use super::super::test_support::{header_value, spawn_capture_server};
     use super::*;
+    use crate::capture;
 
     /// `waxApiCaller` fixture pinned by the TS suite.
     const WAX_API_CALLER: &str = "test-wax-client-v1.0";
 
+    /// A bodiless GET against `endpoint`; the base request of the
+    /// interceptor tests.
+    fn get_options(endpoint: String) -> RequestOptions {
+        RequestOptions {
+            endpoint,
+            url: "/".into(),
+            method: "GET".into(),
+            timeout: 0,
+            data: None,
+            response_type: None,
+            wax_api_caller: None,
+            extra_headers: Vec::new(),
+        }
+    }
+
     // TS line 10: 'Should set x-wax-api-caller header in REST API requests
     // when configured'. The REST caller issues a bodiless GET with the query
     // already encoded in the URL.
+    //
+    // NOTE: together with the standard-API twin below, this also guards the
+    // no-behavior-change claim for unset interceptors — both helpers run
+    // with `None` callbacks.
     #[tokio::test]
     async fn sets_wax_api_caller_header_on_rest_api_requests() {
         let (endpoint, captured) = spawn_capture_server(r#"[{"block_num":1}]"#);
 
-        RequestHelper::new()
+        RequestHelper::new(ApiCallerKind::Rest)
             .request(RequestOptions {
                 endpoint,
                 url: "/hafbe-api/operation-type-counts?result-limit=1".into(),
@@ -267,6 +384,7 @@ mod tests {
                 data: None,
                 response_type: None,
                 wax_api_caller: Some(WAX_API_CALLER.into()),
+                extra_headers: Vec::new(),
             })
             .await
             .unwrap();
@@ -294,7 +412,7 @@ mod tests {
             "id": 1
         });
 
-        RequestHelper::new()
+        RequestHelper::new(ApiCallerKind::JsonRpc)
             .request(RequestOptions {
                 endpoint,
                 url: String::new(),
@@ -303,6 +421,7 @@ mod tests {
                 data: Some(RequestData::Json(data)),
                 response_type: None,
                 wax_api_caller: Some(WAX_API_CALLER.into()),
+                extra_headers: Vec::new(),
             })
             .await
             .unwrap();
@@ -312,6 +431,152 @@ mod tests {
         assert_eq!(
             header_value(&raw, "x-wax-api-caller").as_deref(),
             Some(WAX_API_CALLER)
+        );
+    }
+
+    // The auth-header use case: an `extra_headers` entry pushed by the
+    // request interceptor must reach the wire, after the built-in headers.
+    #[tokio::test]
+    async fn request_interceptor_injects_extra_header() {
+        let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        let helper = RequestHelper::with_interceptors(
+            ApiCallerKind::Rest,
+            Some(Arc::new(|mut data: InterceptorRequestOptions| {
+                data.options
+                    .extra_headers
+                    .push(("authorization".into(), "Bearer s3cr3t".into()));
+
+                Ok(data.options)
+            })),
+            None,
+        );
+
+        helper.request(get_options(endpoint)).await.unwrap();
+
+        let raw = captured.recv().unwrap();
+
+        assert_eq!(
+            header_value(&raw, "authorization").as_deref(),
+            Some("Bearer s3cr3t")
+        );
+    }
+
+    // TS NOTE: a throwing TS request interceptor rejects the call promise
+    // before `fetch` runs; the Rust `Err` likewise fails the request before
+    // anything is sent.
+    #[tokio::test]
+    async fn failing_request_interceptor_prevents_the_send() {
+        let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        let helper = RequestHelper::with_interceptors(
+            ApiCallerKind::Rest,
+            Some(Arc::new(|_| Err("token expired".into()))),
+            None,
+        );
+
+        let error = helper.request(get_options(endpoint)).await.unwrap_err();
+
+        match error {
+            RequestError::Interceptor {
+                request, response, ..
+            } => {
+                // The untouched request and blank running data.
+                assert_eq!(request.method, "GET");
+                assert_eq!(response.status, None);
+            }
+            other => panic!("expected Interceptor error, got: {other}"),
+        }
+        // The request never hit the server.
+        assert!(
+            captured
+                .recv_timeout(std::time::Duration::from_millis(200))
+                .is_err()
+        );
+    }
+
+    // Decoded-response transformation: the value the response interceptor
+    // returns is what the caller sees, with timings already stamped.
+    #[tokio::test]
+    async fn response_interceptor_transforms_the_decoded_body() {
+        let (endpoint, _captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        let helper = RequestHelper::with_interceptors(
+            ApiCallerKind::Rest,
+            None,
+            Some(Arc::new(
+                |mut data: DetailedResponseData,
+                 _: &InterceptorRequestOptions| {
+                    assert!(data.end.is_some(), "timings not yet stamped");
+                    data.response =
+                        Some(serde_json::json!({ "scrubbed": true }));
+
+                    Ok(data)
+                },
+            )),
+        );
+
+        let response = helper.request(get_options(endpoint)).await.unwrap();
+
+        assert_eq!(
+            response.response,
+            Some(serde_json::json!({ "scrubbed": true }))
+        );
+    }
+
+    // TS NOTE: a throwing TS response interceptor rejects the resolved call;
+    // the Rust `Err` discards the response, attaching it in full.
+    #[tokio::test]
+    async fn failing_response_interceptor_discards_the_response() {
+        let (endpoint, _captured) = spawn_capture_server(r#"{"ok":true}"#);
+
+        let helper = RequestHelper::with_interceptors(
+            ApiCallerKind::Rest,
+            None,
+            Some(Arc::new(|_, _: &InterceptorRequestOptions| {
+                Err("scrub failed".into())
+            })),
+        );
+
+        let error = helper.request(get_options(endpoint)).await.unwrap_err();
+
+        match error {
+            RequestError::Interceptor { response, .. } => {
+                assert_eq!(response.status, Some(200));
+                assert!(response.end.is_some());
+            }
+            other => panic!("expected Interceptor error, got: {other}"),
+        }
+    }
+
+    // Originator parity: `InterceptorRequestOptions::caller` must report
+    // the kind the helper was constructed with (TS `apiCallerId`). The
+    // capture pattern is written with `capture!`, doubling as the macro's
+    // integration test.
+    #[tokio::test]
+    async fn interceptor_reports_the_originating_caller_kind() {
+        let seen = Arc::new(Mutex::new(Vec::new()));
+
+        for kind in [ApiCallerKind::JsonRpc, ApiCallerKind::Rest] {
+            let (endpoint, _captured) = spawn_capture_server(r#"{"ok":true}"#);
+            let helper = RequestHelper::with_interceptors(
+                kind,
+                Some(Arc::new(capture!(
+                    [seen] | data | {
+                        seen.lock().unwrap().push(data.caller);
+
+                        Ok(data.options)
+                    }
+                ))),
+                None,
+            );
+
+            helper.request(get_options(endpoint)).await.unwrap();
+        }
+
+        assert_eq!(
+            *seen.lock().unwrap(),
+            vec![ApiCallerKind::JsonRpc, ApiCallerKind::Rest]
         );
     }
 }

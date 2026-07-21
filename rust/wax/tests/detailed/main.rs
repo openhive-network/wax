@@ -30,6 +30,7 @@ mod hive_assertion;
 mod hive_base;
 mod hive_chain;
 mod hive_chain_custom_opts;
+mod interceptor;
 mod mock_base;
 mod non_encrypted_operations;
 mod online_transaction;

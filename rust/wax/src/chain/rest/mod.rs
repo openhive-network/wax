@@ -2,21 +2,27 @@
 //!
 //! TS NOTE: ported from `ts/wasm/lib/detailed/util/api_caller.ts`. The TS
 //! `ApiCaller` is a `Proxy` that accumulates the URL path at property-access
-//! time and carries two interceptor chains; neither survives the port:
+//! time and carries two interceptor chains; neither survives the port
+//! structurally:
 //!
 //! - the constructor-injected "static" pair exists only to bend the one
 //!   generic engine into a JSON-RPC transport (`chain_api.ts` rewrites the
 //!   request into an envelope and unwraps the response); Rust has the
 //!   dedicated `JsonRpcClient` instead, so this engine is REST-only,
-//! - the user pair (`withProxy`) exists to redirect a call to a probed
-//!   endpoint and to smuggle timings out of the fixed `(params) => result`
-//!   proxy signature; the Rust health checker gets both through plain
-//!   arguments and the [`DetailedResponseData`] return value of
-//!   [`RequestHelper::request`].
+//! - the health checker's use of the user pair (`withProxy`) — redirecting
+//!   a call to a probed endpoint and smuggling timings out of the fixed
+//!   `(params) => result` proxy signature — is covered by plain arguments
+//!   and the [`DetailedResponseData`] return value of
+//!   [`RequestHelper::request`] (see [`RestClient::call_at`]).
 //!
-//! With the proxy and the interceptors gone, the TS per-call mutable state
-//! (`paths` / `realPaths` / `lastMethod` / `config`) disappears as well:
-//! callers pass an immutable [`RestCallDescriptor`] instead.
+//! The general-purpose user pair (`chain.withProxy`) DOES have a direct
+//! Rust counterpart: the interceptor callbacks of
+//! [`crate::chain::interceptor`], handed down from `HiveChainOptions` to
+//! this engine's [`RequestHelper`].
+//!
+//! With the proxy gone, the TS per-call mutable state (`paths` /
+//! `realPaths` / `lastMethod` / `config`) disappears as well: callers pass
+//! an immutable [`RestCallDescriptor`] instead.
 
 mod braced_strings;
 mod payload;
@@ -28,6 +34,9 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 
 use crate::chain::error::WaxChainError;
+use crate::chain::interceptor::{
+    ApiCallerKind, RequestInterceptor, ResponseInterceptor,
+};
 use crate::chain::util::{
     DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
     RequestOptions, ResponseType,
@@ -131,14 +140,22 @@ pub struct RestCallDescriptor {
 }
 
 impl RestClient {
-    /// Creates a REST caller issuing requests against `endpoint`.
+    /// Creates a REST caller issuing requests against `endpoint`, running
+    /// the given interceptor callbacks (when set) around every request —
+    /// `call` and `call_at` probes alike.
     pub fn new(
         endpoint: String,
         timeout_ms: u64,
         wax_api_caller: Option<String>,
+        request_interceptor: Option<RequestInterceptor>,
+        response_interceptor: Option<ResponseInterceptor>,
     ) -> Self {
         Self {
-            helper: RequestHelper::new(),
+            helper: RequestHelper::with_interceptors(
+                ApiCallerKind::Rest,
+                request_interceptor,
+                response_interceptor,
+            ),
             endpoints: EndpointResolver::new(endpoint),
             timeout_ms,
             wax_api_caller,
@@ -238,6 +255,7 @@ impl RestClient {
             data: body,
             response_type: Some(ResponseType::Json),
             wax_api_caller: self.wax_api_caller.clone(),
+            extra_headers: Vec::new(),
         }
     }
 }
@@ -273,8 +291,13 @@ mod tests {
             namespace_path: &["hafah_api", "transactions"],
         };
 
-        let caller =
-            RestClient::new(endpoint, 0, Some("test-wax-client-v1.0".into()));
+        let caller = RestClient::new(
+            endpoint,
+            0,
+            Some("test-wax-client-v1.0".into()),
+            None,
+            None,
+        );
 
         let result: TransactionResponse = caller
             .call(
@@ -311,7 +334,7 @@ mod tests {
             namespace_path: &["items"],
         };
 
-        let caller = RestClient::new(endpoint, 0, None);
+        let caller = RestClient::new(endpoint, 0, None, None, None);
 
         let _: Value = caller
             .call(&DESC, json!({ "id": 7, "name": "widget" }))
@@ -325,7 +348,7 @@ mod tests {
     }
 
     fn caller_with_default(endpoint: &str) -> RestClient {
-        RestClient::new(endpoint.into(), 0, None)
+        RestClient::new(endpoint.into(), 0, None, None, None)
     }
 
     // NOTE: the pure prefix-resolution semantics (longest match, root
@@ -354,6 +377,51 @@ mod tests {
         assert_eq!(timings.status, Some(200));
         assert!(timings.end.expect("set on success") >= timings.start);
         assert!(captured.recv().unwrap().starts_with("GET /headblock"));
+    }
+
+    // Interceptors handed to the client must run for `call` AND `call_at`
+    // (the health-check probe path) — uniform by design, so e.g. an auth
+    // header reaches probes too.
+    #[tokio::test]
+    async fn interceptors_apply_to_call_and_call_at() {
+        use std::sync::Mutex;
+
+        use crate::capture;
+
+        const DESC: RestCallDescriptor = RestCallDescriptor {
+            method: "GET",
+            path_template: "/headblock",
+            namespace_path: &["hafah_api", "headblock"],
+        };
+
+        let kinds = Arc::new(Mutex::new(Vec::new()));
+
+        let (call_endpoint, _call_captured) =
+            spawn_capture_server(r#"{"ok":true}"#);
+        let (probe_endpoint, _probe_captured) =
+            spawn_capture_server(r#"{"ok":true}"#);
+
+        let caller = RestClient::new(
+            call_endpoint,
+            0,
+            None,
+            Some(Arc::new(capture!(
+                [kinds] | data | {
+                    kinds.lock().unwrap().push(data.caller);
+
+                    Ok(data.options)
+                }
+            ))),
+            None,
+        );
+
+        let _: Value = caller.call(&DESC, ()).await.unwrap();
+        let _: (Value, _) =
+            caller.call_at(&probe_endpoint, &DESC, ()).await.unwrap();
+
+        use crate::chain::interceptor::ApiCallerKind;
+
+        assert_eq!(*kinds.lock().unwrap(), vec![ApiCallerKind::Rest; 2]);
     }
 
     // End-to-end: an overridden namespace routes to its own server. The

@@ -18,6 +18,7 @@ use std::error::Error;
 use thiserror::Error;
 
 use crate::chain::error::WaxChainError;
+use crate::chain::interceptor::InterceptorError;
 use crate::chain::util::{DetailedResponseData, RequestOptions};
 
 /// Represents a probe failure wrapped by the health checker, emitted through
@@ -128,6 +129,22 @@ pub enum RequestError {
         response: DetailedResponseData,
         #[source]
         source: Option<Box<dyn Error + Send + Sync>>,
+    },
+
+    /// TS NOTE: a throwing TS interceptor rejects the call promise; this is
+    /// that failure made explicit. Raised by the request callback before the
+    /// send (blank running data) or by the response callback after the
+    /// decode (full response attached) — see [`crate::chain::interceptor`].
+    #[error(
+        "Interceptor error while requesting given resource \"{} {}{}\": \
+         {source}",
+        .request.method, .request.endpoint, .request.url
+    )]
+    Interceptor {
+        request: RequestOptions,
+        response: DetailedResponseData,
+        #[source]
+        source: InterceptorError,
     },
 }
 

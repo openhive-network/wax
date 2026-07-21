@@ -497,6 +497,7 @@ mod tests {
             data: None,
             response_type: None,
             wax_api_caller: None,
+            extra_headers: Vec::new(),
         };
         let response = DetailedResponseData {
             start: Instant::now(),

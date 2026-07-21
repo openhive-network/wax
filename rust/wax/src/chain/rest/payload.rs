@@ -218,6 +218,7 @@ mod tests {
             data: None,
             response_type: Some(ResponseType::Json),
             wax_api_caller: None,
+            extra_headers: Vec::new(),
         };
         let response = DetailedResponseData {
             start: std::time::Instant::now(),

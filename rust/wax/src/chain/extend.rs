@@ -248,7 +248,9 @@ mod tests {
     }
 
     fn caller(endpoint: String) -> JsonRpcCaller {
-        JsonRpcCaller::new(Arc::new(JsonRpcClient::new(endpoint, 5_000, None)))
+        JsonRpcCaller::new(Arc::new(JsonRpcClient::new(
+            endpoint, 5_000, None, None, None,
+        )))
     }
 
     // TS NOTE: mirrors `ts/wasm/__tests__/detailed/hive_chain.ts` ('Should be

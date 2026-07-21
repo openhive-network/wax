@@ -8,6 +8,9 @@ use serde::de::DeserializeOwned;
 use serde_json::Value;
 
 use crate::chain::error::WaxChainError;
+use crate::chain::interceptor::{
+    ApiCallerKind, RequestInterceptor, ResponseInterceptor,
+};
 use crate::chain::util::{
     DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
     RequestOptions, ResponseType,
@@ -126,13 +129,23 @@ pub(crate) struct JsonRpcClient {
 }
 
 impl JsonRpcClient {
+    /// Creates a JSON-RPC client issuing requests against `endpoint`,
+    /// running the given interceptor callbacks (when set) around every
+    /// request — `call` and `call_at` probes alike (see
+    /// [`crate::chain::interceptor`]).
     pub(crate) fn new(
         endpoint: String,
         timeout_ms: u64,
         wax_api_caller: Option<String>,
+        request_interceptor: Option<RequestInterceptor>,
+        response_interceptor: Option<ResponseInterceptor>,
     ) -> Self {
         Self {
-            helper: RequestHelper::new(),
+            helper: RequestHelper::with_interceptors(
+                ApiCallerKind::JsonRpc,
+                request_interceptor,
+                response_interceptor,
+            ),
             endpoints: EndpointResolver::new(endpoint),
             timeout_ms,
             wax_api_caller,
@@ -204,6 +217,7 @@ impl JsonRpcClient {
             data: Some(RequestData::Json(serde_json::to_value(&body)?)),
             response_type: Some(ResponseType::Json),
             wax_api_caller: self.wax_api_caller.clone(),
+            extra_headers: Vec::new(),
         };
 
         let response = self.helper.request(request).await?;
@@ -226,7 +240,7 @@ mod tests {
     use super::*;
 
     fn client(endpoint: &str) -> JsonRpcClient {
-        JsonRpcClient::new(endpoint.to_string(), 5_000, None)
+        JsonRpcClient::new(endpoint.to_string(), 5_000, None, None, None)
     }
 
     const PING: JsonRpcCallDescriptor = JsonRpcCallDescriptor {
@@ -247,6 +261,8 @@ mod tests {
             endpoint,
             0,
             Some("test-wax-client-v1.0".into()),
+            None,
+            None,
         );
         let _: Value = rpc.call(&PING, ()).await.unwrap();
 
@@ -278,6 +294,48 @@ mod tests {
                 .unwrap()
                 .contains(r#""method":"test_api.ping""#)
         );
+    }
+
+    // Interceptors handed to the client must run for `call` AND `call_at`
+    // (the health-check probe path) — uniform by design, so e.g. an auth
+    // header reaches probes too.
+    #[tokio::test]
+    async fn interceptors_apply_to_call_and_call_at() {
+        use std::sync::Mutex;
+
+        use crate::capture;
+        use crate::chain::interceptor::ApiCallerKind;
+
+        let kinds = Arc::new(Mutex::new(Vec::new()));
+
+        let (call_endpoint, _call_captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":1,"result":{"pong":1}}"#,
+        );
+        let (probe_endpoint, _probe_captured) = spawn_capture_server(
+            r#"{"jsonrpc":"2.0","id":2,"result":{"pong":1}}"#,
+        );
+
+        let rpc = JsonRpcClient::new(
+            call_endpoint,
+            0,
+            None,
+            Some(Arc::new(capture!(
+                [kinds] | data | {
+                    kinds.lock().unwrap().push(data.caller);
+
+                    Ok(data.options)
+                }
+            ))),
+            None,
+        );
+
+        let _: Value = rpc.call(&PING, ()).await.unwrap();
+        let _: (Value, _) = rpc
+            .call_at(&probe_endpoint, "test_api.ping", ())
+            .await
+            .unwrap();
+
+        assert_eq!(*kinds.lock().unwrap(), vec![ApiCallerKind::JsonRpc; 2]);
     }
 
     // TS NOTE: the health-checker seam for JSON-RPC probes — `withProxy`'s

@@ -15,6 +15,7 @@ use crate::WaxOptions;
 use crate::chain::api::DefaultHiveApi;
 use crate::chain::error::WaxChainError;
 use crate::chain::extend::HiveApi;
+use crate::chain::interceptor::{RequestInterceptor, ResponseInterceptor};
 use crate::chain::options::HiveChainOptions;
 use crate::chain::rest::{RestCaller, RestClient};
 use crate::chain::rpc::{JsonRpcCaller, JsonRpcClient};
@@ -46,9 +47,12 @@ pub struct HiveChain {
     rpc: Arc<JsonRpcClient>,
     rest: Arc<RestClient>,
     // Kept for the `options()` snapshot — the transports do not expose them
-    // back.
+    // back. The interceptors are `Arc` handles, so echoing them keeps the
+    // snapshot honest at refcount-bump cost.
     api_timeout: u32,
     wax_api_caller: Option<String>,
+    request_interceptor: Option<RequestInterceptor>,
+    response_interceptor: Option<ResponseInterceptor>,
     tapos_cache: Mutex<Option<TaposCache>>,
 }
 
@@ -73,11 +77,15 @@ impl HiveChain {
             options.api_endpoint.clone(),
             options.api_timeout.into(),
             options.wax_api_caller.clone(),
+            options.request_interceptor.clone(),
+            options.response_interceptor.clone(),
         ));
         let rest = Arc::new(RestClient::new(
             options.rest_api_endpoint,
             options.api_timeout.into(),
             options.wax_api_caller.clone(),
+            options.request_interceptor.clone(),
+            options.response_interceptor.clone(),
         ));
 
         Ok(Self {
@@ -86,6 +94,8 @@ impl HiveChain {
             rest,
             api_timeout: options.api_timeout,
             wax_api_caller: options.wax_api_caller,
+            request_interceptor: options.request_interceptor,
+            response_interceptor: options.response_interceptor,
             tapos_cache: Mutex::new(None),
         })
     }
@@ -148,6 +158,8 @@ impl HiveChain {
             rest_api_endpoint: self.rest.endpoint(),
             api_timeout: self.api_timeout,
             wax_api_caller: self.wax_api_caller.clone(),
+            request_interceptor: self.request_interceptor.clone(),
+            response_interceptor: self.response_interceptor.clone(),
         }
     }
 

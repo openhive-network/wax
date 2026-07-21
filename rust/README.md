@@ -81,3 +81,80 @@ C++ side rebuild only when their inputs change.
 ```bash
 cargo test -p wax
 ```
+
+## Interceptors
+
+The online chain layer supports an optional request/response callback pair
+(the Rust port of the TS `requestInterceptor` / `responseInterceptor` pair
+installed via `chain.withProxy`), run around every HTTP request the chain
+makes — JSON-RPC, REST, and health-check probes alike. Typical uses:
+auth-header injection, logging/metrics, request tagging, response
+inspection, and decoded-response transformation (test fixtures, response
+scrubbing):
+
+```rust
+use wax::{HiveChainOptions, create_hive_chain};
+
+let chain = create_hive_chain(
+    HiveChainOptions::default()
+        .with_request_interceptor(|mut data| {
+            // `extra_headers` is a Rust extension: TS interceptors cannot
+            // add arbitrary headers (only modeled fields).
+            data.options
+                .extra_headers
+                .push(("authorization".into(), "Bearer s3cr3t".into()));
+            println!(
+                "[wax] {:?} {} {}",
+                data.caller, data.options.method, data.options.endpoint
+            );
+
+            Ok(data.options)
+        })
+        .with_response_interceptor(|data, request| {
+            println!("[wax] {:?} <- status {:?}", request.caller, data.status);
+
+            Ok(data)
+        }),
+)?;
+```
+
+Sharing state with a callback is the usual `Arc` clone-and-`move` dance:
+
+```rust
+use std::sync::{Arc, Mutex};
+
+let seen = Arc::new(Mutex::new(None));
+
+let options = HiveChainOptions::default().with_request_interceptor({
+    let seen = Arc::clone(&seen);
+    move |data| {
+        *seen.lock().unwrap() = data.options.wax_api_caller.clone();
+
+        Ok(data.options)
+    }
+});
+```
+
+The `wax::capture!` macro does exactly that expansion:
+
+```rust
+use wax::capture;
+
+let options = HiveChainOptions::default().with_request_interceptor(
+    capture!([seen] |data| {
+        *seen.lock().unwrap() = data.options.wax_api_caller.clone();
+
+        Ok(data.options)
+    }),
+);
+```
+
+Callbacks are sync — no async work inside (refresh tokens out-of-band and
+read a cached value in the callback). Retries and short-circuiting are out
+of scope by design: callbacks observe and transform, they do not wrap the
+send — a retry policy would have to hook the transport layer underneath the
+request assembly, which is a different (middleware-style) mechanism than
+this TS-parity pair. A callback returning `Err` fails the call with
+`RequestError::Interceptor` — before the send for the request callback,
+discarding the decoded response for the response callback. See the
+`wax/src/chain/interceptor.rs` module docs for the full TS mapping.
