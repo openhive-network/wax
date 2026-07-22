@@ -49,9 +49,10 @@ pub use chain::*;
 /// `async fn m(params: P) -> Vec<Item>;`.
 ///
 /// Every generated struct carries a `set_endpoint_url(Option<String>)`
-/// method routing that namespace's calls to an explicit endpoint — the TS
-/// `api.<namespace>.endpointUrl = url` surface; a root-level override
-/// covering a whole transport is
+/// method routing that namespace's calls to an explicit endpoint, plus an
+/// `endpoint_url()` getter returning the endpoint the namespace currently
+/// resolves to — the TS `api.<namespace>.endpointUrl` surface; a root-level
+/// override covering a whole transport is
 /// [`JsonRpcCaller::set_endpoint_url_for_path`] /
 /// [`RestCaller::set_endpoint_url_for_path`] with an empty path.
 ///

@@ -14,6 +14,6 @@ mod tests;
 
 pub use account_update::{
     AccountAuthorityUpdateOperation, HiveRole, HiveRoleAuthority,
-    HiveRoleMemoKey,
+    HiveRoleMemoKey, HiveRoles,
 };
 pub use legacy_vote_operation::LegacyVoteOperation;

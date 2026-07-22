@@ -186,12 +186,12 @@ impl OnlineTransaction {
     ///
     /// TS NOTE:
     /// `generateAuthorityVerificationTrace(useLegacySerialization?, externalTx?)`.
-    pub async fn generate_authority_verification_trace(
+    pub async fn generate_authority_verification_trace<'a>(
         &self,
         use_legacy: bool,
-        source: Option<&Transaction>,
+        source: impl Into<Option<&'a Transaction>>,
     ) -> Result<AuthorityTrace, WaxChainError> {
-        let source = source.unwrap_or(&self.base);
+        let source = source.into().unwrap_or(&self.base);
 
         let signature_keys = if use_legacy {
             source.legacy_signature_keys()?

@@ -74,9 +74,9 @@ impl HiveChain {
     /// TS NOTE: `createTransaction(expirationTime?)`. Like TS
     /// (`acquireChainReferenceData`), the chain reference data is cached
     /// between calls for 3 s.
-    pub async fn create_transaction(
+    pub async fn create_transaction<'a>(
         &self,
-        expiration: impl Into<Option<String>>,
+        expiration: impl Into<Option<&'a str>>,
     ) -> Result<OnlineTransaction, WaxChainError> {
         let reference = self.acquire_chain_reference_data().await?;
 
@@ -84,7 +84,7 @@ impl HiveChain {
             self.chain_id(),
             &reference.head_block_id,
             Some(reference.time),
-            expiration.into().as_deref(),
+            expiration.into(),
         )?;
 
         Ok(OnlineTransaction::new(
@@ -447,6 +447,38 @@ mod tests {
         // Clearing the override falls back to the (unroutable) default.
         api.set_endpoint_url(None);
         assert!(api.ping(PingRequest { token: 5 }).await.is_err());
+    }
+
+    // The generated getter must mirror the resolution the calls use: the
+    // transport default, then the namespace override, then the live default
+    // again after clearing.
+    #[test]
+    fn generated_endpoint_url_reflects_default_and_override() {
+        let chain = crate::create_hive_chain(crate::HiveChainOptions {
+            api_endpoint: "http://127.0.0.1:1/".into(),
+            rest_api_endpoint: "http://127.0.0.1:2/".into(),
+            ..Default::default()
+        })
+        .unwrap();
+
+        let api = chain.extend::<TestApi>();
+
+        assert_eq!(api.endpoint_url(), "http://127.0.0.1:1/");
+
+        api.set_endpoint_url(Some("http://127.0.0.1:9/".into()));
+
+        assert_eq!(api.endpoint_url(), "http://127.0.0.1:9/");
+
+        // Clearing follows the live default, not the constructed one.
+        api.set_endpoint_url(None);
+        chain.set_endpoint_url("http://127.0.0.1:3/").unwrap();
+
+        assert_eq!(api.endpoint_url(), "http://127.0.0.1:3/");
+
+        // The REST side carries the same getter.
+        let rest = chain.extend_rest::<HafahApi>();
+
+        assert_eq!(rest.endpoint_url(), "http://127.0.0.1:2/");
     }
 
     #[tokio::test]

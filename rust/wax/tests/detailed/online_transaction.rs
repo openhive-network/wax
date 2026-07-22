@@ -74,12 +74,8 @@ async fn trace_accepts_directly_authorized_signature_key() {
     })
     .unwrap();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
@@ -141,12 +137,8 @@ async fn trace_fetches_redirected_account_authority_in_second_round() {
     })
     .unwrap();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 

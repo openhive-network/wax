@@ -7,6 +7,7 @@
 // through `to_api()` or `to_binary_form()`).
 
 use wax::constants::MAINNET_CHAIN_ID;
+use wax::models::basic::HiveDateTime;
 use wax::proto::{
     Operation, Transaction as ProtoTransaction, Vote, operation::Value,
 };
@@ -220,6 +221,47 @@ fn create_transaction_with_tapos_rejects_invalid_block_id() {
         f.create_transaction_with_tapos("not-hex", "2026-05-15T12:00:00")
             .is_err(),
         "invalid block id must error"
+    );
+}
+
+// Seconds between the transaction's expiration and now — for asserting that
+// relative offsets are resolved against the wall clock.
+fn expiration_offset_seconds(tx: &wax::Transaction) -> i64 {
+    let expiration = HiveDateTime::parse(&tx.transaction().expiration)
+        .expect("expiration must parse");
+
+    expiration.inner().timestamp() - HiveDateTime::now().inner().timestamp()
+}
+
+#[test]
+fn create_transaction_with_tapos_resolves_offset_expiration() {
+    let f = foundation();
+    let block_id = "01020304ffeeddccbbaa99887766554433221100";
+
+    let tx = f
+        .create_transaction_with_tapos(block_id, "+1h")
+        .expect("create_transaction_with_tapos");
+
+    let offset = expiration_offset_seconds(&tx);
+    assert!(
+        (3_590..=3_610).contains(&offset),
+        "+1h should expire about an hour from now, got {offset}s"
+    );
+}
+
+#[test]
+fn create_transaction_with_tapos_defaults_expiration_to_one_minute() {
+    let f = foundation();
+    let block_id = "01020304ffeeddccbbaa99887766554433221100";
+
+    let tx = f
+        .create_transaction_with_tapos(block_id, None)
+        .expect("create_transaction_with_tapos");
+
+    let offset = expiration_offset_seconds(&tx);
+    assert!(
+        (50..=70).contains(&offset),
+        "the default expiration is +1m, got {offset}s"
     );
 }
 

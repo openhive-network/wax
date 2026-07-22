@@ -18,15 +18,37 @@ impl HiveDateTime {
         Self(Utc::now())
     }
 
-    /// Converts a Hive-formatted timestamp string into a [`HiveDateTime`].
+    /// Converts a timestamp string into a [`HiveDateTime`]. Accepts the Hive
+    /// wire format (`2025-07-08T12:34:57`), RFC 3339 (`Z` / offset suffix,
+    /// fractional seconds) and unix epoch seconds (`1751977457`).
     pub fn parse(value: &str) -> Result<Self, WaxError> {
-        let naive = NaiveDateTime::parse_from_str(value, HIVE_TIME_FORMAT)
-            .map_err(|_| {
+        if let Ok(naive) =
+            NaiveDateTime::parse_from_str(value, HIVE_TIME_FORMAT)
+        {
+            return Ok(Self(naive.and_utc()));
+        }
+        if let Ok(date_time) = DateTime::parse_from_rfc3339(value) {
+            return Ok(Self(date_time.with_timezone(&Utc)));
+        }
+        if let Ok(seconds) = value.parse::<i64>() {
+            return Self::from_timestamp(seconds);
+        }
+
+        Err(WaxError::new(format!(
+            "Date must be in format {HIVE_TIME_FORMAT}, RFC 3339 or unix \
+             epoch seconds"
+        )))
+    }
+
+    /// Converts unix epoch seconds into a [`HiveDateTime`].
+    pub fn from_timestamp(seconds: i64) -> Result<Self, WaxError> {
+        DateTime::from_timestamp(seconds, 0)
+            .map(Self)
+            .ok_or_else(|| {
                 WaxError::new(format!(
-                    "Date must be in format {HIVE_TIME_FORMAT}"
+                    "Unix timestamp {seconds} exceeds the supported date range"
                 ))
-            })?;
-        Ok(Self(naive.and_utc()))
+            })
     }
 
     /// Converts the timestamp into its Hive wire-format string.
@@ -106,5 +128,29 @@ mod tests {
         assert!(
             serde_json::from_str::<HiveDateTime>("\"2025-07-08\"").is_err()
         );
+    }
+
+    #[test]
+    fn parse_accepts_rfc3339_timestamps() {
+        let wire = HiveDateTime::parse("2025-07-08T12:34:57").unwrap();
+
+        assert_eq!(HiveDateTime::parse("2025-07-08T12:34:57Z").unwrap(), wire);
+        assert_eq!(
+            HiveDateTime::parse("2025-07-08T14:34:57.000+02:00").unwrap(),
+            wire
+        );
+    }
+
+    #[test]
+    fn parse_accepts_unix_epoch_seconds() {
+        let wire = HiveDateTime::parse("2025-07-08T12:34:57").unwrap();
+        let epoch = wire.inner().timestamp().to_string();
+
+        assert_eq!(HiveDateTime::parse(&epoch).unwrap(), wire);
+    }
+
+    #[test]
+    fn parse_rejects_out_of_range_epoch_seconds() {
+        assert!(HiveDateTime::parse(&i64::MAX.to_string()).is_err());
     }
 }

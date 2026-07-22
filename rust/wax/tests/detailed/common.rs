@@ -32,20 +32,19 @@ pub fn wax_test<R>(
     test(&ctx)
 }
 
-/// Owns an in-memory [`BeekeeperApi`] plus an open session token. Returned by
-/// [`new_in_memory_beekeeper`] so the borrow chain — `api → session → wallet`
-/// — has a single, locally-scoped owner per test.
+/// An open session on a fresh in-memory beekeeper. Returned by
+/// [`new_in_memory_beekeeper`]; the session handle keeps the underlying
+/// beekeeper alive, so it is the only owner a test needs.
 pub struct BeekeeperFixture {
-    pub api: BeekeeperApi,
-    pub token: String,
+    pub session: beekeeper::session::Session,
 }
 
 /// Creates a fresh in-memory beekeeper and opens a session on it.
 pub fn new_in_memory_beekeeper() -> BeekeeperFixture {
-    let mut api =
+    let api =
         BeekeeperApi::new(BeekeeperOptions::new("ignored").in_memory(true));
-    let token = api.create_session().expect("create_session");
-    BeekeeperFixture { api, token }
+    let session = api.create_session().expect("create_session");
+    BeekeeperFixture { session }
 }
 
 // ---------------------------------------------------------------------------

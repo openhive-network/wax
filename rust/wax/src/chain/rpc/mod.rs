@@ -92,6 +92,13 @@ impl JsonRpcCaller {
     ) {
         self.client.set_endpoint_url_for_path(path, url);
     }
+
+    /// Returns the endpoint calls under `path` currently resolve to: the
+    /// deepest matching per-namespace override, else the transport-wide
+    /// default endpoint.
+    pub fn endpoint_url_for_path(&self, path: &[&str]) -> String {
+        self.client.endpoint_url_for_path(path)
+    }
 }
 
 /// Represents one JSON-RPC method as emitted by
@@ -171,6 +178,12 @@ impl JsonRpcClient {
         url: Option<String>,
     ) {
         self.endpoints.set_url_for_path(path, url);
+    }
+
+    /// Returns the endpoint calls under `path` currently resolve to. See
+    /// [`JsonRpcCaller::endpoint_url_for_path`].
+    pub(crate) fn endpoint_url_for_path(&self, path: &[&str]) -> String {
+        self.endpoints.resolve(path)
     }
 
     /// Issues a single JSON-RPC call against the endpoint resolved from the

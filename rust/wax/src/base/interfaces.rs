@@ -61,14 +61,14 @@ pub trait SignatureProvider {
 
     /// Decrypt a base58-encoded buffer previously produced by [`Self::encrypt_data`].
     ///
-    /// `key` (and optionally `other_key`) identifies which private key(s) in
-    /// the underlying container should be used to decrypt the payload.
-    fn decrypt_data(
-        &self,
-        content: &str,
-        key: &str,
-        other_key: Option<&str>,
-    ) -> Result<String, WaxError>;
+    /// The buffer is a crypto-memo payload embedding the from/to public keys
+    /// that identify the decryption key, so the content is all a provider
+    /// needs.
+    ///
+    /// TS NOTE: mirrors the online provider's `decryptData(buffer)`; the
+    /// key parameters of the low-level TS `ISignatureProvider.decryptData`
+    /// are not ported — wax always recovered them from the memo anyway.
+    fn decrypt_data(&self, content: &str) -> Result<String, WaxError>;
 }
 
 // NOTE: the transaction and operation types are the concrete

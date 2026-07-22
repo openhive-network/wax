@@ -19,4 +19,8 @@ name = "wax_signers_beekeeper"
 # the beekeeper project's GitLab generic package registry by
 # ../../fetch_beekeeper.sh (run it once before any cargo command).
 hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper" }
-hiveio-wax = { path = "../../wax" }
+# The exact requirement must always equal ../../wax's version, or cargo
+# rejects the path crate as a non-matching candidate. generate_version.sh
+# (cargo set-version --workspace) rewrites it in lockstep, like the
+# hiveio-wax-macros requirement inside wax itself — never bump it by hand.
+hiveio-wax = { path = "../../wax", version = "=0.0.0" }

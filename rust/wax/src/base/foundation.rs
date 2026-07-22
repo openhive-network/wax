@@ -699,20 +699,28 @@ impl WaxFoundation {
     }
 
     /// Creates a transaction bound to the given TaPoS block id and expiration.
-    pub fn create_transaction_with_tapos(
+    ///
+    /// `expiration` accepts an absolute Hive timestamp or a `+N[s|m|h]`
+    /// offset from the current wall clock; `None` defaults to `+1m` —
+    /// matching TS `createTransactionWithTaPoS(taposBlockId, expirationTime?)`.
+    pub fn create_transaction_with_tapos<'a>(
         &self,
         tapos_block_id: &str,
-        expiration: &str,
+        expiration: impl Into<Option<&'a str>>,
     ) -> Result<Transaction, WaxError> {
+        let spec = expiration.into().unwrap_or("+1m");
+        let resolved = resolve_expiration(spec, None)?;
+
         let tapos = rust_protocol()
             .cpp_get_tapos_data(tapos_block_id)
             .map_err(WaxError::from)?;
+
         Ok(Transaction::from_rust(RustTransaction::new(
             rust_protocol(),
             self.options.chain_id.clone(),
             tapos.ref_block_num as u32,
             tapos.ref_block_prefix,
-            expiration,
+            &resolved,
             Vec::new(),
         )))
     }

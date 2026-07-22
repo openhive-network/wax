@@ -303,6 +303,37 @@ async fn account_authority_update_emits_only_the_changed_roles() {
     );
 }
 
+// TS NOTE: mirrors the `roles("hive")` bulk-edit pattern — one accessor
+// hands out every role of the category for edits spanning multiple roles.
+#[tokio::test]
+async fn account_authority_update_hive_returns_every_role_for_bulk_edits() {
+    let chain = chain_for(1);
+
+    let mut operation =
+        AccountAuthorityUpdateOperation::create_for(&chain, "gtg")
+            .await
+            .unwrap();
+
+    let roles = operation.hive();
+    roles
+        .active
+        .add(
+            "STM7vP4NNZTiGP2LWfU4nZKGPWzTAcQ1MPtXVchpZq5YRhFqTBhFf",
+            None,
+        )
+        .unwrap();
+    roles
+        .memo
+        .set("STM8MN3FNBa8WbEpxz3wGL3L1mkt6sGnncH8iuto7r8Wa3T9NSSGT")
+        .unwrap();
+
+    assert_eq!(roles.owner.role(), super::HiveRole::Owner);
+    assert_eq!(roles.posting.role(), super::HiveRole::Posting);
+    assert!(operation.is_effective());
+    assert!(operation.active.changed());
+    assert!(operation.memo.changed());
+}
+
 #[tokio::test]
 async fn account_authority_update_round_trips_through_cpp_validation() {
     let chain = chain_for(1);

@@ -391,8 +391,7 @@ impl Transaction {
                 visit_encryptable(op, EncryptMode::Decrypt, |data| {
                     if data.starts_with('#') {
                         any = true;
-                        // TODO: avoid passing `""`
-                        wallet.decrypt_data(data, "", None)
+                        wallet.decrypt_data(data)
                     } else {
                         Ok(data.to_string())
                     }

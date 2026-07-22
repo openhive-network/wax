@@ -25,13 +25,13 @@ use wax::{SignatureProvider, WaxError, WaxFoundation, create_wax_foundation};
 /// foundation's `crypto_memo` codec wraps it (embedding the from/to keys and
 /// the `#` prefix) into the final memo payload — and the reverse on decrypt.
 /// crypto-memo packing is stateless, so a default foundation suffices.
-pub struct BeekeeperSignatureProvider<'a> {
-    wallet: RefCell<UnlockedWallet<'a>>,
+pub struct BeekeeperSignatureProvider {
+    wallet: RefCell<UnlockedWallet>,
     base: WaxFoundation,
 }
 
-impl<'a> BeekeeperSignatureProvider<'a> {
-    pub fn new(wallet: UnlockedWallet<'a>) -> Self {
+impl BeekeeperSignatureProvider {
+    pub fn new(wallet: UnlockedWallet) -> Self {
         Self {
             wallet: RefCell::new(wallet),
             base: create_wax_foundation(None),
@@ -39,7 +39,7 @@ impl<'a> BeekeeperSignatureProvider<'a> {
     }
 }
 
-impl<'a> SignatureProvider for BeekeeperSignatureProvider<'a> {
+impl SignatureProvider for BeekeeperSignatureProvider {
     fn sign_digest(
         &self,
         public_key: &str,
@@ -74,21 +74,14 @@ impl<'a> SignatureProvider for BeekeeperSignatureProvider<'a> {
         })
     }
 
-    fn decrypt_data(
-        &self,
-        content: &str,
-        _key: &str,
-        _other_key: Option<&str>,
-    ) -> Result<String, WaxError> {
-        // The from/to keys are embedded in the crypto-memo, so the inbound
-        // key arguments (wax core passes empty markers here) are unused — we
-        // recover the real keys by decoding the memo, mirroring TS
-        // `base.decrypt`.
+    fn decrypt_data(&self, content: &str) -> Result<String, WaxError> {
+        // The from/to keys are embedded in the crypto-memo; recover them by
+        // decoding the memo, mirroring TS `base.decrypt`.
         let memo = self.base.crypto_memo_from_string(content)?;
 
         self.wallet
             .borrow_mut()
-            .decrypt_data(&memo.from, Some(&memo.to), &memo.content)
+            .decrypt_data(&memo.from, Some(memo.to.as_str()), &memo.content)
             .map_err(|e| WaxError::new(e.to_string()))
     }
 }

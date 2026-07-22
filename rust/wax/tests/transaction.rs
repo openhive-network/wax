@@ -354,12 +354,7 @@ impl SignatureProvider for StubWallet {
     ) -> Result<String, WaxError> {
         unimplemented!("encrypt_data is not exercised by sign() tests")
     }
-    fn decrypt_data(
-        &self,
-        _content: &str,
-        _key: &str,
-        _other_key: Option<&str>,
-    ) -> Result<String, WaxError> {
+    fn decrypt_data(&self, _content: &str) -> Result<String, WaxError> {
         unimplemented!("decrypt_data is not exercised by sign() tests")
     }
 }
@@ -421,12 +416,7 @@ fn sign_refuses_to_run_when_transaction_is_invalid() {
         ) -> Result<String, WaxError> {
             unimplemented!()
         }
-        fn decrypt_data(
-            &self,
-            _: &str,
-            _: &str,
-            _: Option<&str>,
-        ) -> Result<String, WaxError> {
+        fn decrypt_data(&self, _: &str) -> Result<String, WaxError> {
             unimplemented!()
         }
     }
@@ -473,12 +463,7 @@ fn sign_propagates_wallet_error_without_mutating_transaction() {
         ) -> Result<String, WaxError> {
             unimplemented!()
         }
-        fn decrypt_data(
-            &self,
-            _: &str,
-            _: &str,
-            _: Option<&str>,
-        ) -> Result<String, WaxError> {
+        fn decrypt_data(&self, _: &str) -> Result<String, WaxError> {
             unimplemented!()
         }
     }
@@ -1178,12 +1163,7 @@ impl SignatureProvider for CryptoStub {
         ));
         Ok(format!("#enc:{key}:{content}"))
     }
-    fn decrypt_data(
-        &self,
-        content: &str,
-        _: &str,
-        _: Option<&str>,
-    ) -> Result<String, WaxError> {
+    fn decrypt_data(&self, content: &str) -> Result<String, WaxError> {
         self.decrypts.borrow_mut().push(content.to_string());
         Ok(content.strip_prefix("#enc:").map_or_else(
             || content.to_string(),

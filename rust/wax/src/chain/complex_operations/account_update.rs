@@ -197,6 +197,36 @@ impl AccountAuthorityUpdateOperation {
             || self.posting.changed()
             || self.memo.changed()
     }
+
+    /// Returns every role of the built-in hive category at once, for edits
+    /// spanning multiple roles.
+    ///
+    /// TS NOTE: `roles("hive")` — TS iterates a homogeneous role list; the
+    /// Rust roles are two distinct types, so they come back as one struct of
+    /// mutable references instead.
+    pub fn hive(&mut self) -> HiveRoles<'_> {
+        HiveRoles {
+            owner: &mut self.owner,
+            active: &mut self.active,
+            posting: &mut self.posting,
+            memo: &mut self.memo,
+        }
+    }
+}
+
+/// Represents mutable access to every role of the built-in hive category of
+/// an [`AccountAuthorityUpdateOperation`], returned by
+/// [`AccountAuthorityUpdateOperation::hive`].
+#[derive(Debug)]
+pub struct HiveRoles<'a> {
+    /// The owner role authority.
+    pub owner: &'a mut HiveRoleAuthority,
+    /// The active role authority.
+    pub active: &'a mut HiveRoleAuthority,
+    /// The posting role authority.
+    pub posting: &'a mut HiveRoleAuthority,
+    /// The memo key role.
+    pub memo: &'a mut HiveRoleMemoKey,
 }
 
 impl ComplexOperation for AccountAuthorityUpdateOperation {
@@ -362,15 +392,16 @@ impl HiveRoleAuthority {
     /// Replaces the account or key with a new one, or — when
     /// `new_account_or_key` is `None` — only changes the weight of the
     /// existing entry.
-    pub fn replace(
+    pub fn replace<'a>(
         &mut self,
         account_or_key: &str,
         weight: u32,
-        new_account_or_key: Option<&str>,
+        new_account_or_key: impl Into<Option<&'a str>>,
     ) -> Result<&mut Self, WaxError> {
         self.ensure_can_update()?;
 
-        let new_account_or_key = new_account_or_key.unwrap_or(account_or_key);
+        let new_account_or_key =
+            new_account_or_key.into().unwrap_or(account_or_key);
         if account_or_key != new_account_or_key {
             self.ensure_valid_account_or_key(new_account_or_key)?;
             self.remove_from_role(account_or_key)?;

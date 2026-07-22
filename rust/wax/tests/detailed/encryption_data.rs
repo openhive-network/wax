@@ -43,12 +43,8 @@ pub fn util_function_test(
     non_encrypted_operation_indices: &[usize],
     other_encryption_key: bool,
 ) -> proto::Transaction {
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let key = wallet.import_key(ENCRYPTION_WIF).expect("import_key");
 

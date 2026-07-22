@@ -102,6 +102,13 @@ impl RestCaller {
     ) {
         self.client.set_endpoint_url_for_path(path, url);
     }
+
+    /// Returns the endpoint calls under `path` currently resolve to: the
+    /// deepest matching per-namespace override, else the transport-wide
+    /// default endpoint.
+    pub fn endpoint_url_for_path(&self, path: &[&str]) -> String {
+        self.client.endpoint_url_for_path(path)
+    }
 }
 
 /// Provides the REST request engine behind the typed API surfaces produced by
@@ -183,6 +190,12 @@ impl RestClient {
         url: Option<String>,
     ) {
         self.endpoints.set_url_for_path(path, url);
+    }
+
+    /// Returns the endpoint calls under `path` currently resolve to. See
+    /// [`RestCaller::endpoint_url_for_path`].
+    pub fn endpoint_url_for_path(&self, path: &[&str]) -> String {
+        self.endpoints.resolve(path)
     }
 
     /// Calls the REST method described by `descriptor` with `params`,

@@ -179,12 +179,8 @@ async fn authority_trace_for_direct_multisig_from_existing_transaction() {
 async fn authority_trace_for_direct_sign() {
     let chain = mirrornet_chain();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet
         .import_key(MIRRORNET_SKELETON_KEY)
@@ -421,12 +417,8 @@ async fn authority_trace_for_open_authority_transaction() {
 async fn authority_trace_for_insufficient_weight_transaction() {
     let chain = mirrornet_chain();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet
         .import_key(MIRRORNET_SKELETON_KEY)
@@ -605,12 +597,8 @@ async fn catches_private_key_leak_during_direct_broadcast() {
 async fn create_account_and_transfer_to_it_in_one_transaction() {
     let chain = mirrornet_chain();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet
         .import_key(MIRRORNET_SKELETON_KEY)
@@ -659,12 +647,8 @@ async fn create_account_and_transfer_to_it_in_one_transaction() {
 async fn create_and_sign_transaction_using_online_interface() {
     let chain = mirrornet_chain();
 
-    let mut bk = new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let public_key = wallet
         .import_key(MIRRORNET_SKELETON_KEY)
@@ -704,7 +688,7 @@ async fn create_and_sign_transaction_using_online_interface() {
 /// re-asserts the expected authorities instead of trusting a previous run.
 async fn ensure_test_accounts_exist(
     chain: &HiveChain,
-    signer: &BeekeeperSignatureProvider<'_>,
+    signer: &BeekeeperSignatureProvider,
 ) {
     let account_names = ["authtracetst1", "authtracetst2", "authtracetst3"];
 
@@ -837,7 +821,7 @@ async fn ensure_test_accounts_exist(
 /// broadcasts it to the mirrornet.
 async fn broadcast_signed(
     chain: &HiveChain,
-    signer: &BeekeeperSignatureProvider<'_>,
+    signer: &BeekeeperSignatureProvider,
     operation: wax::Operation,
 ) {
     let mut tx = chain.create_transaction(None).await.unwrap();

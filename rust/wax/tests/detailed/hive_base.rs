@@ -124,12 +124,9 @@ fn vests_sat(ctx: &crate::common::WaxTestCtx, amount: i64) -> NaiAsset {
 #[test]
 fn tapos_with_implicit_expiration() {
     wax_test(None, |ctx| {
-        let mut bk = new_in_memory_beekeeper();
-        let created = bk
-            .api
-            .session(&bk.token)
-            .create_wallet("w0", Some("pw"), Some(true))
-            .expect("create_wallet");
+        let bk = new_in_memory_beekeeper();
+        let created =
+            bk.session.create_wallet("w0", "pw").expect("create_wallet");
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
         assert_eq!(public_key, FIXTURE_PUBLIC_KEY);
@@ -571,12 +568,9 @@ fn operation_get_impacted_accounts_proto() {
 #[test]
 fn create_transaction_using_object_interface() {
     wax_test(None, |ctx| {
-        let mut bk = new_in_memory_beekeeper();
-        let created = bk
-            .api
-            .session(&bk.token)
-            .create_wallet("w0", Some("pw"), Some(true))
-            .expect("create_wallet");
+        let bk = new_in_memory_beekeeper();
+        let created =
+            bk.session.create_wallet("w0", "pw").expect("create_wallet");
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
@@ -620,12 +614,9 @@ fn create_transaction_using_object_interface() {
 #[test]
 fn binary_serialize_signed_transaction() {
     wax_test(None, |ctx| {
-        let mut bk = new_in_memory_beekeeper();
-        let created = bk
-            .api
-            .session(&bk.token)
-            .create_wallet("w0", Some("pw"), Some(true))
-            .expect("create_wallet");
+        let bk = new_in_memory_beekeeper();
+        let created =
+            bk.session.create_wallet("w0", "pw").expect("create_wallet");
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
@@ -1075,12 +1066,9 @@ fn transfer_memo(tx: &Transaction, index: usize) -> String {
 #[test]
 fn create_encrypted_operations() {
     wax_test(None, |ctx| {
-        let mut bk = new_in_memory_beekeeper();
-        let created = bk
-            .api
-            .session(&bk.token)
-            .create_wallet("w0", Some("pw"), Some(true))
-            .expect("create_wallet");
+        let bk = new_in_memory_beekeeper();
+        let created =
+            bk.session.create_wallet("w0", "pw").expect("create_wallet");
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 
@@ -1128,15 +1116,11 @@ fn create_encrypted_operations() {
         // The TS test also round-trips through the signer's `decryptData` to
         // confirm the ciphertexts decrypt back to the original plaintext.
         assert_eq!(
-            provider
-                .decrypt_data(&encrypted0, &public_key, None)
-                .expect("decrypt_data 0"),
+            provider.decrypt_data(&encrypted0).expect("decrypt_data 0"),
             "This should be encrypted"
         );
         assert_eq!(
-            provider
-                .decrypt_data(&encrypted1, &public_key, None)
-                .expect("decrypt_data 1"),
+            provider.decrypt_data(&encrypted1).expect("decrypt_data 1"),
             "This also should be encrypted"
         );
     });
@@ -1147,12 +1131,9 @@ fn create_encrypted_operations() {
 #[test]
 fn decrypt_operations() {
     wax_test(None, |ctx| {
-        let mut bk = new_in_memory_beekeeper();
-        let created = bk
-            .api
-            .session(&bk.token)
-            .create_wallet("w0", Some("pw"), Some(true))
-            .expect("create_wallet");
+        let bk = new_in_memory_beekeeper();
+        let created =
+            bk.session.create_wallet("w0", "pw").expect("create_wallet");
         let mut wallet = created.wallet;
         let public_key = wallet.import_key(FIXTURE_WIF).expect("import_key");
 

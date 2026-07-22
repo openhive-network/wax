@@ -31,7 +31,7 @@ pub use authority_trace::{
 pub use broadcast::Broadcastable;
 pub use complex_operations::{
     AccountAuthorityUpdateOperation, HiveRole, HiveRoleAuthority,
-    HiveRoleMemoKey, LegacyVoteOperation,
+    HiveRoleMemoKey, HiveRoles, LegacyVoteOperation,
 };
 pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveRestApi};

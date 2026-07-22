@@ -536,12 +536,8 @@ fn vote_tapos_tx(foundation: &wax::WaxFoundation) -> wax::Transaction {
 fn signs_the_transaction_twice() {
     let foundation = wax::create_wax_foundation(None);
 
-    let mut bk = crate::common::new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = crate::common::new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let key = wallet.import_key(SIGN_WIF).expect("import_key");
     let other_key = wallet.import_key(OTHER_SIGN_WIF).expect("import_key");
@@ -565,12 +561,8 @@ fn signs_the_transaction_twice() {
 fn signs_the_transaction_twice_on_different_instances() {
     let foundation = wax::create_wax_foundation(None);
 
-    let mut bk = crate::common::new_in_memory_beekeeper();
-    let created = bk
-        .api
-        .session(&bk.token)
-        .create_wallet("w0", Some("pw"), Some(true))
-        .expect("create_wallet");
+    let bk = crate::common::new_in_memory_beekeeper();
+    let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
     let mut wallet = created.wallet;
     let key = wallet.import_key(SIGN_WIF).expect("import_key");
     let other_key = wallet.import_key(OTHER_SIGN_WIF).expect("import_key");
