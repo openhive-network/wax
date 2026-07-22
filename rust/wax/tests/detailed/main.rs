@@ -36,3 +36,4 @@ mod non_encrypted_operations;
 mod online_transaction;
 mod protocol;
 mod regression_hive_operations;
+mod signers_beekeeper;

@@ -24,3 +24,4 @@ hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper" }
 # (cargo set-version --workspace) rewrites it in lockstep, like the
 # hiveio-wax-macros requirement inside wax itself — never bump it by hand.
 hiveio-wax = { path = "../../wax", version = "=0.0.0" }
+thiserror = "2"
