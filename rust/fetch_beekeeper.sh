@@ -12,24 +12,54 @@ set -e
 # invocation (build/test/package/publish), so this script must run before any
 # cargo command in rust/wax.
 #
-# Idempotent: exits immediately when the already-extracted crate matches
-# BEEKEEPER_VERSION. Override the pin via the environment to test another
-# build, e.g. BEEKEEPER_VERSION=1.2.3-xyz ./fetch_beekeeper.sh
+# By default the newest published package is resolved from the registry on
+# every run; set BEEKEEPER_VERSION in the environment to pin a specific build,
+# e.g. BEEKEEPER_VERSION=1.2.3-xyz ./fetch_beekeeper.sh
+#
+# Idempotent: exits immediately when the already-extracted crate matches the
+# resolved version. When the registry is unreachable and a complete crate is
+# already installed, that copy is kept (with a warning) so offline builds keep
+# working.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-BEEKEEPER_VERSION="${BEEKEEPER_VERSION:-1.28.6-rc14-20260709135529}"
 BEEKEEPER_PROJECT_API_URL="${BEEKEEPER_PROJECT_API_URL:-https://gitlab.syncad.com/api/v4/projects/hive%2Fbeekeeper}"
 
 CRATE_NAME="hiveio-beekeeper"
-CRATE_FILE="${CRATE_NAME}-${BEEKEEPER_VERSION}.crate"
-CRATE_URL="${BEEKEEPER_PROJECT_API_URL}/packages/generic/${CRATE_NAME}/${BEEKEEPER_VERSION}/${CRATE_FILE}"
 DEST_DIR="${SCRIPT_DIR}/crates/${CRATE_NAME}"
 
 installed_version() {
   grep -m1 '^version' "${DEST_DIR}/Cargo.toml" 2>/dev/null \
     | sed -E 's/version = "(.*)"/\1/'
 }
+
+crate_installed() {
+  [ -n "$(installed_version)" ] && [ -f "${DEST_DIR}/lib/libbeekeeper_native.a" ]
+}
+
+# Resolves the newest published package version from the registry. Versions
+# embed a build timestamp, so created_at order and version order agree.
+latest_version() {
+  curl --fail --silent --show-error --location \
+    "${BEEKEEPER_PROJECT_API_URL}/packages?package_name=${CRATE_NAME}&package_type=generic&order_by=created_at&sort=desc&per_page=1" \
+    | grep -o '"version":"[^"]*"' | head -1 | cut -d'"' -f4
+}
+
+if [ -z "${BEEKEEPER_VERSION:-}" ]; then
+  if ! BEEKEEPER_VERSION="$(latest_version)" || [ -z "${BEEKEEPER_VERSION}" ]; then
+    if crate_installed; then
+      echo "warning: could not query ${BEEKEEPER_PROJECT_API_URL} for the latest ${CRATE_NAME}; keeping installed $(installed_version)" >&2
+      exit 0
+    fi
+    echo "Failed to resolve the latest ${CRATE_NAME} version from ${BEEKEEPER_PROJECT_API_URL}" >&2
+    echo "Set BEEKEEPER_VERSION explicitly to skip the registry query." >&2
+    exit 1
+  fi
+  echo "Latest published ${CRATE_NAME} version: ${BEEKEEPER_VERSION}"
+fi
+
+CRATE_FILE="${CRATE_NAME}-${BEEKEEPER_VERSION}.crate"
+CRATE_URL="${BEEKEEPER_PROJECT_API_URL}/packages/generic/${CRATE_NAME}/${BEEKEEPER_VERSION}/${CRATE_FILE}"
 
 # The bundle check guards against a previously interrupted install: a version
 # match alone would skip re-extraction forever while beekeeper's build.rs
