@@ -25,23 +25,18 @@ pub use crate::hive_apps_operations::{
     FollowOperationActions, HiveAppsOperation, HiveAppsOperationBase,
     ResourceCreditsOperation, SupportedLanguages,
 };
-pub use crate::models::asset::{
-    AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
+pub use crate::models::{
+    AccountAuthorityInfo, AssetAmount, AssetName, Authorities, HiveDateTime,
+    ManabarData, ManabarType, NaiAsset, NaiAssetConvertible,
+    RequiredAuthorities, WaxAuthority,
 };
-pub use crate::models::authority::{
-    AccountAuthorityInfo, Authorities, RequiredAuthorities, WaxAuthority,
-};
-pub use crate::models::basic::HiveDateTime;
-pub use crate::models::enums::EManabarType;
 pub use crate::proto::operation::Value;
 pub use crate::proto::*;
 pub use crate::{
-    AccountAuthorityUpdateOperation, AuthorityDataProvider, ComplexOperation,
-    HiveChain, HiveChainOptions, HiveRole, HiveRoleAuthority, HiveRoleMemoKey,
-    HiveRoles, LegacyVoteOperation, Manabar, ManabarData, OnlineTransaction,
-    Operation, SignatureProvider, Transaction, WaxChainError, WaxError,
-    WaxFoundation, WaxOptions, create_hive_chain, create_wax_foundation,
-    hive_api, proto,
+    AuthorityDataProvider, ComplexOperation, HiveChain, HiveChainOptions,
+    Manabar, OnlineTransaction, Operation, SignatureProvider, Transaction,
+    WaxChainError, WaxError, WaxFoundation, WaxOptions, create_hive_chain,
+    create_wax_foundation, hive_api, proto,
 };
 
 #[cfg(test)]

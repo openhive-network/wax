@@ -11,8 +11,8 @@ use rust_decimal::Decimal;
 use wax::complex_operations::{
     DefineRecurrentTransferOperation, RecurrentTransferRemovalOperation,
 };
-use wax::models::asset::{NaiAsset, NaiAssetConvertible};
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
+use wax::models::{NaiAsset, NaiAssetConvertible};
 use wax::result::JsonPrice;
 use wax::{Operation, SignatureProvider, Transaction};
 

@@ -1,6 +1,4 @@
 //! DTOs of the `network_broadcast_api` namespace.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/api/network_broadcast_api/`.
 
 use serde::{Deserialize, Serialize};
 

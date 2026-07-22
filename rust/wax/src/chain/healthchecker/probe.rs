@@ -1,12 +1,5 @@
 //! A ready-to-register health check: transport type, logical paths and the
 //! typed probe bundled into one value.
-//!
-//! TS NOTE: TS `register(endpointToCheck, toSend, ...)` reflects the
-//! transport and paths off the passed proxy method and closes over `toSend`
-//! itself; Rust has no reflection, so [`ApiProbe`] carries the same three
-//! things explicitly. The `<method>_probe` constructors emitted by
-//! [`#[hive_api]`](crate::hive_api) build it from a call descriptor in one
-//! move — [`ApiProbe::new`] covers everything else.
 
 use std::future::Future;
 use std::pin::Pin;
@@ -18,9 +11,9 @@ use serde::de::DeserializeOwned;
 use crate::chain::error::WaxChainError;
 use crate::chain::rest::{RestCallDescriptor, RestCaller};
 use crate::chain::rpc::{JsonRpcCallDescriptor, JsonRpcCaller};
-use crate::chain::util::DetailedResponseData;
+use crate::chain::transport::DetailedResponseData;
 
-use super::errors::ChainApiType;
+use super::error::ChainApiType;
 
 /// Represents a health check ready for
 /// [`HealthChecker::register`](super::HealthChecker::register): which
@@ -74,9 +67,6 @@ impl<R> ApiProbe<R> {
 
     /// Builds a probe calling the JSON-RPC method described by `descriptor`
     /// with `params` through [`JsonRpcCaller::call_at`].
-    ///
-    /// TS NOTE: what TS `register` assembles from the proxied method +
-    /// `toSend`; the descriptor is the `#[hive_api]`-emitted const.
     pub fn json_rpc<P>(
         caller: JsonRpcCaller,
         descriptor: JsonRpcCallDescriptor,

@@ -7,7 +7,7 @@
 // through `to_api()` or `to_binary_form()`).
 
 use wax::constants::MAINNET_CHAIN_ID;
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
 use wax::proto::{
     Operation, Transaction as ProtoTransaction, Vote, operation::Value,
 };

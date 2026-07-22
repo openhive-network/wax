@@ -1,17 +1,11 @@
 //! DTOs of the `database_api` namespace.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/api/database_api/`. The TS
-//! response interfaces carry stale Steem-era fields (`confidential_supply`,
-//! `smt_creation_fee`, `sps_interval_ledger`, …) that nodes no longer emit;
-//! since typed deserialization enforces field presence, the Rust DTOs follow
-//! the fields the node actually reflects (`database_api_objects.hpp`)
-//! instead.
 
 use serde::{Deserialize, Serialize};
 
 use crate::hive_api;
 use crate::models::asset::NaiAsset;
-use crate::models::basic::{AccountName, Hex, HiveDateTime};
+use crate::models::basic::{AccountName, Hex};
+use crate::models::hive_date_time::HiveDateTime;
 
 use super::types::{
     ApiAccount, ApiTransaction, ApiWitness, NumberOrString, TransactionPackType,
@@ -170,9 +164,6 @@ pub struct VerifyAuthorityResponse {
 }
 
 /// Represents the witness-elected chain properties (`median_props`).
-///
-/// TS NOTE: TS inlines this object literal in
-/// `GetWitnessScheduleResponse`; Rust needs the named struct.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChainProperties {
     pub account_creation_fee: NaiAsset,
@@ -183,9 +174,6 @@ pub struct ChainProperties {
 }
 
 /// Represents the resource-dynamics parameters of the account-subsidy pools.
-///
-/// TS NOTE: TS inlines this object literal in
-/// `GetWitnessScheduleResponse`; Rust needs the named struct.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RdDynamicsParams {
     pub resource_unit: NumberOrString,

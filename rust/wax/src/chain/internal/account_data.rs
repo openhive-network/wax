@@ -1,8 +1,5 @@
 //! Chain-backed account and witness authority lookups feeding the online
 //! transaction checks.
-//!
-//! TS NOTE: ports `transformApiAuthority`, `collectAccountAuthorities` and
-//! `collectWitnessSigningKeys` from `ts/wasm/lib/detailed/chain_api.ts`.
 
 use std::collections::{HashMap, HashSet};
 

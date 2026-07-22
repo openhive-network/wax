@@ -8,7 +8,7 @@
 //! link against beekeeper like the `detailed` suite does.
 
 use wax::complex_operations::{HbdExchangeRate, WitnessSetPropertiesOperation};
-use wax::models::asset::NaiAssetConvertible;
+use wax::models::NaiAssetConvertible;
 use wax::{Transaction, WaxFoundation, create_wax_foundation};
 
 fn foundation() -> WaxFoundation {

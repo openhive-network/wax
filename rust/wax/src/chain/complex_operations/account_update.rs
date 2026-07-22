@@ -27,9 +27,6 @@ const HIVE_OWNER_UPDATE_LIMIT_KEY: &str = "HIVE_OWNER_UPDATE_LIMIT";
 const DEFAULT_ACCOUNT_OR_KEY_WEIGHT: u32 = 1;
 
 /// Used as the memo-key sentinel meaning "no memo key set".
-///
-/// TS NOTE: TS/Python hardcode the mainnet `STM` prefix here even though the
-/// address prefix is configurable; kept for parity.
 const NULL_PUBLIC_KEY: &str = "STM1111111111111111111111111111111114T1Anm";
 
 /// Online operation — automatically filled with the authority data fetched
@@ -45,17 +42,11 @@ const NULL_PUBLIC_KEY: &str = "STM1111111111111111111111111111111114T1Anm";
 /// the public [`owner`](Self::owner) / [`active`](Self::active) /
 /// [`posting`](Self::posting) / [`memo`](Self::memo) fields.
 ///
-/// TS NOTE: mirrors `AccountAuthorityUpdateOperation`
-/// (`complex_operations/account_update.ts`). The TS/Python role-category
-/// registry (`RoleCategoryBase` / `LevelBase` plus the `role()` / `roles()`
-/// lookups) only ever contains the single built-in Hive category, so the
-/// Rust port collapses it into these four concrete fields.
-///
 /// # Example
 ///
 /// ```no_run
 /// # async fn example(chain: &wax::HiveChain) -> Result<(), wax::WaxChainError> {
-/// use wax::AccountAuthorityUpdateOperation;
+/// use wax::complex_operations::AccountAuthorityUpdateOperation;
 ///
 /// let mut operation =
 ///     AccountAuthorityUpdateOperation::create_for(chain, "initminer")
@@ -120,8 +111,6 @@ impl AccountAuthorityUpdateOperation {
             })
             .await?;
 
-        // TS NOTE: TS throws `Account <account> not found on the chain`;
-        // Rust reuses the shared missing-accounts error.
         let chain_account =
             response.accounts.into_iter().next().ok_or_else(|| {
                 WaxChainError::AccountsNotFound {
@@ -200,10 +189,6 @@ impl AccountAuthorityUpdateOperation {
 
     /// Returns every role of the built-in hive category at once, for edits
     /// spanning multiple roles.
-    ///
-    /// TS NOTE: `roles("hive")` — TS iterates a homogeneous role list; the
-    /// Rust roles are two distinct types, so they come back as one struct of
-    /// mutable references instead.
     pub fn hive(&mut self) -> HiveRoles<'_> {
         HiveRoles {
             owner: &mut self.owner,
@@ -297,9 +282,6 @@ impl HiveRole {
 
 /// Represents a single editable authority role (owner / active / posting):
 /// the on-chain snapshot plus the pending modifications.
-///
-/// TS NOTE: mirrors `HiveRoleAuthorityDefinition`; the mutators return
-/// `Result` (TS throws), chaining as `role.add(...)?.remove(...)?`.
 #[derive(Debug, Clone)]
 pub struct HiveRoleAuthority {
     role: HiveRole,
@@ -343,9 +325,6 @@ impl HiveRoleAuthority {
 
     /// Checks if the authority has changed since initialization, by value
     /// comparison against the on-chain snapshot.
-    ///
-    /// TS NOTE: TS/Python compare the entries index-wise, which is sensitive
-    /// to insertion order; map equality compares contents.
     pub fn changed(&self) -> bool {
         self.enforced_modifications || self.authority != self.previous_authority
     }
@@ -357,9 +336,6 @@ impl HiveRoleAuthority {
     }
 
     /// Resets the role to its on-chain state.
-    ///
-    /// TS NOTE: also clears the [`Self::enforce_modifications`] mark,
-    /// following Python; TS leaves the mark set.
     pub fn reset(&mut self) {
         self.authority = self.previous_authority.clone();
         self.enforced_modifications = false;
@@ -413,9 +389,6 @@ impl HiveRoleAuthority {
 
     /// Removes the given account or key from the role. Does nothing if the
     /// account or key is not present.
-    ///
-    /// TS NOTE: the silent no-op on absent entries follows TS; Python raises
-    /// `KeyError` there.
     pub fn remove(
         &mut self,
         account_or_key: &str,
@@ -428,9 +401,6 @@ impl HiveRoleAuthority {
 
     /// Checks if the account or key is present in the role (and, when
     /// `weight` is given, carries exactly that weight).
-    ///
-    /// TS NOTE: TS/Python treat zero-weight entries as absent (a truthiness
-    /// artifact); Rust checks presence directly.
     pub fn has(
         &self,
         account_or_key: &str,
@@ -544,8 +514,6 @@ fn invalid_account_or_key() -> WaxError {
 }
 
 /// Represents the editable memo key role.
-///
-/// TS NOTE: mirrors `HiveRoleMemoKeyDefinition`.
 #[derive(Debug, Clone)]
 pub struct HiveRoleMemoKey {
     address_prefix: String,
@@ -583,9 +551,6 @@ impl HiveRoleMemoKey {
     }
 
     /// Resets the role to its on-chain state.
-    ///
-    /// TS NOTE: also clears the [`Self::enforce_modifications`] mark,
-    /// following Python; TS leaves the mark set.
     pub fn reset(&mut self) {
         self.public_key = self.previous_public_key.clone();
         self.enforced_modifications = false;
@@ -624,10 +589,6 @@ impl OwnerUpdateGuard {
         let now = Utc::now();
         let older_than_limit = |time: DateTime<Utc>| now - time > self.limit;
 
-        // TS NOTE: the condition is kept exactly as TS/Python evaluate it
-        // (using the client wall clock). It diverges from the chain's
-        // `owner_update_limit_mgr::check`, which rejects an update only when
-        // BOTH timestamps are within the limit.
         if !older_than_limit(self.last_owner_update)
             && older_than_limit(self.previous_owner_update)
         {
@@ -869,8 +830,6 @@ mod tests {
 
         assert!(allowed.add(OTHER_KEY, None).is_ok());
 
-        // TS NOTE: both updates within the limit — the chain would reject
-        // this, but the ported TS/Python condition lets it through.
         let mut chain_would_reject = owner_role_with_updates(10, 20);
 
         assert!(chain_would_reject.add(OTHER_KEY, None).is_ok());

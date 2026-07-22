@@ -1,9 +1,4 @@
 //! The online transaction type: [`OnlineTransaction`].
-//!
-//! TS NOTE: ports the `OnlineTransaction` class and its
-//! `OnChainOperationValidator` helper from
-//! `ts/wasm/lib/detailed/online_transaction.ts`. The TS visitor subclass is
-//! replaced by a match over `proto::operation::Value`.
 
 use std::collections::{HashMap, HashSet};
 
@@ -28,8 +23,6 @@ use crate::chain::internal::account_data::collect_account_authorities;
 use crate::chain::internal::authority_cache::CachingAuthorityProvider;
 use crate::chain::internal::trace::convert_authority_trace;
 
-/// TS NOTE: `MAX_ACCOUNTS_PER_CALL` — existence checks never ask
-/// `rc_api.find_rc_accounts` for more than this many accounts per call.
 const MAX_ACCOUNTS_PER_CALL: usize = 100;
 
 /// Represents a [`Transaction`] bound to the chain it was created from,
@@ -44,8 +37,6 @@ const MAX_ACCOUNTS_PER_CALL: usize = 100;
 /// [`HiveChain::create_transaction`](crate::HiveChain::create_transaction).
 /// Every [`Transaction`] method is mirrored here; the builders return
 /// `&mut Self` so building keeps the online type.
-///
-/// TS NOTE: the TS `OnlineTransaction` class (extends `Transaction`).
 pub struct OnlineTransaction {
     base: Transaction,
     api: DefaultHiveApi,
@@ -183,9 +174,6 @@ impl OnlineTransaction {
     /// transaction — or for `source` when given, resolving authorities
     /// through this transaction's chain binding. `use_legacy` forces
     /// pre-HF26 serialization when true.
-    ///
-    /// TS NOTE:
-    /// `generateAuthorityVerificationTrace(useLegacySerialization?, externalTx?)`.
     pub async fn generate_authority_verification_trace<'a>(
         &self,
         use_legacy: bool,
@@ -250,9 +238,6 @@ struct VerificationData {
 }
 
 impl VerificationData {
-    // TS NOTE: TS subtracts the created-accounts set both while collecting
-    // and again before scanning; only the final subtraction is observable,
-    // so the Rust port collects everything and subtracts once at scan time.
     fn collect_key_leak_texts(
         &mut self,
         op: &proto::Operation,
@@ -314,8 +299,6 @@ fn collect_verification_data(
             Value::RecurrentTransferOperation(transfer) => {
                 data.collect_key_leak_texts(op, &[&transfer.memo])?
             }
-            // TS NOTE: the account_create*/account_update* arms also call
-            // `collectModifiedAuthorityData`, an empty TODO in TS — omitted.
             Value::AccountCreateOperation(create) => {
                 data.created_accounts
                     .insert(create.new_account_name.clone());

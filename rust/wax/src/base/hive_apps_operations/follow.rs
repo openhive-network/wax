@@ -20,15 +20,10 @@ const OPERATION_ID: &str = "follow";
 
 /// Maximum number of `following` entries allowed on a single `follow` body
 /// when emitted as an array.
-///
-/// TS NOTE: matches the literal `100` baked into the TS guard
-/// `following.length > 100`.
 const MAX_FOLLOWING: usize = 100;
 
 /// Represents which list (or both) a `reset_blog_list` call should drop
 /// matching entries from.
-///
-/// TS NOTE: mirrors `EFollowBlogAction`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FollowBlogAction {
     FollowBlog,
@@ -38,8 +33,6 @@ pub enum FollowBlogAction {
 
 /// Represents the outer action tag carried by a `follow` hive-apps body —
 /// either a follow-list mutation or a reblog.
-///
-/// TS NOTE: mirrors `EFollowOperationActions`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FollowOperationActions {
     Follow,
@@ -57,10 +50,6 @@ impl FollowOperationActions {
 }
 
 /// Represents the `what`-tag a single follow-action body carries.
-///
-/// TS NOTE: mirrors `EFollowActions`. The empty-string `Unfollow` tag is
-/// the on-wire signal hived uses to drop a follow/mute entry — not a
-/// placeholder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FollowActions {
     Follow,
@@ -132,12 +121,6 @@ impl FollowOperation {
     }
 
     /// Shared body builder for every `follow`-tagged action.
-    ///
-    /// TS NOTE: when `blogs` contains exactly one entry, `following` is
-    /// emitted as a bare string (not a single-element array) — matching
-    /// the TS `otherBlogs.length > 0 ? [blog, ...otherBlogs] : blog`
-    /// shape. The max-length guard fires only on the multi-blog (array)
-    /// path, also matching TS.
     fn follow_body_builder(
         mut self,
         what: FollowActions,
@@ -356,10 +339,6 @@ impl FollowOperation {
     /// Stages reset entries clearing matching entries between
     /// `working_account` (the follower) and the given blog account(s),
     /// scoped to `action`.
-    ///
-    /// TS NOTE: the TS `BOTH` switch arm intentionally falls through into
-    /// `MUTE_BLOG`, staging *two* entries (`reset_following_list` then
-    /// `reset_muted_list`). This impl preserves that two-entry behaviour.
     pub fn reset_blog_list(
         self,
         action: FollowBlogAction,

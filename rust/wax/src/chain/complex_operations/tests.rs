@@ -198,9 +198,6 @@ fn chain_for(requests: usize) -> crate::HiveChain {
     .unwrap()
 }
 
-// TS NOTE: mirrors the weight expectations of the TS `LegacyVoteOperation`
-// tests — with `current_mana == post_voting_power` a 100% legacy vote maps
-// to the full 10000 weight.
 #[tokio::test]
 async fn legacy_vote_resolves_a_full_upvote() {
     let chain = chain_for(2);
@@ -303,8 +300,6 @@ async fn account_authority_update_emits_only_the_changed_roles() {
     );
 }
 
-// TS NOTE: mirrors the `roles("hive")` bulk-edit pattern — one accessor
-// hands out every role of the category for edits spanning multiple roles.
 #[tokio::test]
 async fn account_authority_update_hive_returns_every_role_for_bulk_edits() {
     let chain = chain_for(1);

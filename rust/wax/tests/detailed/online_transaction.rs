@@ -11,10 +11,10 @@
 
 use serde_json::json;
 
-use wax::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, HiveChainOptions,
-    ProcessedEntry, WaxChainError, create_hive_chain,
+use wax::authority_trace::{
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, ProcessedEntry,
 };
+use wax::{HiveChainOptions, WaxChainError, create_hive_chain};
 
 use wax_signers_beekeeper::BeekeeperSignatureProvider;
 

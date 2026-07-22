@@ -5,12 +5,13 @@
 //! [`WaxFoundation`] exposing the offline API surface. All public items are
 //! re-exported at the crate root.
 
-pub mod complex_operations;
+// pub(crate): joins the online builders in the public
+// `crate::complex_operations` namespace assembled by `lib.rs`.
+pub(crate) mod complex_operations;
 pub mod constants;
 mod error;
 mod foundation;
 pub mod hive_apps_operations;
-mod interfaces;
 // pub(crate): the online layer reuses the FFI conversion and construction
 // helpers (`internal::authority`, `internal::protocol`, ...).
 pub(crate) mod internal;
@@ -25,11 +26,11 @@ pub use foundation::WaxFoundation;
 // The online `create_transaction` factory shares the offline construction
 // helper but needs the internal `RustTransaction` it returns.
 pub(crate) use foundation::build_transaction_with_chain_reference_data;
-pub use interfaces::{AuthorityDataProvider, Manabar, SignatureProvider};
-pub use internal::models::manabar_data::ManabarData;
+pub use models::authority::AuthorityDataProvider;
+pub use models::manabar_data::Manabar;
 pub use operation::{ComplexOperation, Operation};
 pub use options::WaxOptions;
-pub use transaction::Transaction;
+pub use transaction::{SignatureProvider, Transaction};
 
 /// Creates a [`WaxFoundation`] for offline operations, using the given
 /// [`WaxOptions`] (or the defaults when `None` is passed).

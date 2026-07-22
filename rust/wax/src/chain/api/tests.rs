@@ -8,10 +8,10 @@
 
 use serde_json::json;
 
-use crate::models::basic::HiveDateTime;
+use crate::models::hive_date_time::HiveDateTime;
 use crate::{HiveChainOptions, create_hive_chain};
 
-use super::super::util::test_support::spawn_capture_server;
+use super::super::transport::test_support::spawn_capture_server;
 use super::*;
 
 const DGP_FIXTURE: &str = r#"{
@@ -306,9 +306,6 @@ fn omits_unset_optional_request_fields() {
     assert_eq!(value, json!({ "accounts": ["gtg"] }));
 }
 
-// TS NOTE: the Rust analog of TS `chain.api.database_api...` — the default
-// surface must reach the chain's JSON-RPC endpoint with the
-// `"database_api.<method>"` envelope.
 #[tokio::test]
 async fn chain_api_calls_default_namespace_over_json_rpc() {
     let envelope = Box::leak(

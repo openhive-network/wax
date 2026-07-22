@@ -7,9 +7,6 @@
 //! requested, [`CachingAuthorityProvider::acquire_data`] fetches everything
 //! requested between rounds, and the trace is re-run until no new accounts
 //! surface.
-//!
-//! TS NOTE: ports `AccountAuthorityCachingProvider` from
-//! `ts/wasm/lib/detailed/util/account_authority_caching_provider.ts`.
 
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, MutexGuard};
@@ -64,11 +61,6 @@ impl CachingAuthorityProvider {
     /// Fetches authorities and witness keys for everything requested since
     /// the previous round. Accounts the chain does not know move to the
     /// unknown sets, so they are reported as missing instead of re-requested.
-    ///
-    /// TS NOTE: TS leaves the requested-minus-fetched difference as a `TODO`
-    /// and never fills `unknownAccounts`, which would re-request nonexistent
-    /// accounts forever; the Rust port implements the intended behavior so
-    /// the trace loop terminates.
     pub(crate) async fn acquire_data(
         &self,
         api: &DefaultHiveApi,
@@ -112,10 +104,6 @@ impl CachingAuthorityProvider {
 
     /// Returns whether the last trace round requested data the cache does not
     /// hold yet, i.e. whether another acquire + trace round is needed.
-    ///
-    /// TS NOTE: TS `canContinue` checks requested accounts only; witness
-    /// requests are included here so a witness-key miss also triggers a
-    /// fetch round.
     pub(crate) fn can_continue(&self) -> bool {
         let state = self.lock();
 

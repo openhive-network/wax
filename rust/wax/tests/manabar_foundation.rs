@@ -4,7 +4,7 @@
 //  python/wax/tests/other/test_calculate_manabar_full_regeneration_time.py).
 
 use chrono::{DateTime, Utc};
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
 use wax::{Manabar, WaxFoundation, create_wax_foundation};
 
 fn foundation() -> WaxFoundation {

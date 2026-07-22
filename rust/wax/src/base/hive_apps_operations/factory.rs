@@ -14,15 +14,6 @@ use crate::base::models::basic::AccountName;
 /// Represents the shared state for any "hive apps" custom-JSON operation
 /// builder: the on-wire `id`, the in-progress (yet-to-be-authorized) body
 /// entries, and the authorized [`proto::CustomJson`] ops.
-///
-/// TS NOTE: mirrors the field set of the abstract `HiveAppsOperation`
-/// class. `body` is `pub(crate)` — the Rust analogue of TS `protected` —
-/// so concrete builders in this crate push staged entries onto it
-/// directly, the way TS subclasses do (`this.body.push([...])`). Each entry
-/// stages its body pre-serialized: the builders serialize typed structs
-/// whose field order matches the TS insertion order, keeping the payload
-/// bytes identical to `JSON.stringify` (`serde_json`'s `Value` would
-/// reorder keys alphabetically).
 #[derive(Debug, Clone)]
 pub struct HiveAppsOperationBase {
     id: &'static str,
@@ -44,9 +35,6 @@ impl HiveAppsOperationBase {
     /// Commits every currently-staged entry as its own
     /// [`proto::CustomJson`] carrying the given authorities, then drains
     /// the stage so the builder can be reused.
-    ///
-    /// TS NOTE: matches `HiveAppsOperation.authorize` in factory.ts — at
-    /// least one of the two authority lists must be non-empty.
     pub fn authorize(
         &mut self,
         required_posting_auths: Vec<AccountName>,
@@ -94,10 +82,6 @@ impl HiveAppsOperationBase {
 /// Provides the chaining `authorize` method (with a default
 /// implementation) for any builder that embeds a [`HiveAppsOperationBase`].
 /// Import this trait to call `.authorize(...)` on a concrete builder.
-///
-/// TS NOTE: mirrors the public surface of the abstract `HiveAppsOperation`
-/// class. Rust composes shared state via a base struct + trait instead of
-/// TS-style class inheritance.
 pub trait HiveAppsOperation: Sized {
     /// Mutable access to the embedded base — drives the default
     /// `authorize` implementation.

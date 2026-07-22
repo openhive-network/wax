@@ -172,15 +172,12 @@ fn expand_trait(args: Args, item: ItemTrait) -> syn::Result<TokenStream2> {
         "Routes every `{namespace}` call to `url` instead of the \
          transport's default endpoint; `None` clears the override. The \
          override lives on the shared transport, so every `{ident}` handle \
-         bound to the same chain observes it.\n\nTS NOTE: \
-         `api.{namespace}.endpointUrl = url` (TS clears by assigning \
-         `undefined`)."
+         bound to the same chain observes it."
     );
     let endpoint_doc = format!(
         "Returns the endpoint `{namespace}` calls currently resolve to — \
          the namespace override when set (see [`Self::set_endpoint_url`]), \
-         else the transport's default endpoint.\n\nTS NOTE: reading \
-         `api.{namespace}.endpointUrl`."
+         else the transport's default endpoint."
     );
 
     Ok(quote! {
@@ -334,7 +331,7 @@ fn expand_method(
                     };
             },
             quote!(self.caller.call(&Self::#const_ident, #params_expr).await),
-            quote!(::wax::ApiProbe::rest(
+            quote!(::wax::healthchecker::ApiProbe::rest(
                 ::core::clone::Clone::clone(&self.caller),
                 Self::#const_ident,
                 #params_expr,
@@ -361,7 +358,7 @@ fn expand_method(
                     };
             },
             quote!(self.caller.call(&Self::#const_ident, #params_expr).await),
-            quote!(::wax::ApiProbe::json_rpc(
+            quote!(::wax::healthchecker::ApiProbe::json_rpc(
                 ::core::clone::Clone::clone(&self.caller),
                 Self::#const_ident,
                 #params_expr,
@@ -385,7 +382,7 @@ fn expand_method(
         pub fn #probe_ident(
             &self
             #params_sig
-        ) -> ::wax::ApiProbe<#result> {
+        ) -> ::wax::healthchecker::ApiProbe<#result> {
             #probe_body
         }
     })

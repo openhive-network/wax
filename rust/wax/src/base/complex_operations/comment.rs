@@ -42,8 +42,6 @@ const APP_TAG: &str =
     concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
 
 /// Represents the wire-form `format` value written to `json_metadata.format`.
-///
-/// TS NOTE: mirrors `ECommentFormat`.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum CommentFormat {
     Html,
@@ -98,9 +96,6 @@ pub struct ReplyOperation {
     pub app: Option<String>,
     /// Arbitrary extra `json_metadata` entries, merged in order over the
     /// `format`/`app` defaults before the typed fields above are applied.
-    ///
-    /// TS NOTE: mirrors the constructor `jsonMetadata` object; entry order
-    /// is preserved in the serialized output like JS object key order.
     pub json_metadata: Vec<(String, Value)>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
@@ -133,9 +128,6 @@ pub struct BlogPostOperation {
     pub app: Option<String>,
     /// Arbitrary extra `json_metadata` entries, merged in order over the
     /// `format`/`app` defaults before the typed fields above are applied.
-    ///
-    /// TS NOTE: mirrors the constructor `jsonMetadata` object; entry order
-    /// is preserved in the serialized output like JS object key order.
     pub json_metadata: Vec<(String, Value)>,
 
     pub beneficiaries: Vec<BeneficiaryRoute>,
@@ -328,9 +320,6 @@ impl CommentInputs {
             metadata.set(key, value.clone());
         }
 
-        // TS NOTE: `optionalJsonMeta.app ?? wax/version` — an `app` entry
-        // in the user metadata beats the default tag; the typed `app`
-        // field beats both.
         let app = match (&self.app, metadata.get("app")) {
             (Some(app), _) => Value::from(app.as_str()),
             (None, Some(app)) => app.clone(),
@@ -406,9 +395,6 @@ fn metadata_array(
 
 /// First-occurrence-wins dedupe preserving order. Mirrors TS
 /// `[...new Set([...existing, ...data.tags])]`.
-///
-/// TS NOTE: `Set` compares non-primitives by reference, so deep-equal
-/// user-supplied objects survive in TS but collapse here.
 fn deduplicate_preserving_order(
     items: impl Iterator<Item = Value>,
 ) -> Vec<Value> {

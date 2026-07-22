@@ -1,13 +1,5 @@
 //! Timed HTTP request helper backing the health checker and the online API
 //! callers.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/util/request_helper.ts`. The TS
-//! version wraps the global `fetch` and an `AbortController` for timeouts; the
-//! Rust version wraps a pooled `reqwest::Client` and uses `reqwest`'s per-request
-//! timeout instead. The TS `request<T>` is generic over the parsed body type;
-//! since the only in-tree consumer (the health checker) treats the body as
-//! `any`, the Rust port decodes into a dynamic [`serde_json::Value`] and drops
-//! the generic.
 
 use std::time::{Duration, Instant};
 
@@ -23,12 +15,6 @@ use crate::chain::interceptor::{
 
 /// Represents the timing, status, headers and decoded body captured for a
 /// request.
-///
-/// TS NOTE: `IDetailedResponseData<T>`. TS also uses this shape as the
-/// `Partial<>` "running data" that is filled in as the request progresses and
-/// attached to errors; the Rust port keeps that single-type approach by making
-/// every field that is only known after completion an [`Option`]. On the success
-/// path returned by [`RequestHelper::request`] all of them are populated.
 #[derive(Debug, Clone)]
 pub struct DetailedResponseData {
     pub start: Instant,
@@ -52,8 +38,6 @@ impl DetailedResponseData {
 }
 
 /// Represents the options describing a single request.
-///
-/// TS NOTE: `IRequestOptions`.
 #[derive(Debug, Clone)]
 pub struct RequestOptions {
     pub endpoint: String,
@@ -62,24 +46,14 @@ pub struct RequestOptions {
     /// Request timeout in milliseconds; `0` disables it.
     pub timeout: u64,
     pub data: Option<RequestData>,
-    /// TS NOTE: declared as `responseType` in TS but ignored by the request
-    /// logic there (the body is always JSON-decoded); kept for parity and left
-    /// unused here as well.
     pub response_type: Option<ResponseType>,
     /// `X-Wax-Api-Caller` header value for the request.
     pub wax_api_caller: Option<String>,
     /// Additional headers appended after the built-in ones.
-    ///
-    /// TS NOTE: no TS counterpart — TS interceptors cannot add headers at
-    /// all (only `waxApiCaller` is modeled); this is a deliberate Rust
-    /// extension to serve the auth-header use case of
-    /// [`crate::chain::interceptor`].
     pub extra_headers: Vec<(String, String)>,
 }
 
 /// Represents the request body payload.
-///
-/// TS NOTE: `data?: string | object`.
 #[derive(Debug, Clone, PartialEq)]
 pub enum RequestData {
     Text(String),
@@ -87,8 +61,6 @@ pub enum RequestData {
 }
 
 /// Represents the requested decoding of the response body.
-///
-/// TS NOTE: `responseType?: "text" | "json"`.
 #[derive(Debug, Clone, Copy)]
 pub enum ResponseType {
     Text,
@@ -114,9 +86,6 @@ fn reqwest_error(
 }
 
 /// Provides timed HTTP requests over a shared, connection-pooled client.
-///
-/// TS NOTE: the TS `RequestHelper` is stateless and calls the global `fetch`;
-/// the Rust port owns a [`reqwest::Client`] so connections are reused.
 pub struct RequestHelper {
     client: Client,
     /// Which transport this helper serves; reported to interceptors as
@@ -330,15 +299,6 @@ impl RequestHelper {
 
 #[cfg(test)]
 mod tests {
-    //! TS NOTE: mirrors `ts/wasm/__tests__/detailed/wax_api_caller_header.ts`.
-    //! The TS tests intercept the chain's request data via `withProxy` and
-    //! assert the `waxApiCaller` option is propagated down to the request
-    //! layer. Here `RequestOptions` is built directly, so the observable
-    //! equivalent at this layer is the `x-wax-api-caller` header that
-    //! `init_builder` emits from that option (the TS counterpart is
-    //! `request_helper.ts` lines 58-59), captured off the wire by a local
-    //! server. The caller-level counterpart (option threaded down from the
-    //! REST engine) lives in the `api_caller` tests.
 
     use std::sync::{Arc, Mutex};
 
@@ -462,9 +422,6 @@ mod tests {
         );
     }
 
-    // TS NOTE: a throwing TS request interceptor rejects the call promise
-    // before `fetch` runs; the Rust `Err` likewise fails the request before
-    // anything is sent.
     #[tokio::test]
     async fn failing_request_interceptor_prevents_the_send() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);
@@ -524,8 +481,6 @@ mod tests {
         );
     }
 
-    // TS NOTE: a throwing TS response interceptor rejects the resolved call;
-    // the Rust `Err` discards the response, attaching it in full.
     #[tokio::test]
     async fn failing_response_interceptor_discards_the_response() {
         let (endpoint, _captured) = spawn_capture_server(r#"{"ok":true}"#);

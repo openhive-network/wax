@@ -1,7 +1,8 @@
 use std::str::FromStr;
 
 use rust_decimal::Decimal;
-use wax::{Manabar, ManabarData};
+use wax::Manabar;
+use wax::models::ManabarData;
 
 fn dp(s: &str) -> Decimal {
     Decimal::from_str(s).unwrap()

@@ -5,7 +5,8 @@ use crate::core::proto;
 use crate::WaxError;
 use crate::base::foundation::WaxFoundation;
 use crate::base::models::asset::{AssetName, NaiAssetConvertible};
-use crate::base::models::basic::{AccountName, HiveDateTime};
+use crate::base::models::basic::AccountName;
+use crate::base::models::hive_date_time::HiveDateTime;
 use crate::base::operation::ComplexOperation;
 
 /// Represents the builder for the update-proposal operation.
@@ -13,8 +14,6 @@ use crate::base::operation::ComplexOperation;
 /// `daily_pay` is coerced to HBD at finalize-time, so passing the wrong asset
 /// surfaces as a `WaxError` from the foundation rather than panicking when the
 /// proto op is pushed onto a transaction.
-///
-/// TS NOTE: mirrors `complex_operations/update_proposal.ts`.
 #[derive(Debug, Clone, Default)]
 pub struct UpdateProposalOperation {
     pub proposal_id: i64,

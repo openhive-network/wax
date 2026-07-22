@@ -20,15 +20,16 @@ use crate::base::constants::{
     DEFAULT_COMMENT_PERCENT_HBD,
 };
 use crate::base::internal::authority::to_rust_authorities;
-use crate::base::internal::models::manabar_data::ManabarData;
 use crate::base::internal::protocol::rust_protocol;
 use crate::base::models::asset::{
     Asset, AssetAmount, AssetName, NaiAsset, NaiAssetConvertible,
 };
 use crate::base::models::authority::Authorities;
 use crate::base::models::basic::{
-    AccountName, Hex, HiveDateTime, PublicKey, SigDigest, Signature,
+    AccountName, Hex, PublicKey, SigDigest, Signature,
 };
+use crate::base::models::hive_date_time::HiveDateTime;
+use crate::base::models::manabar_data::ManabarData;
 use crate::base::operation::Operation;
 use crate::base::options::WaxOptions;
 use crate::base::result::{
@@ -85,8 +86,6 @@ impl WaxFoundation {
     }
 
     /// Returns the chain id this foundation was constructed with.
-    ///
-    /// TS NOTE: matches `IWaxBaseInterface.chainId`.
     pub fn chain_id(&self) -> &str {
         &self.options.chain_id
     }
@@ -122,16 +121,12 @@ impl WaxFoundation {
     }
 
     /// Returns the bundled crate version (`CARGO_PKG_VERSION`).
-    ///
-    /// TS NOTE: mirrors `getVersion()`, which returns the npm package version.
     pub fn get_version(&self) -> &'static str {
         env!("CARGO_PKG_VERSION")
     }
 
     /// Derives a new foundation that shares this one's runtime state but uses
     /// the given chain id.
-    ///
-    /// TS NOTE: mirrors `extendConfig({ chainId })`.
     pub fn extend_config(&self, chain_id: &str) -> Self {
         Self::new(WaxOptions {
             chain_id: chain_id.to_string(),
@@ -140,8 +135,6 @@ impl WaxFoundation {
 
     /// Returns zero-amount NaiAsset templates for HIVE / HBD / VESTS. Cached
     /// per foundation.
-    ///
-    /// TS NOTE: mirrors `IWaxBaseInterface.ASSETS`.
     pub fn assets(&self) -> Result<Assets, WaxError> {
         Ok(self.assets.clone())
     }
@@ -202,8 +195,6 @@ impl WaxFoundation {
     /// [`Self::create_asset_with_required_symbol`] (which only handles the
     /// HIVE/HBD/VESTS symbols), this accepts any packed asset id — e.g.
     /// `3_200_000_035` for HIVE.
-    ///
-    /// TS NOTE: mirrors `cpp_general_asset(asset_num, amount)`.
     pub fn general_asset(
         &self,
         asset_num: u32,
@@ -374,10 +365,6 @@ impl WaxFoundation {
 
     /// Calculates the current Hive Power APR, in percent (2 decimal
     /// places).
-    ///
-    /// TS NOTE: the core returns the APR as a string to dodge floating
-    /// point issues; TS `calculateHpApr` parses it into a JS number, Rust
-    /// into a lossless `Decimal` — mirroring Python.
     pub fn calculate_hp_apr(
         &self,
         head_block_num: u32,
@@ -400,8 +387,6 @@ impl WaxFoundation {
 
     /// Calculates the instantaneous inflation rate, in basis points, for the
     /// given block number.
-    ///
-    /// TS NOTE: mirrors `cpp_calculate_inflation_rate_for_block(block_num)`.
     pub fn calculate_inflation_rate_for_block(
         &self,
         block_num: u32,
@@ -488,9 +473,6 @@ impl WaxFoundation {
 
     /// Recovers the WIF-format public key that produced `signature` for the
     /// given transaction `sig_digest`.
-    ///
-    /// TS NOTE: mirrors `getPublicKeyFromSignature`.
-    /// Python NOTE: mirrors `base_api.get_public_key_from_signature`.
     pub fn get_public_key_from_signature(
         &self,
         sig_digest: &SigDigest,
@@ -530,8 +512,6 @@ impl WaxFoundation {
     }
 
     /// Generates a fresh, random WIF private key.
-    ///
-    /// TS NOTE: mirrors `cpp_generate_private_key()`.
     pub fn generate_private_key(&self) -> Result<String, WaxError> {
         rust_protocol()
             .cpp_generate_private_key()
@@ -560,8 +540,6 @@ impl WaxFoundation {
 
     /// Converts a WIF-form public key into its raw hex form — the inverse of
     /// [`Self::convert_raw_public_key_to_wif`].
-    ///
-    /// TS NOTE: mirrors `cpp_convert_wif_public_key_to_raw(wif_public_key)`.
     pub fn convert_wif_public_key_to_raw(
         &self,
         wif_public_key: &PublicKey,
@@ -794,8 +772,6 @@ impl WaxFoundation {
     /// `percent_hbd`, votes and curation rewards allowed, no extensions). The
     /// comment complex operation uses this to decide whether an explicit
     /// options op is even needed.
-    ///
-    /// TS NOTE: mirrors `getDefaultCommentOptionsOperation(author, permlink)`.
     pub fn default_comment_options(
         &self,
         author: &str,
@@ -913,8 +889,6 @@ impl WaxFoundation {
     /// Encode a [`CryptoMemo`] into a `crypto-memo` string — the second step of
     /// memo encryption, after a wallet has produced the inner `content`. The
     /// returned string is the full `#`-prefixed memo payload.
-    ///
-    /// TS NOTE: mirrors `cpp_crypto_memo_dump_string`.
     pub fn crypto_memo_dump_string(
         &self,
         memo: &CryptoMemo,
@@ -931,8 +905,6 @@ impl WaxFoundation {
     /// Decode a `crypto-memo` string into a [`CryptoMemo`] — the first step of
     /// memo decryption, before handing `content` (with the embedded `from`/`to`
     /// keys) to a wallet for decryption.
-    ///
-    /// TS NOTE: mirrors `cpp_crypto_memo_from_string`.
     pub fn crypto_memo_from_string(
         &self,
         value: &str,

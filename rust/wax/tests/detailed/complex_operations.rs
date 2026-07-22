@@ -11,18 +11,17 @@
 
 use serde_json::json;
 
+use wax::complex_operations::AccountAuthorityUpdateOperation;
 use wax::complex_operations::{
     BeneficiaryRoute, BlogPostOperation, CommentFormat,
     DefineRecurrentTransferOperation, HbdExchangeRate,
     RecurrentTransferRemovalOperation, ReplyOperation, UpdateProposalOperation,
     WitnessSetPropertiesOperation,
 };
-use wax::models::asset::{NaiAsset, NaiAssetConvertible};
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
+use wax::models::{NaiAsset, NaiAssetConvertible};
 use wax::proto::{self, operation::Value as OperationValue};
-use wax::{
-    AccountAuthorityUpdateOperation, HiveChain, Transaction, create_hive_chain,
-};
+use wax::{HiveChain, Transaction, create_hive_chain};
 
 use crate::common::{WaxTestCtx, wax_test};
 

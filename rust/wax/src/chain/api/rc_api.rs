@@ -1,6 +1,4 @@
 //! DTOs of the `rc_api` namespace.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/api/rc_api/`.
 
 use serde::{Deserialize, Serialize};
 
@@ -32,8 +30,6 @@ pub struct FindRcAccountsResponse {
 }
 
 /// Represents an account's resource-credit state.
-///
-/// TS NOTE: `RcAccount`.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RcAccount {
     pub account: AccountName,

@@ -1,3 +1,5 @@
+//! Configuration for the offline foundation layer.
+
 use crate::base::constants::DEFAULT_CHAIN_ID;
 use crate::base::models::basic::ChainId;
 

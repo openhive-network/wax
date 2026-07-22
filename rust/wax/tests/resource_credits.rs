@@ -6,7 +6,7 @@
 //! `max_rc` as a quoted string (to survive non-int64-safe JSON parsers, per
 //! the `as_int64` directive the chain's serializer uses).
 
-use wax::hive_apps_operations::rc::ResourceCreditsOperation;
+use wax::hive_apps_operations::ResourceCreditsOperation;
 use wax::{Transaction, WaxFoundation, create_wax_foundation};
 
 const TAPOS: &str = "04c507a8c7fe5be96be64ce7c86855e1806cbde3";

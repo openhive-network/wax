@@ -1,16 +1,15 @@
 //! Payload shaping for the REST transport: converts the typed request params
 //! into a call's path, query string and body, and decodes the typed result
 //! out of the response.
-//!
-//! TS NOTE: the params/response handling interleaved with the call flow in
-//! the TS `callFn` (`api_caller.ts` lines 104-154).
 
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Value};
 
 use crate::chain::error::WaxChainError;
-use crate::chain::util::{DetailedResponseData, RequestData, RequestOptions};
+use crate::chain::transport::{
+    DetailedResponseData, RequestData, RequestOptions,
+};
 
 use super::braced_strings::extract_braced_strings;
 use super::query_string::{object_to_query_string, stringify};
@@ -33,10 +32,6 @@ pub(super) fn to_params_map<P: Serialize>(
 /// Substitutes the `{param}` placeholders in the path template from the
 /// params, removing each consumed key; the remaining params later become the
 /// query string or the request body.
-///
-/// TS NOTE: `api_caller.ts` lines 105-118. TS silently skips substitution
-/// when params is `undefined` and sends the braces verbatim; the Rust port
-/// reports the missing parameter instead.
 pub(super) fn substitute_path_params(
     template: &str,
     params: Option<Map<String, Value>>,
@@ -85,10 +80,6 @@ pub(super) fn split_payload(
 
 /// Decodes the response body into the typed result, passing the raw response
 /// data along for callers that need the timings.
-///
-/// TS NOTE: TS only checks that a result is present when the API config
-/// declares one (`api_caller.ts` lines 148-151) and returns it untyped; typed
-/// deserialization subsumes both the presence check and shape validation.
 pub(super) fn extract_result<R: DeserializeOwned>(
     request: RequestOptions,
     response: DetailedResponseData,
@@ -109,7 +100,7 @@ pub(super) fn extract_result<R: DeserializeOwned>(
 mod tests {
     use serde_json::json;
 
-    use crate::chain::util::ResponseType;
+    use crate::chain::transport::ResponseType;
 
     use super::*;
 
@@ -205,9 +196,6 @@ mod tests {
         assert_eq!(to_params_map(()).unwrap(), None);
     }
 
-    // TS NOTE: 'No result found in the Hive API response' — a missing or
-    // mismatching body must surface as `ApiResponse`, not a panic or a bare
-    // deserialization error.
     #[test]
     fn reports_undecodable_result() {
         let request = RequestOptions {

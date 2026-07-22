@@ -25,10 +25,10 @@ use wax::api::{
     GetBlockHeaderRequest, GetBlockRangeRequest, GetBlockRequest,
     GetBlockResponse,
 };
-use wax::{
-    HealthChecker, HealthCheckerEvent, HealthCheckerOptions, HiveChain,
-    hive_api,
+use wax::healthchecker::{
+    HealthChecker, HealthCheckerEvent, HealthCheckerOptions,
 };
+use wax::{HiveChain, hive_api};
 
 use crate::common::{chain_at, spawn_routing_server};
 

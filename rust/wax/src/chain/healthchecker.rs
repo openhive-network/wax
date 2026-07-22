@@ -1,15 +1,9 @@
 //! Endpoint health checking: latency probing and failover across multiple Hive
 //! API nodes.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/`. Register API
-//! probes with [`HealthChecker::register`], spawn the checker with
-//! [`HealthChecker::spawn`] (or hand [`HealthChecker::run`] to your runtime
-//! yourself), and watch the scoreboard through [`HealthChecker::events`] /
-//! [`HealthChecker::best`].
 
 mod checker;
 mod endpoint;
-mod errors;
+mod error;
 mod events;
 mod math;
 mod options;
@@ -18,7 +12,7 @@ mod scored_endpoint;
 
 pub use checker::{HealthChecker, HealthCheckerGuard};
 pub use endpoint::{ErrorReason, HiveEndpoint, HiveEndpointData, ProbeState};
-pub use errors::{
+pub use error::{
     ChainApiType, EndpointInfo, HealthCheckerError, RequestError,
     ValidatorFailedError,
 };

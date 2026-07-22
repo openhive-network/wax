@@ -17,10 +17,6 @@ const HIVE_100_PERCENT: i32 = 100 * HIVE_PERCENT;
 /// Represents a vote operation resolved from a legacy (pre-HF28) weight
 /// percentage: the equivalent post-HF28 weight is computed from the voter's
 /// on-chain mana state by [`Self::create_for`].
-///
-/// TS NOTE: mirrors `LegacyVoteOperation`
-/// (`complex_operations/legacy_vote_operation.ts`); the TS static factory is
-/// named `for`, which is a Rust keyword.
 #[derive(Debug, Clone)]
 pub struct LegacyVoteOperation {
     vote: proto::Vote,
@@ -65,8 +61,6 @@ impl LegacyVoteOperation {
         )
         .await?;
 
-        // TS NOTE: TS throws `Voter account not found: <voter>`; Rust reuses
-        // the shared missing-accounts error.
         let voter_account =
             accounts.accounts.into_iter().next().ok_or_else(|| {
                 WaxChainError::AccountsNotFound {

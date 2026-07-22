@@ -1,10 +1,5 @@
 //! REST request engine behind the typed API surfaces.
 //!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/util/api_caller.ts`. The TS
-//! `ApiCaller` is a `Proxy` that accumulates the URL path at property-access
-//! time and carries two interceptor chains; neither survives the port
-//! structurally:
-//!
 //! - the constructor-injected "static" pair exists only to bend the one
 //!   generic engine into a JSON-RPC transport (`chain_api.ts` rewrites the
 //!   request into an envelope and unwraps the response); Rust has the
@@ -37,7 +32,7 @@ use crate::chain::error::WaxChainError;
 use crate::chain::interceptor::{
     ApiCallerKind, RequestInterceptor, ResponseInterceptor,
 };
-use crate::chain::util::{
+use crate::chain::transport::{
     DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
     RequestOptions, ResponseType,
 };
@@ -136,8 +131,6 @@ pub struct RestClient {
 #[derive(Debug, Clone, Copy)]
 pub struct RestCallDescriptor {
     /// HTTP verb of the method.
-    ///
-    /// TS NOTE: `TWaxApiRequest.method`, defaulted to `GET` for REST callers.
     pub method: &'static str,
     /// URL path with `{param}` placeholders filled from the request params.
     pub path_template: &'static str,
@@ -179,11 +172,6 @@ impl RestClient {
 
     /// Sets (or clears with `None`) the endpoint override for the given
     /// namespace path; an empty path overrides every call of this caller.
-    ///
-    /// TS NOTE: `setEndpointUrlForPath`. Clearing diverges: TS pins the
-    /// *current* `defaultEndpointUrl` into the path, so a later default
-    /// change no longer reaches it; the Rust port removes the override, so
-    /// the path follows the live default again.
     pub fn set_endpoint_url_for_path(
         &self,
         path: &[&str],
@@ -200,10 +188,6 @@ impl RestClient {
 
     /// Calls the REST method described by `descriptor` with `params`,
     /// returning the decoded result.
-    ///
-    /// TS NOTE: the body of the TS `callFn` (`api_caller.ts` lines 104-154)
-    /// minus the interceptor chain, which has no Rust counterpart (see the
-    /// module docs).
     pub async fn call<P, R>(
         &self,
         descriptor: &RestCallDescriptor,
@@ -223,12 +207,6 @@ impl RestClient {
     /// `endpoint` (ignoring the caller's endpoint and overrides), returning
     /// the decoded result together with the raw response data (timings,
     /// status, headers). Used by health-check probes.
-    ///
-    /// TS NOTE: the capability behind `withProxy` — the TS health checker
-    /// redirects a call through a request interceptor rewriting
-    /// `data.endpoint` and captures the timings through a response
-    /// interceptor; Rust takes the endpoint as an argument and returns the
-    /// timings instead.
     pub async fn call_at<P, R>(
         &self,
         endpoint: &str,
@@ -278,16 +256,11 @@ mod tests {
     use serde::Deserialize;
     use serde_json::{Value, json};
 
-    use super::super::util::test_support::{
+    use super::super::transport::test_support::{
         header_value, spawn_capture_server,
     };
     use super::*;
 
-    // TS NOTE: mirrors the REST case of
-    // `ts/wasm/__tests__/detailed/wax_api_caller_header.ts` plus the path
-    // substitution of `hive_chain_rest_api.ts` ('Should be able to extend and
-    // perform REST API calls') — one GET with a path param, a query param and
-    // the `x-wax-api-caller` header, asserted off the wire.
     #[tokio::test]
     async fn performs_get_call_with_path_and_query_params() {
         let (endpoint, captured) =
@@ -368,10 +341,6 @@ mod tests {
     // override, replace, clear) are covered on the shared
     // [`EndpointResolver`] in `util/endpoints.rs`.
 
-    // TS NOTE: the health-checker seam — `withProxy`'s endpoint rewrite and
-    // timings capture become an explicit argument and a returned value. The
-    // caller-wide default is unroutable, so `call_at` must hit the given
-    // endpoint.
     #[tokio::test]
     async fn call_at_hits_explicit_endpoint_and_returns_timings() {
         let (endpoint, captured) = spawn_capture_server(r#"{"ok":true}"#);

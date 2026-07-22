@@ -5,7 +5,7 @@
 // C++ math — that lives in hived. We pick simple feeds where the integer
 // arithmetic is easy to verify by hand.
 
-use wax::models::asset::NaiAsset;
+use wax::models::NaiAsset;
 use wax::{WaxFoundation, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";

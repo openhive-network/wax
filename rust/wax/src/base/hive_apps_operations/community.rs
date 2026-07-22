@@ -17,8 +17,6 @@ use crate::base::operation::ComplexOperation;
 const OPERATION_ID: &str = "community";
 
 /// Represents languages supported by Hive community props.
-///
-/// TS NOTE: mirrors `ESupportedLanguages`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SupportedLanguages {
     English,
@@ -54,8 +52,6 @@ impl SupportedLanguages {
 }
 
 /// Represents the membership roles available within a Hive community.
-///
-/// TS NOTE: mirrors `EAvailableCommunityRoles`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AvailableCommunityRoles {
     Muted,
@@ -81,8 +77,6 @@ impl AvailableCommunityRoles {
 }
 
 /// Represents the on-wire action tag for a single community-operation body.
-///
-/// TS NOTE: mirrors `ECommunityOperationActions`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CommunityOperationActions {
     FlagPost,
@@ -118,9 +112,6 @@ impl CommunityOperationActions {
 /// Represents community properties — the `props` payload of an `updateProps`
 /// action. Defaults are applied at stage time inside
 /// [`CommunityOperation::update_props`].
-///
-/// TS NOTE: mirrors `ICommunityProps`. `lang` accepts an arbitrary string;
-/// pass [`SupportedLanguages::as_str`] when emitting one of the known codes.
 #[derive(Debug, Clone, Default)]
 pub struct CommunityProps {
     pub title: String,
@@ -286,10 +277,6 @@ impl CommunityOperation {
     }
 
     /// Stages an `updateProps` action updating community properties.
-    ///
-    /// TS NOTE: optional fields fall back to the TS defaults — empty
-    /// strings for the text fields, `false` for `is_nsfw`, and `en` for
-    /// `lang`.
     pub fn update_props(
         mut self,
         community: impl Into<String>,
@@ -409,10 +396,6 @@ struct UpdatePropsPayload {
     lang: String,
 }
 
-/// TS NOTE: the TS `push` guard trims every top-level string field of a
-/// staged body (`data[key].trim()`); the typed bodies apply the same trim
-/// per field at construction time. Nested objects (`props`) stay untouched,
-/// as in TS.
 fn trimmed(value: impl Into<String>) -> String {
     value.into().trim().to_string()
 }

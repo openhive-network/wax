@@ -1,7 +1,5 @@
 //! Endpoint scoring: converts the accumulated probe history into a
 //! normalized, best-first scoreboard.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/math.ts`.
 
 use super::endpoint::{ErrorReason, ProbeState};
 use super::scored_endpoint::{ScoredEndpoint, ScoredState};
@@ -25,11 +23,6 @@ const CONNECTION_ISSUES_MULTIPLIER: f64 = 0.2;
 /// latency. A URL's raw score is the median of those latencies (robust
 /// against a single spike) blended with the coefficient of variation of the
 /// latencies ([`CONNECTION_ISSUES_MULTIPLIER`]) penalizing jitter.
-///
-/// TS NOTE: `defaultCalcScores`. Empty histories are skipped in every
-/// branch (TS skips them only in the main loop and would throw on the
-/// all-zero-latency path); the unused TS min-latency tracking is not
-/// ported.
 pub fn default_calc_scores(
     data: &[(String, Vec<ProbeState>)],
 ) -> Vec<ScoredEndpoint> {
@@ -37,8 +30,6 @@ pub fn default_calc_scores(
         return Vec::new();
     };
 
-    // TS NOTE: the 'No up times at all' TS branch — actually reached when
-    // every up probe reported a zero latency; everything is listed as down.
     if max_latency == 0 {
         return list_all_down(data);
     }
@@ -153,8 +144,6 @@ fn penalized_latencies(history: &[ProbeState], penalty_ms: f64) -> Vec<f64> {
 
 /// Returns the failure reason of the newest sample; [`ErrorReason::Other`]
 /// when that sample is an up one.
-///
-/// TS NOTE: `endpointData[endpointData.length - 1].reason || 'other'`.
 fn last_error_reason(history: &[ProbeState]) -> ErrorReason {
     match history.last() {
         Some(ProbeState::Down { reason }) => *reason,
@@ -165,9 +154,6 @@ fn last_error_reason(history: &[ProbeState]) -> ErrorReason {
 /// Converts each raw median score into the blended one: the median scaled
 /// into `0..=100` across all up URLs, weighted against the jitter
 /// coefficient by [`CONNECTION_ISSUES_MULTIPLIER`].
-///
-/// TS NOTE: TS tracks the median range while bucketing; computing it here
-/// from the finished bucket is equivalent.
 fn blend_jitter_penalty(raw_up: &mut [RawUpScore]) {
     let medians = raw_up.iter().map(|raw| raw.score);
     let min_median = medians.clone().fold(f64::MAX, f64::min);

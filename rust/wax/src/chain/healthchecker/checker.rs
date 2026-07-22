@@ -1,10 +1,5 @@
 //! The health checker: registration, scoring and scheduling of endpoint
 //! probes.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/healthchecker.ts`
-//! (the `HealthChecker` class itself; its event map lives in `events.rs`,
-//! its constructor parameters in `options.rs`). The TS `setInterval` loop
-//! becomes the user-spawned [`HealthChecker::run`] future.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -19,7 +14,7 @@ use super::endpoint::{
     CheckOutcome, EndpointCore, HiveEndpoint, HiveEndpointData, ProbeFn,
     ProbeState,
 };
-use super::errors::{ChainApiType, ProbeFailure};
+use super::error::{ChainApiType, ProbeFailure};
 use super::events::{EVENT_CHANNEL_CAPACITY, HealthCheckerEvent};
 use super::options::{
     CalcScoresFn, DEFAULT_JSON_RPC_ENDPOINTS, DEFAULT_REST_API_ENDPOINTS,
@@ -29,8 +24,6 @@ use super::probe::ApiProbe;
 use super::scored_endpoint::ScoredEndpoint;
 
 /// Used as the tick period of [`HealthChecker::run`].
-///
-/// TS NOTE: `PERFORM_CHECK_INTERVAL_MS`.
 const PERFORM_CHECK_INTERVAL: Duration = Duration::from_millis(1_000);
 
 /// Provides endpoint health checking: registered API probes run periodically
@@ -41,10 +34,6 @@ const PERFORM_CHECK_INTERVAL: Duration = Duration::from_millis(1_000);
 /// probed until one clone's [`run`](Self::run) future is spawned; checks
 /// start with the first [`register`](Self::register) and pause when the last
 /// endpoint group is unregistered.
-///
-/// TS NOTE: `HealthChecker` (an `EventEmitter` driven by `setInterval`);
-/// event listeners become the [`events`](Self::events) channel and the
-/// interval becomes the user-spawned [`run`](Self::run) future.
 #[derive(Clone)]
 pub struct HealthChecker {
     inner: Arc<CheckerInner>,
@@ -98,8 +87,6 @@ impl HealthChecker {
     /// Returns a receiver of the checker's events. Only events emitted after
     /// this call are delivered; a receiver lagging more than the channel
     /// backlog skips the oldest events.
-    ///
-    /// TS NOTE: the `EventEmitter` `on`/`off` surface (`IHealthCheckerEvents`).
     pub fn events(&self) -> broadcast::Receiver<HealthCheckerEvent> {
         self.inner.events.subscribe()
     }
@@ -115,11 +102,6 @@ impl HealthChecker {
     ///
     /// The first registration schedules an immediate check round, picked up
     /// by the [`run`](Self::run) future.
-    ///
-    /// TS NOTE: `register(endpointToCheck, toSend, validator?,
-    /// testOnEndpoints?)`. TS reflects the transport and paths off the
-    /// proxied API method and closes over `toSend`; [`ApiProbe`] carries the
-    /// same three things explicitly.
     pub fn register<R>(
         &self,
         probe: ApiProbe<R>,
@@ -136,9 +118,6 @@ impl HealthChecker {
     /// `Err(reason)` — marks the URL down with
     /// [`super::ErrorReason::ValidationError`] and emits
     /// [`HealthCheckerEvent::ValidationError`].
-    ///
-    /// TS NOTE: the `validator` parameter of `register`; `true | string`
-    /// becomes `Result<(), String>`.
     pub fn register_with_validator<R, V>(
         &self,
         probe: ApiProbe<R>,
@@ -178,9 +157,6 @@ impl HealthChecker {
     /// health checks, dropping the stats of node URLs no other group checks.
     /// Returns `false` if no such group is registered. The last
     /// unregistration pauses checking until the next registration.
-    ///
-    /// TS NOTE: `unregister(api)` — takes the id
-    /// ([`HiveEndpoint::id`]) instead of the handle.
     pub fn unregister(&self, id: u32) -> bool {
         let removed = self.inner.endpoints().remove(&id).is_some();
         if !removed {
@@ -189,8 +165,6 @@ impl HealthChecker {
 
         self.clear_unused_endpoint_urls_from_stats();
 
-        // TS NOTE: `stop()` — TS clears its interval; the Rust `run` future
-        // keeps ticking and just finds no check scheduled.
         if self.inner.endpoints().is_empty() {
             *self.inner.next_check() = None;
         }
@@ -208,8 +182,6 @@ impl HealthChecker {
 
     /// Returns the handle of the endpoint group with the given id, if
     /// registered.
-    ///
-    /// TS NOTE: `getEndpoint`.
     pub fn endpoint(&self, id: u32) -> Option<HiveEndpoint> {
         let core = self.inner.endpoints().get(&id).cloned()?;
 
@@ -217,8 +189,6 @@ impl HealthChecker {
     }
 
     /// Returns the handles of all registered endpoint groups.
-    ///
-    /// TS NOTE: the `[Symbol.iterator]` surface.
     pub fn endpoints(&self) -> Vec<HiveEndpoint> {
         self.endpoint_cores()
             .into_iter()
@@ -234,9 +204,6 @@ impl HealthChecker {
             }
         }
 
-        // TS NOTE: TS leaves the cached-scored-list limit stale until the
-        // next register/unregister; Rust keeps the invariant on every URL
-        // set change.
         self.recalculate_stats_limit();
     }
 
@@ -259,10 +226,6 @@ impl HealthChecker {
     /// Subscribes to the given node URL: while subscribed, its up/down
     /// transitions are emitted as [`HealthCheckerEvent::NewUp`] /
     /// [`HealthCheckerEvent::NewDown`].
-    ///
-    /// TS NOTE: `subscribe` adds a per-URL listener on the internal
-    /// 'statechanged' event; the Rust checker filters against the
-    /// subscription set while applying check outcomes.
     pub fn subscribe(&self, endpoint_url: impl Into<String>) {
         self.inner.subscriptions().insert(endpoint_url.into());
     }
@@ -303,10 +266,6 @@ impl HealthChecker {
     /// so it may freely call back into this checker. It is deliberately
     /// synchronous — for async reactions consume a receiver from
     /// [`events`](Self::events) with a `while let` loop instead.
-    ///
-    /// TS NOTE: the closest analog of the TS `EventEmitter` `on(...)`
-    /// surface; one handler receives all events (match on the variant)
-    /// instead of one listener per event name.
     pub fn spawn_with_handler<F>(&self, mut handler: F) -> HealthCheckerGuard
     where
         F: FnMut(HealthCheckerEvent) + Send + 'static,
@@ -341,10 +300,6 @@ impl HealthChecker {
     /// endpoint group is registered, then each round schedules the next at
     /// `max(2 × round duration, minimal_check_interval_ms)` after it ends;
     /// with nothing registered, ticks are idle.
-    ///
-    /// TS NOTE: the `setInterval(performChecks, 1000)` loop that
-    /// `ensureRunning`/`stop` manage; Rust hands the loop to the user
-    /// instead of owning a timer.
     pub async fn run(&self) {
         let mut ticker = tokio::time::interval(PERFORM_CHECK_INTERVAL);
         ticker.set_missed_tick_behavior(MissedTickBehavior::Delay);
@@ -358,9 +313,6 @@ impl HealthChecker {
     /// Runs one scheduled check round, if due: probes every endpoint group
     /// concurrently, applies the outcomes, refreshes the scoreboard and
     /// schedules the next round.
-    ///
-    /// TS NOTE: `performChecks`. Crate-visible so in-crate tests can drive
-    /// rounds without spawning [`Self::run`].
     pub(crate) async fn perform_checks(&self) {
         let due = {
             let mut next_check = self.inner.next_check();
@@ -431,8 +383,6 @@ impl HealthChecker {
 
     /// Appends a probe result to its URL's history ring, trimming the front
     /// so the ring never exceeds the cached-scored-list limit.
-    ///
-    /// TS NOTE: `pushEndpointData`.
     fn push_endpoint_data(&self, data: HiveEndpointData) {
         let mut stats = self.inner.stats();
         let limit = stats.limit;
@@ -450,9 +400,6 @@ impl HealthChecker {
 
     /// Rebuilds the cached scoreboard from the recorded per-URL histories,
     /// announcing a leadership change and the fresh scoreboard.
-    ///
-    /// TS NOTE: `calculateCachedScored` plus the 'data' emit of
-    /// `performChecks`.
     fn refresh_scores(&self) {
         let mut snapshot: Vec<(String, Vec<ProbeState>)> = {
             let stats = self.inner.stats();
@@ -509,8 +456,6 @@ impl HealthChecker {
             endpoints.len() == 1
         };
 
-        // TS NOTE: `ensureRunning` — the first registration schedules an
-        // immediate round for the `run` future to pick up.
         if became_first {
             let mut next_check = self.inner.next_check();
             if next_check.is_none() {
@@ -548,8 +493,6 @@ impl HealthChecker {
 
     /// Recalculates the per-URL history limit: the largest URL count of any
     /// endpoint group times the group count.
-    ///
-    /// TS NOTE: `calculateCachedScoredListSize`.
     pub(super) fn recalculate_stats_limit(&self) {
         let endpoints = self.endpoint_cores();
 
@@ -563,9 +506,6 @@ impl HealthChecker {
 
     /// Drops the history of node URLs no endpoint group checks anymore and
     /// recalculates the history limit.
-    ///
-    /// TS NOTE: `clearUnusedEndpointUrlsFromStats` (the internal
-    /// 'clearunused' event handler).
     pub(super) fn clear_unused_endpoint_urls_from_stats(&self) {
         let endpoints = self.endpoint_cores();
 
@@ -633,8 +573,6 @@ struct CheckerInner {
     subscriptions: Mutex<HashSet<String>>,
     /// When the next check round is due; `None` while one is running or
     /// nothing is registered.
-    ///
-    /// TS NOTE: `nextScheduledCheck`.
     next_check: Mutex<Option<Instant>>,
     events: broadcast::Sender<HealthCheckerEvent>,
 }
@@ -672,20 +610,14 @@ impl CheckerInner {
 /// keyed by node URL across all endpoint groups.
 struct StatsStore {
     /// Per-URL probe results, newest last.
-    ///
-    /// TS NOTE: `endpointStats`.
     per_url: HashMap<String, VecDeque<ProbeState>>,
     /// Ring capacity of each history.
-    ///
-    /// TS NOTE: `cachedScoredListLimit`.
     limit: usize,
 }
 
 /// Represents the scoreboard cached by the latest check round.
 struct ScoreCache {
-    /// TS NOTE: `cachedScoredList`.
     list: Vec<ScoredEndpoint>,
-    /// TS NOTE: `lastBest`.
     last_best: Option<String>,
 }
 
@@ -696,7 +628,7 @@ mod tests {
     use std::time::Instant as StdInstant;
 
     use crate::chain::error::WaxChainError;
-    use crate::chain::util::DetailedResponseData;
+    use crate::chain::transport::DetailedResponseData;
 
     use super::super::endpoint::ErrorReason;
     use super::super::options::INITIAL_CHECK_INTERVAL_MS;

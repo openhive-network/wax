@@ -14,7 +14,7 @@
 //!   suite.
 //! - `utils.ts` — ported as unit tests in `src/chain/rest/query_string.rs`.
 //! - `wax_api_caller_header.ts` — ported as unit tests in
-//!   `src/chain/util/request_helper.rs`.
+//!   `src/chain/transport/request_helper.rs`.
 //! - `hive_chain_rest_api.ts` — ported into `extend_api.rs` (see its header
 //!   for the TS-only members).
 

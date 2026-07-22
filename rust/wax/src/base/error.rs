@@ -1,3 +1,5 @@
+//! The error type of the offline wax API.
+
 use thiserror::Error;
 
 use crate::base::models::asset::AssetName;

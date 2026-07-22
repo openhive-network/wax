@@ -1,6 +1,4 @@
 //! DTOs of the `block_api` namespace.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/api/block_api/`.
 
 use serde::{Deserialize, Serialize};
 
@@ -43,9 +41,6 @@ pub struct GetBlockHeaderRequest {
 }
 
 /// Represents the result of `block_api.get_block_header`.
-///
-/// TS NOTE: TS types `header` as required; the node reflects it as
-/// `fc::optional`, absent for blocks the node does not have.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct GetBlockHeaderResponse {
     pub header: Option<ApiBlockHeader>,

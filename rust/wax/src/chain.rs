@@ -7,48 +7,38 @@
 //! used wherever an offline foundation is expected.
 
 pub mod api;
+pub mod authority_trace;
+pub mod healthchecker;
+pub mod interceptor;
+pub mod transport;
 
-mod authority_trace;
 mod broadcast;
-mod complex_operations;
+// pub(crate): joins the offline builders in the public
+// `crate::complex_operations` namespace assembled by `lib.rs`.
+pub(crate) mod complex_operations;
 mod error;
 mod extend;
-mod healthchecker;
 mod hive_chain;
-mod interceptor;
 mod internal;
 mod online_transaction;
 mod options;
 mod rest;
 mod rpc;
-mod util;
 
 pub use api::DefaultHiveApi;
-pub use authority_trace::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
-    AuthorityRole, AuthorityTrace, AuthorityTraceSignatureInfo, ProcessedEntry,
-};
 pub use broadcast::Broadcastable;
-pub use complex_operations::{
-    AccountAuthorityUpdateOperation, HiveRole, HiveRoleAuthority,
-    HiveRoleMemoKey, HiveRoles, LegacyVoteOperation,
-};
 pub use error::WaxChainError;
 pub use extend::{HiveApi, HiveRestApi};
-pub use healthchecker::*;
 pub use hive_chain::HiveChain;
-pub use interceptor::*;
 pub use online_transaction::OnlineTransaction;
-pub use options::HiveChainOptions;
+pub use options::{
+    DEFAULT_API_ENDPOINT, DEFAULT_API_TIMEOUT, DEFAULT_REST_API_ENDPOINT,
+    HiveChainOptions,
+};
 pub use rest::{RestCallDescriptor, RestCaller};
 pub use rpc::{JsonRpcCallDescriptor, JsonRpcCaller};
-pub use util::*;
 
 /// Constructs a [`HiveChain`] from the given options.
-///
-/// TS NOTE: TS `createHiveChain` is `async` because of WASM module init. Rust
-/// has no such dependency, so this factory is sync — async I/O only happens
-/// when calling chain methods.
 pub fn create_hive_chain(
     options: impl Into<Option<HiveChainOptions>>,
 ) -> Result<HiveChain, WaxChainError> {

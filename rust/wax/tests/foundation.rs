@@ -5,7 +5,7 @@
 // `core_*` tests.
 
 use wax::constants::MAINNET_CHAIN_ID;
-use wax::models::asset::NaiAsset;
+use wax::models::NaiAsset;
 use wax::{WaxFoundation, WaxOptions, create_wax_foundation};
 
 const HIVE_NAI: &str = "@@000000021";
@@ -296,7 +296,7 @@ fn chain_reference_data_passes_absolute_expiration_through() {
 
 #[test]
 fn chain_reference_data_resolves_offset_against_head_block_time_on_testnet() {
-    use wax::models::basic::HiveDateTime;
+    use wax::models::HiveDateTime;
     let f = create_wax_foundation(WaxOptions {
         chain_id: TESTNET_CHAIN_ID.to_string(),
     });
@@ -337,7 +337,7 @@ fn chain_reference_data_ignores_head_block_time_on_mainnet() {
     // foundation anchors to the local clock instead. Asserting "expiration
     // doesn't match the head_block_time-derived value" is enough; we don't
     // pin a precise wall-clock window because tests run on slow shared CI.
-    use wax::models::basic::HiveDateTime;
+    use wax::models::HiveDateTime;
     let f = foundation();
     let head = HiveDateTime::parse("2020-01-01T00:00:00")
         .expect("static HiveDateTime literal");
@@ -655,7 +655,7 @@ fn extend_config_produces_foundation_with_new_chain_id() {
 mod scan_text_for_matching_private_keys {
     use super::foundation;
     use std::collections::HashMap;
-    use wax::models::authority::{Authorities, WaxAuthority};
+    use wax::models::{Authorities, WaxAuthority};
 
     const ACCOUNT: &str = "alice";
 

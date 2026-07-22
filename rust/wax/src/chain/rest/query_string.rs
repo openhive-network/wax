@@ -1,7 +1,4 @@
 //! Query-string serialization for the REST API caller.
-//!
-//! TS NOTE: ported from `objectToQueryString` in
-//! `ts/wasm/lib/detailed/util/query_string.ts`.
 
 use percent_encoding::{AsciiSet, NON_ALPHANUMERIC, utf8_percent_encode};
 use serde_json::{Map, Value};
@@ -22,11 +19,6 @@ const URI_COMPONENT: &AsciiSet = &NON_ALPHANUMERIC
 
 /// Converts a params object into a URL query string (`key=value&...`),
 /// percent-encoding the values while leaving the keys untouched.
-///
-/// TS NOTE: TS skips both `undefined` and `null` values; JSON has no
-/// `undefined`, so only [`Value::Null`] is skipped. Arrays are comma-joined and
-/// nested objects are JSON-encoded before escaping, matching the TS branch
-/// order (the array check precedes the generic object check).
 pub fn object_to_query_string(params: &Map<String, Value>) -> String {
     let mut parts = Vec::with_capacity(params.len());
 
@@ -64,10 +56,6 @@ fn encode(value: &str) -> String {
     utf8_percent_encode(value, URI_COMPONENT).to_string()
 }
 
-// TS NOTE: mirrors `ts/wasm/__tests__/detailed/utils.ts` — the query-string
-// utility suite. The TS `undefinedValue: undefined` entry has no JSON
-// counterpart (serde maps cannot hold `undefined`), so the Rust fixture
-// carries only the `null` entry; both are skipped by the TS implementation.
 #[cfg(test)]
 mod tests {
     use serde_json::{Map, Value, json};
@@ -108,11 +96,6 @@ mod tests {
 
     // TS line 30: "Should be able to convert object with multiple parameters
     // to a correct query string".
-    //
-    // TS NOTE: TS iterates the params object in insertion order
-    // (`name=John&age=30&...`); `serde_json::Map` sorts keys, so the same
-    // pairs appear alphabetically. Query-string parameter order carries no
-    // meaning, so the encoding itself is what this test pins.
     #[test]
     fn converts_multiple_parameters() {
         let querified = object_to_query_string(&params(json!({

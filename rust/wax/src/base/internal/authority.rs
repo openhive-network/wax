@@ -5,8 +5,9 @@ use crate::core::ffi::{
 };
 use crate::core::{AuthorityProvider, RustAuthorityProvider};
 
-use crate::base::interfaces::AuthorityDataProvider;
-use crate::base::models::authority::{Authorities, WaxAuthority};
+use crate::base::models::authority::{
+    Authorities, AuthorityDataProvider, WaxAuthority,
+};
 
 // Adapter from the high-level, per-account [`AuthorityDataProvider`] to the core bridge's
 // batch `AuthorityProvider`. Holds a raw pointer to keep the type `'static`

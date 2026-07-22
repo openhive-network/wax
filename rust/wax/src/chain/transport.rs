@@ -1,3 +1,6 @@
+//! Shared HTTP transport: the request helper, endpoint resolution and the
+//! request/response payload types.
+
 mod endpoints;
 mod request_helper;
 #[cfg(test)]

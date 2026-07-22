@@ -1,15 +1,13 @@
+//! The error type of the online chain layer.
+
 use crate::WaxError;
 use thiserror::Error;
 
 use crate::chain::healthchecker::RequestError;
-use crate::chain::util::{DetailedResponseData, RequestOptions};
+use crate::chain::transport::{DetailedResponseData, RequestOptions};
 use crate::models::basic::AccountName;
 
 /// Represents any failure originating from the online chain layer.
-///
-/// TS NOTE: TS surfaces these under `WaxChainApiError` / `WaxError`; Rust splits
-/// the offline `WaxError` (re-used here via [`Self::Foundation`]) from the
-/// online-only variants.
 #[derive(Debug, Error)]
 pub enum WaxChainError {
     #[error("JSON-RPC error {code}: {message}")]
@@ -25,14 +23,9 @@ pub enum WaxChainError {
         source: url::ParseError,
     },
 
-    /// TS NOTE: the `WaxRequestError` subclasses raised by the request layer
-    /// (see `util::request_helper`).
     #[error(transparent)]
     Request(#[from] RequestError),
 
-    /// TS NOTE: TS throws a bare `Error('No <param> in request')` when a
-    /// `{param}` path placeholder is missing from the REST request params
-    /// (`util/api_caller.ts`).
     #[error("No {name} in request")]
     MissingPathParam { name: String },
 
@@ -42,10 +35,6 @@ pub enum WaxChainError {
     #[error("REST API request params must serialize to a JSON object")]
     NonObjectParams,
 
-    /// TS NOTE: `WaxChainApiError` — TS raises 'No result found in the Hive
-    /// API response' when a declared result is absent; typed deserialization
-    /// subsumes that presence check, so this variant covers every mismatch
-    /// between the response body and the declared result type.
     #[error(
         "Invalid response from chain API \"{} {}{}\": {source}",
         .request.method, .request.endpoint, .request.url
@@ -57,8 +46,6 @@ pub enum WaxChainError {
         source: serde_json::Error,
     },
 
-    /// TS NOTE: `findAccounts` throws when `database_api.find_accounts`
-    /// returns fewer accounts than requested.
     #[error(
         "No such account{s} on chain with given name{s}: \"{}\"",
         .accounts.join(", "),
@@ -66,8 +53,6 @@ pub enum WaxChainError {
     )]
     AccountsNotFound { accounts: Vec<AccountName> },
 
-    /// TS NOTE: `findWitnessAccounts` throws when
-    /// `database_api.find_witnesses` returns fewer witnesses than requested.
     #[error(
         "No such witness{s} on chain with given name{s}: \"{}\"",
         .witnesses.join(", "),
@@ -75,8 +60,6 @@ pub enum WaxChainError {
     )]
     WitnessesNotFound { witnesses: Vec<AccountName> },
 
-    /// TS NOTE: `OnChainOperationValidator.ensureAccountsExist` throws when
-    /// `rc_api.find_rc_accounts` reports fewer accounts than checked.
     #[error("Accounts \"{}\" do not exist!", .accounts.join("\", \""))]
     AccountsDoNotExist { accounts: Vec<AccountName> },
 

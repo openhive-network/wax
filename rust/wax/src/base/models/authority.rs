@@ -5,7 +5,9 @@ use std::collections::HashMap;
 
 use crate::core::proto;
 
-use crate::base::models::basic::{AccountName, HiveDateTime, PublicKey};
+use crate::WaxError;
+use crate::base::models::basic::{AccountName, PublicKey};
+use crate::base::models::hive_date_time::HiveDateTime;
 
 /// Represents an authority (weight threshold with key and account auths).
 pub type WaxAuthority = proto::Authority;
@@ -47,4 +49,22 @@ pub struct AccountAuthorityInfo {
     /// The owner authority's previous update timestamp, kept as a fallback
     /// for the same recovery-window check.
     pub previous_owner_update: HiveDateTime,
+}
+
+/// Provides account authorities and witness signing keys to the offline
+/// signing helpers.
+pub trait AuthorityDataProvider {
+    /// Returns the authority information for the given account.
+    fn get_account_authorities(
+        &self,
+        account: &str,
+    ) -> Result<AccountAuthorityInfo, WaxError>;
+
+    /// Returns the witness's public signing key, if known.
+    fn get_witness_public_key(
+        &self,
+        _witness: &str,
+    ) -> Result<Option<PublicKey>, WaxError> {
+        Ok(None)
+    }
 }

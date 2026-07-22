@@ -28,6 +28,16 @@ pub use crate::core::transaction_to_canonical_json;
 pub use base::*;
 pub use chain::*;
 
+/// High-level builders producing protocol operations: the offline builders
+/// plus the chain-bound online ones, in one namespace.
+///
+/// Assembled here because the offline half lives in the base layer and the
+/// online half in the chain layer; both source modules are crate-private.
+pub mod complex_operations {
+    pub use crate::base::complex_operations::*;
+    pub use crate::chain::complex_operations::*;
+}
+
 /// Generates a typed Hive API surface from idiomatic declarations, for use
 /// with [`extend`](chain::HiveChain::extend) /
 /// [`extend_rest`](chain::HiveChain::extend_rest).
@@ -42,12 +52,6 @@ pub use chain::*;
 /// overridable with `#[hive_api(namespace = "...")]`. `P` must implement
 /// `serde::Serialize` and `R` `serde::de::DeserializeOwned`.
 ///
-/// TS NOTE: the type-level `responseArray` knob of `TWaxApiRequest` is not
-/// ported — it only lifts the declared element type into `ResultType[]` for
-/// endpoints returning bare JSON arrays, working around the TS descriptor
-/// indirection. Rust declares such a method naturally:
-/// `async fn m(params: P) -> Vec<Item>;`.
-///
 /// Every generated struct carries a `set_endpoint_url(Option<String>)`
 /// method routing that namespace's calls to an explicit endpoint, plus an
 /// `endpoint_url()` getter returning the endpoint the namespace currently
@@ -59,9 +63,10 @@ pub use chain::*;
 /// Every method additionally emits its call descriptor
 /// ([`JsonRpcCallDescriptor`] / [`RestCallDescriptor`]) as the
 /// `SCREAMING_CASE` associated const of the same name, plus a
-/// `<name>_probe(params)` constructor returning the [`ApiProbe`] that
-/// [`HealthChecker::register`](HealthChecker::register) takes — so wiring a
-/// generated method into the health checker is one call:
+/// `<name>_probe(params)` constructor returning the
+/// [`ApiProbe`](crate::healthchecker::ApiProbe) that
+/// [`HealthChecker::register`](crate::healthchecker::HealthChecker::register)
+/// takes — so wiring a generated method into the health checker is one call:
 /// `checker.register(api.block_api.get_block_probe(params), vec![])`.
 /// (Probe constructors additionally need `P: Send + Sync + 'static` and
 /// `R: Send + 'static`.)

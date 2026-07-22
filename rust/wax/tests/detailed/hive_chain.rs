@@ -10,8 +10,8 @@
 use chrono::Utc;
 use serde_json::{Value, json};
 
-use wax::models::basic::HiveDateTime;
-use wax::models::enums::EManabarType;
+use wax::models::HiveDateTime;
+use wax::models::ManabarType;
 use wax::{HiveChain, HiveChainOptions, create_hive_chain};
 
 use crate::common::{
@@ -186,7 +186,7 @@ async fn upvote_manabar_value_uses_account_vote_power() {
     let manabar = chain
         .calculate_current_manabar_value_for_account(
             "alice",
-            EManabarType::Upvote,
+            ManabarType::Upvote,
         )
         .await
         .unwrap();
@@ -235,7 +235,7 @@ async fn downvote_manabar_scales_max_to_pool_share() {
     let small = chain
         .calculate_current_manabar_value_for_account(
             "alice",
-            EManabarType::Downvote,
+            ManabarType::Downvote,
         )
         .await
         .unwrap();
@@ -246,7 +246,7 @@ async fn downvote_manabar_scales_max_to_pool_share() {
     let large = chain
         .calculate_current_manabar_value_for_account(
             "alice",
-            EManabarType::Downvote,
+            ManabarType::Downvote,
         )
         .await
         .unwrap();
@@ -265,7 +265,7 @@ async fn rc_manabar_value_comes_from_rc_api() {
     let chain = chain_for(endpoint);
 
     let manabar = chain
-        .calculate_current_manabar_value_for_account("alice", EManabarType::Rc)
+        .calculate_current_manabar_value_for_account("alice", ManabarType::Rc)
         .await
         .unwrap();
 
@@ -306,7 +306,7 @@ async fn full_regeneration_time_spans_the_regen_window() {
     let already_full = chain
         .calculate_manabar_full_regeneration_time_for_account(
             "alice",
-            EManabarType::Upvote,
+            ManabarType::Upvote,
         )
         .await
         .unwrap();
@@ -319,7 +319,7 @@ async fn full_regeneration_time_spans_the_regen_window() {
     let empty = chain
         .calculate_manabar_full_regeneration_time_for_account(
             "alice",
-            EManabarType::Upvote,
+            ManabarType::Upvote,
         )
         .await
         .unwrap();
@@ -346,7 +346,7 @@ async fn full_regeneration_time_reports_empty_capacity_as_now() {
     let time = chain
         .calculate_manabar_full_regeneration_time_for_account(
             "alice",
-            EManabarType::Upvote,
+            ManabarType::Upvote,
         )
         .await
         .unwrap();
@@ -368,7 +368,7 @@ async fn manabar_helpers_report_missing_accounts() {
     let error = chain
         .calculate_current_manabar_value_for_account(
             "ghost",
-            EManabarType::Upvote,
+            ManabarType::Upvote,
         )
         .await
         .unwrap_err();
@@ -379,7 +379,7 @@ async fn manabar_helpers_report_missing_accounts() {
     );
 
     let error = chain
-        .calculate_current_manabar_value_for_account("ghost", EManabarType::Rc)
+        .calculate_current_manabar_value_for_account("ghost", ManabarType::Rc)
         .await
         .unwrap_err();
 
@@ -703,9 +703,7 @@ const RECOVER_ACCOUNT_TX: &str = r#"{
     ]
 }"#;
 
-fn required_authorities_of(
-    json: &str,
-) -> wax::models::authority::RequiredAuthorities {
+fn required_authorities_of(json: &str) -> wax::models::RequiredAuthorities {
     wax::create_wax_foundation(None)
         .create_transaction_from_json(json)
         .expect("create_transaction_from_json")

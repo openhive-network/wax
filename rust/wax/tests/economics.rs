@@ -7,7 +7,7 @@
 // against the canonical implementation rather than reinventing the math here.
 
 use rust_decimal::Decimal;
-use wax::models::asset::NaiAsset;
+use wax::models::NaiAsset;
 use wax::result::JsonPrice;
 use wax::{WaxFoundation, create_wax_foundation};
 

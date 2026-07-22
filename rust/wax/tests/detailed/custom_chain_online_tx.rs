@@ -15,10 +15,12 @@ use std::collections::HashSet;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use wax::api::{FindAccountsRequest, GetWitnessScheduleRequest};
+use wax::authority_trace::{
+    AuthorityEntryProcessingStatus, AuthorityPathEntry, ProcessedEntry,
+};
 use wax::proto::{self, operation::Value as OperationValue};
 use wax::{
-    AuthorityEntryProcessingStatus, AuthorityPathEntry, HiveChain,
-    HiveChainOptions, ProcessedEntry, create_hive_chain, create_wax_foundation,
+    HiveChain, HiveChainOptions, create_hive_chain, create_wax_foundation,
 };
 
 use wax_signers_beekeeper::BeekeeperSignatureProvider;

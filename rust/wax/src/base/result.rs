@@ -9,8 +9,6 @@ use crate::base::models::basic::{AccountName, ChainId, Hex, PublicKey};
 
 /// Represents zero-amount NaiAsset templates for the three first-class Hive
 /// symbols, useful as a starting point or a symbol-specific sentinel.
-///
-/// TS NOTE: mirrors `IWaxBaseInterface.ASSETS`.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Assets {
     pub hive: NaiAsset,
@@ -22,8 +20,6 @@ pub struct Assets {
 /// `get_config` helper. Keys vary by chain build; common ones include
 /// `HIVE_CHAIN_ID`, `HIVE_ADDRESS_PREFIX`, `HIVE_TREASURY_ACCOUNT`,
 /// `HIVE_SYMBOL`, `HBD_SYMBOL`, `VESTS_SYMBOL` and `IS_TEST_NET`.
-///
-/// TS NOTE: mirrors `IChainConfig`.
 pub type ChainConfig = HashMap<String, String>;
 
 /// Represents a price as a base/quote pair of assets.
@@ -68,9 +64,6 @@ pub struct PrivateKeyData {
 /// Represents a decoded `crypto-memo`: the two public keys it was encrypted
 /// for and the inner base58 encrypted content (the buffer produced by a
 /// wallet's `encrypt_data`).
-///
-/// TS NOTE: mirrors the `crypto_memo` shape passed to / returned from
-/// `cpp_crypto_memo_dump_string` / `cpp_crypto_memo_from_string`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CryptoMemo {
     pub from: PublicKey,
@@ -82,9 +75,6 @@ pub struct CryptoMemo {
 /// [`crate::Transaction::binary_view_metadata`]. The shape is a recursive AST
 /// over the wire-serialized transaction: scalars hold a printable `value`,
 /// arrays hold a `length` and `children`, objects hold `children` only.
-///
-/// TS NOTE: mirrors `IBinaryViewNode` (and `binary_data_node` in
-/// `core/types.hpp`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum BinaryViewNode {
     Scalar {

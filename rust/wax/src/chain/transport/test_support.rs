@@ -1,10 +1,5 @@
 //! Shared wire-level fixtures for the request-layer tests: a single-shot HTTP
 //! capture server and raw-request inspection helpers.
-//!
-//! TS NOTE: the TS tests observe outgoing requests through the `withProxy`
-//! interceptor seam of `api_caller.ts`; the Rust tests capture what was
-//! actually sent on the wire instead — stronger, and independent of the
-//! interceptor callbacks ported later (`crate::chain::interceptor`).
 
 use std::io::{Read, Write};
 use std::net::TcpListener;

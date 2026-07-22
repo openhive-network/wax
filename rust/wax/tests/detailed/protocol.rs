@@ -14,8 +14,8 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
 
-use wax::models::asset::NaiAsset;
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
+use wax::models::NaiAsset;
 use wax::proto::{
     AccountCreate, Asset, Authority, Operation as ProtoOperation,
     Transaction as ProtoTransaction, Transfer, Vote, operation::Value,
@@ -1151,7 +1151,7 @@ fn legacy_sig_digest_serialization_sensitive_with_test_chain_id() {
 // transaction".
 #[test]
 fn required_authorities_for_vote_transaction() {
-    use wax::models::authority::RequiredAuthorities;
+    use wax::models::RequiredAuthorities;
 
     wax_test(None, |ctx| {
         let auths = ctx

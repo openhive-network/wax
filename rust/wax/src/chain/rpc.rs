@@ -1,3 +1,6 @@
+//! JSON-RPC transport: the batching caller and the per-method call
+//! descriptors the `#[hive_api]` macro binds to it.
+
 mod request;
 
 use std::sync::Arc;
@@ -11,7 +14,7 @@ use crate::chain::error::WaxChainError;
 use crate::chain::interceptor::{
     ApiCallerKind, RequestInterceptor, ResponseInterceptor,
 };
-use crate::chain::util::{
+use crate::chain::transport::{
     DetailedResponseData, EndpointResolver, RequestData, RequestHelper,
     RequestOptions, ResponseType,
 };
@@ -25,9 +28,6 @@ use self::request::{JsonRpcRequest, JsonRpcResponse, unwrap_envelope};
 /// The handle shares the chain's [`JsonRpcClient`], so a later
 /// `set_endpoint_url` on the chain is reflected by API surfaces already
 /// handed out.
-///
-/// TS NOTE: the TS analog is the `ApiCaller` proxy configured for JSON-RPC in
-/// `chain_api.ts`; the generated Rust methods bind to this handle instead.
 #[derive(Clone)]
 pub struct JsonRpcCaller {
     client: Arc<JsonRpcClient>,
@@ -58,12 +58,6 @@ impl JsonRpcCaller {
     /// the chain's configured one), returning the decoded `result` together
     /// with the raw response data (timings, status, headers). Used by
     /// health-check probes.
-    ///
-    /// TS NOTE: the capability behind `withProxy` — the TS health checker
-    /// redirects a call through a request interceptor rewriting
-    /// `data.endpoint` and captures the timings through a response
-    /// interceptor; Rust takes the endpoint as an argument and returns the
-    /// timings instead.
     pub async fn call_at<P, R>(
         &self,
         endpoint: &str,
@@ -80,11 +74,6 @@ impl JsonRpcCaller {
     /// Sets (or clears with `None`) the endpoint override for the given
     /// namespace path; an empty path overrides every call of this
     /// transport.
-    ///
-    /// TS NOTE: `setEndpointUrlForPath`. Clearing diverges: TS pins the
-    /// *current* `defaultEndpointUrl` into the path, so a later default
-    /// change no longer reaches it; the Rust port removes the override, so
-    /// the path follows the live default again.
     pub fn set_endpoint_url_for_path(
         &self,
         path: &[&str],
@@ -104,10 +93,6 @@ impl JsonRpcCaller {
 /// Represents one JSON-RPC method as emitted by
 /// [`#[hive_api]`](crate::hive_api): the wire method name and the logical
 /// path of the method within the API surface.
-///
-/// TS NOTE: the JSON-RPC counterpart of [`crate::RestCallDescriptor`] — the
-/// static analog of the path the TS proxy assembles at property-access time
-/// (`paths` and the `"<ns>.<method>"` string built from them).
 #[derive(Debug, Clone, Copy)]
 pub struct JsonRpcCallDescriptor {
     /// Wire method name, e.g. `"block_api.get_block"`.
@@ -247,7 +232,7 @@ impl JsonRpcClient {
 mod tests {
     use serde_json::{Value, json};
 
-    use super::super::util::test_support::{
+    use super::super::transport::test_support::{
         header_value, spawn_capture_server,
     };
     use super::*;
@@ -261,9 +246,6 @@ mod tests {
         namespace_path: &["test_api", "ping"],
     };
 
-    // TS NOTE: the standard-API case of
-    // `ts/wasm/__tests__/detailed/wax_api_caller_header.ts` — the chain-level
-    // tag must reach regular JSON-RPC calls, like it reaches REST calls.
     #[tokio::test]
     async fn call_sets_wax_api_caller_header() {
         let (endpoint, captured) = spawn_capture_server(
@@ -351,10 +333,6 @@ mod tests {
         assert_eq!(*kinds.lock().unwrap(), vec![ApiCallerKind::JsonRpc; 2]);
     }
 
-    // TS NOTE: the health-checker seam for JSON-RPC probes — `withProxy`'s
-    // endpoint rewrite and timings capture become an explicit argument and a
-    // returned value. The client's own endpoint is unroutable, so `call_at`
-    // must hit the given one.
     #[tokio::test]
     async fn call_at_posts_envelope_to_explicit_endpoint() {
         let (endpoint, captured) = spawn_capture_server(
@@ -394,7 +372,7 @@ mod tests {
 
     // Probe failures must surface through the request-layer taxonomy
     // ([`RequestError`]) — the health checker classifies them into
-    // [`crate::ErrorReason`]s.
+    // [`crate::healthchecker::ErrorReason`]s.
     #[tokio::test]
     async fn call_at_reports_transport_failures_as_request_errors() {
         let error = client("http://127.0.0.1:1")

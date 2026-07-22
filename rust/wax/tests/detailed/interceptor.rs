@@ -17,13 +17,12 @@ use std::thread;
 
 use serde::{Deserialize, Serialize};
 
-use wax::{
-    ApiCallerKind, HiveChainOptions, capture, create_hive_chain, hive_api,
-};
+use wax::interceptor::ApiCallerKind;
+use wax::{HiveChainOptions, capture, create_hive_chain, hive_api};
 
 /// Serves a single request with a canned 200 JSON body, returning the
 /// server URL and a receiver yielding the raw captured request (the
-/// integration-test twin of `src/chain/util/test_support.rs`).
+/// integration-test twin of `src/chain/transport/test_support.rs`).
 fn spawn_capture_server(
     body: &'static str,
 ) -> (String, mpsc::Receiver<String>) {

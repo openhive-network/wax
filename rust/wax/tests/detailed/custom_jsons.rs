@@ -10,10 +10,10 @@
 use serde_json::json;
 
 use wax::Transaction;
-use wax::hive_apps_operations::community::{
+use wax::hive_apps_operations::{
     AvailableCommunityRoles, CommunityOperation, CommunityProps,
 };
-use wax::hive_apps_operations::follow::{FollowBlogAction, FollowOperation};
+use wax::hive_apps_operations::{FollowBlogAction, FollowOperation};
 use wax::hive_apps_operations::{HiveAppsOperation, ResourceCreditsOperation};
 use wax::proto::{self, operation::Value as OperationValue};
 

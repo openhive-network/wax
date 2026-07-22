@@ -1,11 +1,8 @@
 //! Per-account manabar argument assembly for the online manabar accessors.
-//!
-//! TS NOTE: ports `getManabarDataArguments` and its `EManabarType`-driven
-//! account/RC selection from `ts/wasm/lib/detailed/chain_api.ts`.
 
 use crate::WaxError;
-use crate::models::basic::HiveDateTime;
-use crate::models::enums::EManabarType;
+use crate::models::hive_date_time::HiveDateTime;
+use crate::models::manabar_data::ManabarType;
 
 use crate::chain::api::{
     ApiManabar, DefaultHiveApi, FindAccountsRequest, FindRcAccountsRequest,
@@ -13,8 +10,6 @@ use crate::chain::api::{
 };
 use crate::chain::error::WaxChainError;
 
-/// TS NOTE: `ONE_HUNDRED_PERCENT` (`base_api.ts`) — 100% in Hive basis
-/// points, used to scale an account's vote power to the downvote pool share.
 const ONE_HUNDRED_PERCENT: i64 = 10_000;
 
 /// Represents the inputs of the offline manabar calculators
@@ -33,7 +28,7 @@ pub(crate) struct ManabarArguments {
 pub(crate) async fn manabar_arguments(
     api: &DefaultHiveApi,
     account: &str,
-    manabar_type: EManabarType,
+    manabar_type: ManabarType,
 ) -> Result<ManabarArguments, WaxChainError> {
     let properties = api
         .database_api
@@ -41,8 +36,8 @@ pub(crate) async fn manabar_arguments(
         .await?;
 
     let (manabar, max_mana) = match manabar_type {
-        EManabarType::Rc => rc_manabar(api, account).await?,
-        EManabarType::Upvote | EManabarType::Downvote => {
+        ManabarType::Rc => rc_manabar(api, account).await?,
+        ManabarType::Upvote | ManabarType::Downvote => {
             vote_manabar(
                 api,
                 account,
@@ -83,11 +78,11 @@ async fn rc_manabar(
 
 /// Fetches the upvote or downvote manabar of `account`, with the maximum
 /// derived from the account's vote power (scaled to the downvote pool share
-/// for [`EManabarType::Downvote`]).
+/// for [`ManabarType::Downvote`]).
 async fn vote_manabar(
     api: &DefaultHiveApi,
     account: &str,
-    manabar_type: EManabarType,
+    manabar_type: ManabarType,
     downvote_pool_percent: u16,
 ) -> Result<(ApiManabar, i64), WaxChainError> {
     let response = api
@@ -113,11 +108,8 @@ async fn vote_manabar(
         })?;
 
     match manabar_type {
-        EManabarType::Upvote => Ok((api_account.voting_manabar, vote_power)),
+        ManabarType::Upvote => Ok((api_account.voting_manabar, vote_power)),
         _ => {
-            // TS NOTE: the branch mirrors TS — dividing first keeps huge vote
-            // powers in range (TS relies on BigInt's unbounded range, Rust on
-            // `i64` never being pushed past `i64::MAX / ONE_HUNDRED_PERCENT`).
             let downvote_pool_percent = i64::from(downvote_pool_percent);
             let max_mana =
                 if vote_power / ONE_HUNDRED_PERCENT > ONE_HUNDRED_PERCENT {

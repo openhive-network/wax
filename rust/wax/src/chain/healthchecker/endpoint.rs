@@ -1,13 +1,5 @@
 //! A single health-checked endpoint group: the public [`HiveEndpoint`]
 //! handle and its probe internals.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/healthchecker/endpoint.ts`. TS
-//! splits the public surface into the `IHiveEndpoint` interface and hides the
-//! probe internals in the `HiveEndpoint` class; in Rust the internals live in
-//! [`EndpointCore`] and the public surface is the [`HiveEndpoint`] handle
-//! the checker hands out. TS also holds a `checker` back-reference purely to
-//! emit events while probing; [`EndpointCore::perform_check`] returns them
-//! as a [`CheckOutcome`] instead, so no back-reference exists.
 
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
@@ -17,21 +9,16 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use futures_util::future::join_all;
 
 use crate::chain::error::WaxChainError;
-use crate::chain::util::DetailedResponseData;
+use crate::chain::transport::DetailedResponseData;
 
 use super::checker::HealthChecker;
-use super::errors::{
+use super::error::{
     ChainApiType, EndpointInfo, HealthCheckerError, ProbeFailure, RequestError,
     ValidatorFailedError,
 };
 
 /// Represents a registered endpoint group: a cheap-clone handle to inspect
 /// and adjust the node URLs it checks.
-///
-/// TS NOTE: `IHiveEndpoint` — TS hands out the live `HiveEndpoint` class,
-/// whose URL removal reaches the checker through the internal 'clearunused'
-/// event; the Rust handle pairs the shared group core with its checker to do
-/// the same directly.
 #[derive(Clone)]
 pub struct HiveEndpoint {
     checker: HealthChecker,
@@ -79,9 +66,6 @@ impl HiveEndpoint {
     pub fn add_endpoint_url(&self, endpoint_url: impl Into<String>) {
         self.core.add_endpoint_url(endpoint_url.into());
 
-        // TS NOTE: TS leaves the cached-scored-list limit stale until the
-        // next register/unregister; Rust keeps the invariant on every URL
-        // set change.
         self.checker.recalculate_stats_limit();
     }
 
@@ -123,10 +107,6 @@ struct EndpointState {
 
 /// Represents a registered probe: calls one API method against the given
 /// node URL, returning the raw response data (with its timings) on success.
-///
-/// TS NOTE: the `(apiUrl: string) => Promise<IDetailedResponseData<any>>`
-/// closure TS `register` builds around `withProxy`; the Rust checker builds
-/// it around `call_at`, erasing the user validator into it.
 pub(crate) type ProbeFn = Box<dyn Fn(String) -> ProbeFuture + Send + Sync>;
 
 /// Represents the boxed future a probe call resolves to.
@@ -224,12 +204,6 @@ impl EndpointCore {
     /// that answer and the failure reason for the ones that do not. Returns
     /// the recorded stats, the up/down transitions and the wrapped failures
     /// for the checker to emit.
-    ///
-    /// TS NOTE: `performCheck`; TS emits 'stats' / 'statechanged' / 'error'
-    /// through the checker as each probe settles, Rust applies the same
-    /// transitions once all probes settled and returns them instead. Like TS
-    /// (which snapshots the URL set before looping), URLs added or removed
-    /// while a round is in flight only affect the next round.
     pub(crate) async fn perform_check(&self) -> CheckOutcome {
         let urls: Vec<String> =
             self.state().endpoint_urls.iter().cloned().collect();
@@ -256,10 +230,6 @@ impl EndpointCore {
 
     /// Probes a single node URL, measuring the round-trip latency in
     /// milliseconds.
-    ///
-    /// TS NOTE: the probe half of `verifyUponUrl`; the bookkeeping half lives
-    /// in [`Self::record_up`] / [`Self::record_down`], applied after the
-    /// concurrent probes settle.
     async fn verify_upon_url(
         &self,
         endpoint_url: String,
@@ -313,10 +283,6 @@ impl EndpointCore {
             outcome.state_changes.push(data.clone());
         }
 
-        // TS NOTE: TS builds this error inside the `register` closure and
-        // emits 'validationerror' right away; the Rust closure only returns
-        // the reason and the response, and the rich error is built here,
-        // where the live endpoint identity is known.
         if let ProbeFailure::Validation { reason, response } = &failure {
             outcome.validation_errors.push(ValidatorFailedError {
                 failed_reason: reason.clone(),
@@ -352,9 +318,6 @@ impl EndpointCore {
 }
 
 /// Converts a probe failure into the reason its URL is marked down with.
-///
-/// TS NOTE: the `instanceof` cascade of the `verifyUponUrl` catch block
-/// (`endpoint.ts` lines 146-155).
 fn classify_reason(failure: &ProbeFailure) -> ErrorReason {
     match failure {
         ProbeFailure::Validation { .. } => ErrorReason::ValidationError,
@@ -373,32 +336,16 @@ fn classify_reason(failure: &ProbeFailure) -> ErrorReason {
 
 /// Represents everything one [`EndpointCore::perform_check`] round produced:
 /// the per-URL probe results, the up/down transitions and the failures.
-///
-/// TS NOTE: TS pushes these through the `HealthChecker` event emitter
-/// ('stats', 'statechanged', 'error' and 'validationerror') as each probe
-/// settles; the Rust endpoint returns them and the checker does the emitting.
 #[derive(Debug, Default)]
 pub(crate) struct CheckOutcome {
     pub stats: Vec<HiveEndpointData>,
     /// The URLs that switched buckets, with their new state.
-    ///
-    /// TS NOTE: `INewUpDownEvent` — its `endpointUrl` / `up` fields duplicate
-    /// `data`, and its `paths` / `apiCallerId` only serve 'statechanged'
-    /// listeners, which Rust does not expose (the checker filters
-    /// subscriptions by URL); what remains is the plain data entry. The
-    /// dead-code TS `INewBestEvent` is not ported either — the TS 'newbest'
-    /// event actually emits a `TScoredEndpoint`
-    /// ([`super::ScoredEndpoint`]).
     pub state_changes: Vec<HiveEndpointData>,
     pub errors: Vec<HealthCheckerError>,
     pub validation_errors: Vec<ValidatorFailedError>,
 }
 
 /// Represents the latest probe result for a single node URL.
-///
-/// TS NOTE: `THiveEndpointData` (`IHiveEndpointDataUp | IHiveEndpointDataDown`).
-/// The `IHiveEndpointDataBase.endpointUrl` field both TS shapes carry is
-/// hoisted here; the `up` discriminant collapses into [`ProbeState`].
 #[derive(Debug, Clone)]
 pub struct HiveEndpointData {
     pub url: String,
@@ -406,9 +353,6 @@ pub struct HiveEndpointData {
 }
 
 /// Represents the up/down half of a probe result.
-///
-/// TS NOTE: the varying fields of `IHiveEndpointDataUp` /
-/// `IHiveEndpointDataDown`.
 #[derive(Debug, Clone)]
 pub enum ProbeState {
     Up {
@@ -421,10 +365,6 @@ pub enum ProbeState {
 }
 
 /// Represents why a node URL was marked as down.
-///
-/// TS NOTE: `TErrorReason`; its `userabort` value maps the browser-only
-/// abort signal behind the unported `WaxRequestAbortedByUser` (see
-/// [`RequestError`]), so it is not ported either.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorReason {
     Timeout,
@@ -440,7 +380,7 @@ mod tests {
     use std::task::{Context, Poll, Waker};
     use std::time::{Duration, Instant};
 
-    use crate::chain::util::RequestOptions;
+    use crate::chain::transport::RequestOptions;
 
     use super::*;
 
@@ -635,8 +575,6 @@ mod tests {
         ));
     }
 
-    // TS NOTE: the `instanceof` cascade of `verifyUponUrl` — each failure
-    // kind must map onto its `TErrorReason`.
     #[test]
     fn classifies_failure_reasons() {
         let cases: Vec<(ProbeFailure, ErrorReason)> = vec![

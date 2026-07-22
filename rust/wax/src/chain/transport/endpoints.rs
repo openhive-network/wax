@@ -6,15 +6,7 @@ use std::sync::Mutex;
 /// Represents the endpoint configuration of one transport: the caller-wide
 /// default URL plus per-namespace-path overrides, the deepest matching
 /// prefix winning.
-///
-/// TS NOTE: `ApiCaller.defaultEndpointUrl` plus the `endpointUrl` keys TS
-/// scatters across the `localTypes` tree (`getEndpointUrlForRestApi` /
-/// `setEndpointUrlForPath` serve both transports there too); the Rust port
-/// keeps a flat prefix list instead.
 pub(crate) struct EndpointResolver {
-    /// TS NOTE: `defaultEndpointUrl`. Mutable behind a shared reference so
-    /// an endpoint change on the chain is reflected by API handles already
-    /// handed out, like the live TS proxy.
     default: Mutex<String>,
     overrides: Mutex<Vec<EndpointOverride>>,
 }
@@ -51,11 +43,6 @@ impl EndpointResolver {
 
     /// Sets (or clears with `None`) the endpoint override for the given
     /// namespace path; an empty path overrides every call of the transport.
-    ///
-    /// TS NOTE: `setEndpointUrlForPath`. Clearing diverges: TS pins the
-    /// *current* `defaultEndpointUrl` into the path, so a later default
-    /// change no longer reaches it; the Rust port removes the override, so
-    /// the path follows the live default again.
     pub(crate) fn set_url_for_path(&self, path: &[&str], url: Option<String>) {
         let mut overrides =
             self.overrides.lock().expect("overrides mutex poisoned");
@@ -72,10 +59,6 @@ impl EndpointResolver {
 
     /// Resolves the endpoint for a call: the deepest override whose path
     /// prefixes the namespace path, or the caller-wide default.
-    ///
-    /// TS NOTE: `getEndpointUrlForRestApi` — TS walks the `localTypes` tree
-    /// keeping the deepest `endpointUrl` seen on the way; the flat
-    /// equivalent is the longest matching prefix.
     pub(crate) fn resolve(&self, namespace_path: &[&str]) -> String {
         let overrides =
             self.overrides.lock().expect("overrides mutex poisoned");
@@ -100,10 +83,6 @@ mod tests {
         EndpointResolver::new("http://default".into())
     }
 
-    // TS NOTE: mirrors the per-path `endpointUrl` semantics asserted in
-    // `hive_chain_rest_api.ts` ('extended.restApi.a.endpointUrl = url1;
-    // extended.restApi.a.b.endpointUrl = url2') — the deepest override wins
-    // and siblings fall back to the shallower one.
     #[test]
     fn resolves_longest_matching_override() {
         let resolver = resolver();
@@ -116,8 +95,6 @@ mod tests {
         assert_eq!(resolver.resolve(&["z"]), "http://default");
     }
 
-    // TS NOTE: `chain.restApi.endpointUrl = url` — a root-level override
-    // applies to every namespace of the transport.
     #[test]
     fn root_override_applies_to_every_path() {
         let resolver = resolver();

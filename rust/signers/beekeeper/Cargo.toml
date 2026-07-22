@@ -18,7 +18,7 @@ name = "wax_signers_beekeeper"
 # name-reservation placeholders instead of the local crates. Extracted from
 # the beekeeper project's GitLab generic package registry by
 # ../../fetch_beekeeper.sh (run it once before any cargo command).
-hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper" }
+hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper", version = "1.28.6-rc14-20260722131040" }
 # The exact requirement must always equal ../../wax's version, or cargo
 # rejects the path crate as a non-matching candidate. generate_version.sh
 # (cargo set-version --workspace) rewrites it in lockstep, like the

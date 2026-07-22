@@ -1,6 +1,4 @@
 //! DTOs of the `account_by_key_api` namespace.
-//!
-//! TS NOTE: ported from `ts/wasm/lib/detailed/api/account_by_key_api/`.
 
 use serde::{Deserialize, Serialize};
 

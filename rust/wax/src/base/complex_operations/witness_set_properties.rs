@@ -23,9 +23,6 @@ pub struct HbdExchangeRate {
 /// time (HIVE for `account_creation_fee`, HBD/HIVE for `hbd_exchange_rate`)
 /// so the wrong symbol surfaces as a `WaxError` rather than a wire-time
 /// rejection by hived.
-///
-/// TS NOTE: mirrors `complex_operations/witness_set_properties.ts`.
-/// Python NOTE: mirrors `complex_operations/witness_set_properties.py`.
 #[derive(Debug, Clone, Default)]
 pub struct WitnessSetPropertiesOperation {
     pub owner: AccountName,

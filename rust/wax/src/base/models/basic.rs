@@ -1,6 +1,6 @@
 //! Basic type aliases and small value types used throughout the API.
 
-pub use crate::base::internal::models::hive_date_time::HiveDateTime;
+use crate::base::models::hive_date_time::HiveDateTime;
 
 /// Represents a Hive account name.
 pub type AccountName = String;

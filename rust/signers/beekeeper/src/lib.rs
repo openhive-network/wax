@@ -1,7 +1,5 @@
-//! Beekeeper-backed [`SignatureProvider`] for the `wax` crate.
-//!
-//! TS NOTE: the Rust counterpart of the TS `signers-*` extension packages —
-//! a pluggable signing provider wired into wax's transaction signing.
+//! Beekeeper-backed [`SignatureProvider`] for the `wax` crate: a pluggable
+//! signing provider wired into wax's transaction signing.
 
 use std::cell::RefCell;
 use std::fmt;
@@ -9,7 +7,7 @@ use std::fmt;
 use beekeeper::wallet::UnlockedWallet;
 use thiserror::Error;
 use wax::api::FindAccountsRequest;
-use wax::models::basic::{AccountName, PublicKey};
+use wax::models::{AccountName, PublicKey};
 use wax::result::CryptoMemo;
 use wax::{
     HiveChain, SignatureProvider, WaxChainError, WaxError, WaxFoundation,
@@ -17,21 +15,17 @@ use wax::{
 };
 
 /// Bridges a Beekeeper [`UnlockedWallet`] to wax's [`SignatureProvider`]
-/// trait.
-///
-/// TS NOTE: TS builds an `OnlineSigner` via `createSigner(base, wallet, key)`
-/// which both signs and encrypts through the same wallet handle. This adapter
-/// mirrors that role for the Rust side.
+/// trait, signing and encrypting through the same wallet handle.
 ///
 /// Beekeeper's `sign_digest` / `encrypt_data` / `decrypt_data` take `&mut
 /// self`, so the wallet is wrapped in a `RefCell` to satisfy the
 /// `&self`-taking `SignatureProvider` methods.
 ///
-/// Like TS's `createSigner(base, wallet, key)`, encryption is a two-step
-/// process: the beekeeper wallet produces the inner ciphertext, then the wax
-/// foundation's `crypto_memo` codec wraps it (embedding the from/to keys and
-/// the `#` prefix) into the final memo payload — and the reverse on decrypt.
-/// crypto-memo packing is stateless, so a default foundation suffices.
+/// Encryption is a two-step process: the beekeeper wallet produces the inner
+/// ciphertext, then the wax foundation's `crypto_memo` codec wraps it
+/// (embedding the from/to keys and the `#` prefix) into the final memo
+/// payload — and the reverse on decrypt. crypto-memo packing is stateless,
+/// so a default foundation suffices.
 pub struct BeekeeperSignatureProvider {
     wallet: RefCell<UnlockedWallet>,
     base: WaxFoundation,
@@ -100,12 +94,6 @@ impl SignatureProvider for BeekeeperSignatureProvider {
 ///
 /// For the key-authority roles the first `key_auths` entry is used; for
 /// [`Role::Memo`] the account's `memo_key`.
-///
-/// TS NOTE: mirrors the `BeekeeperProvider.for(chain, wallet, account,
-/// role)` overload. TS stores the resolved key inside the provider because
-/// its signing entry point is transaction-level; Rust's
-/// [`SignatureProvider::sign_digest`] receives the public key per call, so
-/// the key is returned to the caller instead.
 pub async fn resolve_public_key(
     chain: &HiveChain,
     account: &str,
@@ -131,8 +119,8 @@ pub async fn resolve_public_key(
         Role::Active => found.active,
         Role::Posting => found.posting,
         Role::Memo => {
-            // TS NOTE: TS only checks the resolved key for truthiness, so an
-            // empty `memo_key` rejects like a missing authority key.
+            // NOTE: an empty `memo_key` counts as missing (guarantee ported
+            // from TS, which only checks the resolved key for truthiness).
             return if found.memo_key.is_empty() {
                 Err(BeekeeperProviderError::MissingRoleKey {
                     account: account.to_string(),
@@ -159,9 +147,6 @@ pub async fn resolve_public_key(
 }
 
 /// Represents a failure of [`resolve_public_key`].
-///
-/// TS NOTE: `WaxBeekeeperProviderError`, plus a variant carrying the
-/// underlying chain-call failure (TS lets those propagate untyped).
 #[derive(Debug, Error)]
 pub enum BeekeeperProviderError {
     #[error("Account {0} not found")]
@@ -185,9 +170,8 @@ impl From<WaxChainError> for BeekeeperProviderError {
 /// Represents the account authority whose key is resolved by
 /// [`resolve_public_key`].
 ///
-/// TS NOTE: `TRole` (`"owner" | "active" | "posting" | "memo"`). wax's
-/// `HiveRole` spans only the three key authorities, while the signer also
-/// accepts the memo key — hence a local enum.
+/// wax's `HiveRole` spans only the three key authorities, while the signer
+/// also accepts the memo key — hence a local enum.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Role {
     Owner,

@@ -1,7 +1,7 @@
-pub mod community;
-pub mod factory;
-pub mod follow;
-pub mod rc;
+pub(crate) mod community;
+pub(crate) mod factory;
+pub(crate) mod follow;
+pub(crate) mod rc;
 
 pub use community::{
     AvailableCommunityRoles, CommunityOperation, CommunityOperationActions,

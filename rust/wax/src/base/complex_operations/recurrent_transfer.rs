@@ -48,9 +48,6 @@ fn build_extensions(
 
 /// Represents the builder for the define / update flavour of a recurrent
 /// transfer.
-///
-/// TS NOTE: mirrors `DefineRecurrentTransferOperation`
-/// (`complex_operations/recurrent_transfer.ts`).
 #[derive(Debug, Clone, Default)]
 pub struct DefineRecurrentTransferOperation {
     pub from_account: AccountName,
@@ -93,8 +90,6 @@ impl ComplexOperation for DefineRecurrentTransferOperation {
 
 /// Represents the builder for the removal flavour of a recurrent transfer (a
 /// zero-amount HIVE transfer).
-///
-/// TS NOTE: mirrors `RecurrentTransferRemovalOperation`.
 #[derive(Debug, Clone, Default)]
 pub struct RecurrentTransferRemovalOperation {
     pub from_account: AccountName,

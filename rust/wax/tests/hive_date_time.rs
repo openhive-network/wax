@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use chrono::{TimeZone, Utc};
-use wax::models::basic::{ChainReferenceData, HiveDateTime};
+use wax::models::{ChainReferenceData, HiveDateTime};
 
 const CANONICAL: &str = "2026-05-15T12:34:56";
 

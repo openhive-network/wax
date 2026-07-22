@@ -19,12 +19,13 @@ use serde_json::{Value, json};
 use wax::api::{
     BroadcastTransactionRequest, FindAccountsRequest, FindAccountsResponse,
 };
-use wax::proto::{self, operation::Value as OperationValue};
-use wax::{
+use wax::authority_trace::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, AuthorityPathTraceData,
-    HiveChain, LegacyVoteOperation, ProcessedEntry, WaxChainError,
-    create_wax_foundation, hive_api,
+    ProcessedEntry,
 };
+use wax::complex_operations::LegacyVoteOperation;
+use wax::proto::{self, operation::Value as OperationValue};
+use wax::{HiveChain, WaxChainError, create_wax_foundation, hive_api};
 
 use crate::common::{
     api_account_json_roles, authority_json, chain_at, dgpo_result, nai,

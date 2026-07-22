@@ -23,9 +23,6 @@ use crate::models::basic::ChainReferenceData;
 
 /// Used to bound the reuse of cached TaPoS reference data between
 /// [`create_transaction`](HiveChain::create_transaction) calls.
-///
-/// TS NOTE: the `taposLiveness` argument TS `createTransaction` passes to
-/// `acquireChainReferenceData` — the same 3 s.
 const TAPOS_LIVENESS: Duration = Duration::from_secs(3);
 
 /// Represents the online (chain-bound) API on top of [`WaxFoundation`]:
@@ -37,11 +34,6 @@ const TAPOS_LIVENESS: Duration = Duration::from_secs(3);
 ///
 /// Composes a [`WaxFoundation`] for offline operations and owns the
 /// JSON-RPC / REST transports used for online calls.
-///
-/// TS NOTE: TypeScript `IHiveChainInterface` extends `IWaxBaseInterface` and
-/// exposes the same surface — Rust mirrors that via
-/// `Deref<Target = WaxFoundation>`, so the offline methods are callable on a
-/// chain and `&chain` coerces wherever a `&WaxFoundation` is expected.
 pub struct HiveChain {
     foundation: WaxFoundation,
     rpc: Arc<JsonRpcClient>,
@@ -143,14 +135,6 @@ impl HiveChain {
 
     /// Returns a snapshot of the chain's current configuration: the chain id,
     /// the live endpoints and the construction-time transport settings.
-    ///
-    /// TS NOTE: with [`create_hive_chain`](crate::create_hive_chain) and
-    /// struct-update syntax this covers `IHiveChainInterface.extendConfig` —
-    /// deriving a chain with selectively overridden options:
-    /// `create_hive_chain(HiveChainOptions { api_timeout: 5_000,
-    /// ..chain.options() })`. TS additionally links the derived chain back to
-    /// its originator (endpoint changes propagate up); the Rust copies are
-    /// independent.
     pub fn options(&self) -> HiveChainOptions {
         HiveChainOptions {
             chain_id: self.foundation.chain_id().to_string(),
@@ -164,9 +148,6 @@ impl HiveChain {
     }
 
     /// Returns the default typed API surface bound to this chain.
-    ///
-    /// TS NOTE: `chain.api` — the default JSON-RPC namespaces every chain
-    /// exposes without `extend`.
     pub fn api(&self) -> DefaultHiveApi {
         DefaultHiveApi::bind(self.json_rpc_caller())
     }
@@ -177,8 +158,6 @@ impl HiveChain {
     /// `get_dynamic_global_properties` call. The cache lock is held across
     /// the fetch, so concurrent callers wait for the one in flight instead
     /// of fetching again.
-    ///
-    /// TS NOTE: `acquireChainReferenceData(taposLiveness)`.
     pub(crate) async fn acquire_chain_reference_data(
         &self,
     ) -> Result<ChainReferenceData, WaxChainError> {
@@ -232,10 +211,10 @@ fn validate_endpoint(url: &str) -> Result<(), WaxChainError> {
 
 #[cfg(test)]
 mod tests {
-    use super::super::util::test_support::spawn_capture_server;
+    use super::super::transport::test_support::spawn_capture_server;
     use super::*;
     use crate::create_hive_chain;
-    use crate::models::basic::HiveDateTime;
+    use crate::models::hive_date_time::HiveDateTime;
 
     // A real `database_api.get_dynamic_global_properties` payload in its
     // JSON-RPC envelope (see `chain/api/tests.rs`).
@@ -285,10 +264,6 @@ mod tests {
         "max_open_recurrent_transfers": 255
     }}"#;
 
-    // TS NOTE: mirrors `acquireChainReferenceData` — a second call within
-    // the liveness window reuses the cached reference data. The capture
-    // server is single-shot, so a second fetch would fail with a connection
-    // error instead of succeeding.
     #[tokio::test]
     async fn chain_reference_data_is_cached_between_calls() {
         let (endpoint, _captured) = spawn_capture_server(DGP_RESPONSE);

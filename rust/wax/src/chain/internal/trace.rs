@@ -1,8 +1,5 @@
 //! Conversion of the flattened FFI authority-verification trace into the
 //! public [`AuthorityTrace`] model.
-//!
-//! TS NOTE: ports `convertAuthorityTrace` from
-//! `ts/wasm/lib/detailed/verify_authority_trace.ts`.
 
 use std::collections::{HashMap, HashSet};
 
@@ -50,9 +47,6 @@ pub(crate) fn convert_authority_trace(
         .map(|&index| build_path_entry(&trace.nodes, index))
         .collect();
 
-    // TS NOTE: the overall status is summarised from the last root entry
-    // (`getAuthorityTraceLastRoot`), not from the C++ `verification_status`
-    // bitfield.
     let verification_status = trace
         .root_indices
         .last()
@@ -82,8 +76,6 @@ fn to_processing_status(
             has_account_authority_cycle: node.flags & CYCLE_DETECTED != 0,
             has_insufficient_weight: node.flags & INSUFFICIENT_WEIGHT != 0,
             has_matching_public_key: node.flags & MATCHING_KEY != 0,
-            // TS NOTE: declared on the TS interface but never populated by
-            // the TS converter either.
             unrelated_account_matched_to_public_key: None,
         };
     }

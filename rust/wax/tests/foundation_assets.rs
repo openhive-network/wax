@@ -4,7 +4,7 @@
 //   - `get_asset` (mirrors TS `getAsset`, backed by C++ `cpp_asset_symbol` and
 //     `cpp_asset_value`)
 
-use wax::models::asset::{AssetName, NaiAsset, NaiAssetConvertible};
+use wax::models::{AssetName, NaiAsset, NaiAssetConvertible};
 use wax::result::HiveAssetData;
 use wax::{WaxFoundation, create_wax_foundation};
 

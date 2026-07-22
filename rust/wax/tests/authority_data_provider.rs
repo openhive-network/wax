@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use wax::core::proto;
-use wax::models::authority::{AccountAuthorityInfo, Authorities};
-use wax::models::basic::HiveDateTime;
+use wax::models::HiveDateTime;
+use wax::models::{AccountAuthorityInfo, Authorities};
 use wax::{AuthorityDataProvider, WaxError};
 
 fn placeholder_timestamp() -> HiveDateTime {

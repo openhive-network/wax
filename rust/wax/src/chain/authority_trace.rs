@@ -1,11 +1,10 @@
+//! Authority-trace data: the result of walking the on-chain authority
+//! graph for a signed transaction.
+
 use crate::models::basic::{AccountName, PublicKey, Signature};
 
 /// Represents data produced by walking the on-chain authority graph for a
 /// signed transaction.
-///
-/// TS NOTE: TypeScript `IVerifyAuthorityTrace` also exposes `rootEntry` and
-/// `finalAuthorityPath` (the array form); both are marked `@deprecated` and
-/// are intentionally omitted here.
 #[derive(Debug, Clone, Default)]
 pub struct AuthorityTrace {
     /// One entry per required authority — pairs the chosen path with the
@@ -59,9 +58,6 @@ pub struct AuthorityTraceSignatureInfo {
 /// Represents the outcome of processing a single authority path entry —
 /// either accepted (with extra context) or rejected (with a breakdown of
 /// failure causes).
-///
-/// TS NOTE: TypeScript discriminates on `entryAccepted: true | false`; Rust
-/// uses a native sum type.
 #[derive(Debug, Clone)]
 pub enum AuthorityEntryProcessingStatus {
     Accepted {
@@ -91,9 +87,6 @@ pub enum AuthorityEntryProcessingStatus {
 /// Represents the entry being processed at a single step of authority
 /// resolution: either an account name (which redirects to another authority)
 /// or a public key (a leaf).
-///
-/// TS NOTE: TypeScript uses a bare union `TAccountName | TPublicKey` — both
-/// are `string` there. Rust makes the variant explicit.
 #[derive(Debug, Clone)]
 pub enum ProcessedEntry {
     Account(AccountName),
@@ -102,8 +95,4 @@ pub enum ProcessedEntry {
 
 /// Represents the role (posting / active / owner / ...) tied to an authority
 /// entry.
-///
-/// TS NOTE: TS aliases this as `TAuthorityRole = string` with a `TODO` to
-/// unify with the role enum used by account-authority-update meta ops; the
-/// Rust alias mirrors that until the unified enum exists.
 pub type AuthorityRole = String;
