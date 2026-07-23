@@ -27,6 +27,17 @@ BEEKEEPER_PROJECT_API_URL="${BEEKEEPER_PROJECT_API_URL:-https://gitlab.syncad.co
 
 CRATE_NAME="hiveio-beekeeper"
 DEST_DIR="${SCRIPT_DIR}/crates/${CRATE_NAME}"
+SIGNER_MANIFEST="${SCRIPT_DIR}/signers/beekeeper/Cargo.toml"
+
+# Pins the beekeeper signer's dependency requirement to the version actually
+# fetched. cargo set-version cannot: beekeeper is not a workspace member. An
+# exact `=` requirement is used so the path crate always matches, even across
+# the prerelease boundaries a caret requirement would reject.
+sync_signer_requirement() {
+  sed -i -E \
+    "s|^(hiveio-beekeeper = \{ path = \"[^\"]*\", version = \")[^\"]*(\" \})|\1=${BEEKEEPER_VERSION}\2|" \
+    "${SIGNER_MANIFEST}"
+}
 
 installed_version() {
   grep -m1 '^version' "${DEST_DIR}/Cargo.toml" 2>/dev/null \
@@ -49,6 +60,10 @@ if [ -z "${BEEKEEPER_VERSION:-}" ]; then
   if ! BEEKEEPER_VERSION="$(latest_version)" || [ -z "${BEEKEEPER_VERSION}" ]; then
     if crate_installed; then
       echo "warning: could not query ${BEEKEEPER_PROJECT_API_URL} for the latest ${CRATE_NAME}; keeping installed $(installed_version)" >&2
+      # Keep the signer requirement matched to the crate on disk even when the
+      # registry is unreachable; the sync below is skipped by this early exit.
+      BEEKEEPER_VERSION="$(installed_version)"
+      sync_signer_requirement
       exit 0
     fi
     echo "Failed to resolve the latest ${CRATE_NAME} version from ${BEEKEEPER_PROJECT_API_URL}" >&2
@@ -57,6 +72,11 @@ if [ -z "${BEEKEEPER_VERSION:-}" ]; then
   fi
   echo "Latest published ${CRATE_NAME} version: ${BEEKEEPER_VERSION}"
 fi
+
+# Runs on every path, including the "already present" early exit below: the
+# manifest requirement must track the resolved version regardless of whether a
+# download was needed this time.
+sync_signer_requirement
 
 CRATE_FILE="${CRATE_NAME}-${BEEKEEPER_VERSION}.crate"
 CRATE_URL="${BEEKEEPER_PROJECT_API_URL}/packages/generic/${CRATE_NAME}/${BEEKEEPER_VERSION}/${CRATE_FILE}"

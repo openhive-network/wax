@@ -13,12 +13,19 @@ categories = ["cryptography::cryptocurrencies"]
 name = "wax_signers_beekeeper"
 
 [dependencies]
-# Path-only on purpose (same rationale as the hiveio-beekeeper dev-dependency
-# of hiveio-wax): version-only requirements resolve to the crates.io
-# name-reservation placeholders instead of the local crates. Extracted from
-# the beekeeper project's GitLab generic package registry by
-# ../../fetch_beekeeper.sh (run it once before any cargo command).
-hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper", version = "1.28.6-rc14-20260722131040" }
+# The path points at the crate ../../fetch_beekeeper.sh extracts from the
+# beekeeper project's GitLab generic package registry (run it once before any
+# cargo command). The version requirement exists only because `cargo package`
+# rejects a non-dev path dependency without one — hiveio-wax's beekeeper
+# dev-dependency stays path-only and is stripped from the published manifest,
+# but this is a regular dependency and must carry a version.
+#
+# cargo set-version leaves it alone (beekeeper is not a workspace member), so a
+# hand-pinned value drifts the moment beekeeper publishes a newer build than
+# fetch_beekeeper.sh installs, breaking resolution against the freshly fetched
+# path crate. fetch_beekeeper.sh therefore rewrites this to `=<fetched
+# version>` on every run — never edit the version by hand.
+hiveio-beekeeper = { path = "../../crates/hiveio-beekeeper", version = "=1.28.6-rc14-20260722131040" }
 # The exact requirement must always equal ../../wax's version, or cargo
 # rejects the path crate as a non-matching candidate. generate_version.sh
 # (cargo set-version --workspace) rewrites it in lockstep, like the
