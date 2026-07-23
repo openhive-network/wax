@@ -222,6 +222,41 @@ let api = chain.extend::<CondenserApi>();
 let count = api.get_account_count(vec![]).await?;
 ```
 
+A trait declares the endpoints of one namespace; a `#[hive_api]` struct
+declares the structure of a surface composed from such namespaces. Field
+names become the caller-side access path, and one field may be marked
+`#[hive_api(base)]` to flatten the default surface in through `Deref` — the
+analog of the TS `TDefaultHiveApi & YourApi` intersection, giving the same
+call shape as TS / Python (`api.<namespace>.<method>`):
+
+```rust
+use wax::prelude::*;
+
+/// Endpoints: one JSON-RPC namespace (`condenser_api`, from the trait name).
+#[hive_api]
+pub trait CondenserApi {
+    /// Returns the number of accounts on the chain.
+    async fn get_account_count(params: Vec<String>) -> u64;
+}
+
+/// Structure: the custom namespace plus the default surface.
+#[hive_api]
+pub struct MyApi {
+    pub condenser_api: CondenserApi,
+    #[hive_api(base)]
+    base: wax::DefaultHiveApi,
+}
+
+let chain = create_hive_chain(None)?;
+let api = chain.extend::<MyApi>();
+
+let count = api.condenser_api.get_account_count(vec![]).await?;
+let props = api
+    .database_api // default surface namespace, through `Deref` to `base`
+    .get_dynamic_global_properties(Default::default())
+    .await?;
+```
+
 With `#[hive_api(rest)]` the trait declares a REST surface for
 `chain.extend_rest()` instead; `{placeholders}` in the verb attribute's path
 template are substituted from the params at call time:
@@ -243,9 +278,8 @@ let api = chain.extend_rest::<HafahApi>();
 let block = api.get_block(GetBlockRequest { block_num: 5_000_000 }).await?;
 ```
 
-See the `#[hive_api]` docs (`wax::hive_api`) for composing namespaces into
-structs, the default surface (`chain.api()`), per-namespace endpoint overrides
-and health-checker probes.
+See the `#[hive_api]` docs (`wax::hive_api`) for the default surface
+(`chain.api()`), per-namespace endpoint overrides and health-checker probes.
 
 ### Intercept API requests and responses
 
