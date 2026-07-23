@@ -47,9 +47,9 @@ echo $NEW_VERSION
 
 cd "$SCRIPT_DIR"
 
-# Bump both workspace members (wax + its proc-macro companion wax_macros) in
-# lockstep: wax depends on hiveio-wax-macros with an exact `=` requirement,
-# and --workspace rewrites that requirement to the new version too.
+# Bump every workspace member in lockstep: wax depends on hiveio-wax-macros
+# and the beekeeper signer depends on hiveio-wax, both with exact `=`
+# requirements, and --workspace rewrites those requirements too.
 cargo set-version --workspace ${NEW_VERSION}
 
-grep '^version' wax/Cargo.toml wax_macros/Cargo.toml
+grep '^version' wax/Cargo.toml wax_macros/Cargo.toml signers/beekeeper/Cargo.toml

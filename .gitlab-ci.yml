@@ -248,7 +248,12 @@ build_rust:
       - ${CI_PROJECT_DIR}/rust/wax/lib
       - ${CI_PROJECT_DIR}/rust/wax/Cargo.toml
       - ${CI_PROJECT_DIR}/rust/crates
+      # Every manifest generate_version.sh rewrites must be listed here: the
+      # jobs consuming these artifacts overlay them onto a pristine clone, and
+      # a member left at the repo version breaks the exact-version
+      # requirements linking the workspace crates together.
       - ${CI_PROJECT_DIR}/rust/wax_macros/Cargo.toml
+      - ${CI_PROJECT_DIR}/rust/signers/beekeeper/Cargo.toml
   tags:
     - public-runner-docker
 
@@ -256,9 +261,11 @@ test_rust:
   stage: test_rust
   image: "${WAX_RUST_BUILDER_IMAGE}"
   needs:
-    # No artifacts needed: wax's build.rs regenerates the protobuf outputs
-    # (incl. the FileDescriptorSet) into OUT_DIR during the test build.
+    # Artifacts are required: the test build links the prelinked native bundle
+    # (rust/wax/lib) and the manifests carry the version generate_version.sh
+    # stamped, which the intra-workspace `=` requirements resolve against.
     - job: build_rust
+      artifacts: true
   variables:
     # wax's build.rs compiles C++ and .proto files from the hive submodule's
     # nested tree during the test build.
