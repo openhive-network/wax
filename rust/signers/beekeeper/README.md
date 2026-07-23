@@ -14,7 +14,7 @@ data.
 ```rust
 use beekeeper::{api::BeekeeperApi, options::BeekeeperOptions};
 use wax::prelude::*;
-use wax_signers_beekeeper::BeekeeperSignatureProvider;
+use wax_signers_beekeeper::prelude::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

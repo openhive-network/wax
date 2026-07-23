@@ -11,7 +11,9 @@ use serde_json::json;
 
 use wax::{HiveChain, HiveChainOptions, create_hive_chain};
 
-use wax_signers_beekeeper::{BeekeeperProviderError, Role, resolve_public_key};
+use wax_signers_beekeeper::{
+    BeekeeperProviderError, BeekeeperRole, resolve_public_key,
+};
 
 use crate::common::{
     OTHER_PUBLIC_KEY, api_account_json_roles, authority_json,
@@ -50,7 +52,7 @@ async fn resolves_the_requested_role_authority_key() {
         )])]);
     let chain = chain_for(endpoint);
 
-    let key = resolve_public_key(&chain, "alice", Role::Active)
+    let key = resolve_public_key(&chain, "alice", BeekeeperRole::Active)
         .await
         .unwrap();
 
@@ -73,7 +75,7 @@ async fn resolves_the_memo_key() {
         )])]);
     let chain = chain_for(endpoint);
 
-    let key = resolve_public_key(&chain, "alice", Role::Memo)
+    let key = resolve_public_key(&chain, "alice", BeekeeperRole::Memo)
         .await
         .unwrap();
 
@@ -86,7 +88,7 @@ async fn errors_on_unknown_account() {
         spawn_json_rpc_server(vec![find_accounts_result(vec![])]);
     let chain = chain_for(endpoint);
 
-    let error = resolve_public_key(&chain, "alice", Role::Active)
+    let error = resolve_public_key(&chain, "alice", BeekeeperRole::Active)
         .await
         .unwrap_err();
 
@@ -106,14 +108,14 @@ async fn errors_on_role_without_key_entries() {
         )])]);
     let chain = chain_for(endpoint);
 
-    let error = resolve_public_key(&chain, "alice", Role::Active)
+    let error = resolve_public_key(&chain, "alice", BeekeeperRole::Active)
         .await
         .unwrap_err();
 
     assert!(matches!(
         &error,
         BeekeeperProviderError::MissingRoleKey { account, role }
-            if account == "alice" && *role == Role::Active
+            if account == "alice" && *role == BeekeeperRole::Active
     ));
     assert_eq!(error.to_string(), "Account alice does not have active key");
 }

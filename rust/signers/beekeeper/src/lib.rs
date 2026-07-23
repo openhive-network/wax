@@ -14,6 +14,15 @@ use wax::{
     create_wax_foundation,
 };
 
+/// Single-import surface for the beekeeper signer:
+/// `use wax_signers_beekeeper::prelude::*;`.
+pub mod prelude {
+    pub use crate::{
+        BeekeeperProviderError, BeekeeperRole, BeekeeperSignatureProvider,
+        resolve_public_key,
+    };
+}
+
 /// Bridges a Beekeeper [`UnlockedWallet`] to wax's [`SignatureProvider`]
 /// trait, signing and encrypting through the same wallet handle.
 ///
@@ -93,11 +102,11 @@ impl SignatureProvider for BeekeeperSignatureProvider {
 /// [`BeekeeperSignatureProvider`].
 ///
 /// For the key-authority roles the first `key_auths` entry is used; for
-/// [`Role::Memo`] the account's `memo_key`.
+/// [`BeekeeperRole::Memo`] the account's `memo_key`.
 pub async fn resolve_public_key(
     chain: &HiveChain,
     account: &str,
-    role: Role,
+    role: BeekeeperRole,
 ) -> Result<PublicKey, BeekeeperProviderError> {
     let response = chain
         .api()
@@ -115,10 +124,10 @@ pub async fn resolve_public_key(
     };
 
     let authority = match role {
-        Role::Owner => found.owner,
-        Role::Active => found.active,
-        Role::Posting => found.posting,
-        Role::Memo => {
+        BeekeeperRole::Owner => found.owner,
+        BeekeeperRole::Active => found.active,
+        BeekeeperRole::Posting => found.posting,
+        BeekeeperRole::Memo => {
             // NOTE: an empty `memo_key` counts as missing (guarantee ported
             // from TS, which only checks the resolved key for truthiness).
             return if found.memo_key.is_empty() {
@@ -153,7 +162,10 @@ pub enum BeekeeperProviderError {
     AccountNotFound(AccountName),
 
     #[error("Account {account} does not have {role} key")]
-    MissingRoleKey { account: AccountName, role: Role },
+    MissingRoleKey {
+        account: AccountName,
+        role: BeekeeperRole,
+    },
 
     // Boxed: `WaxChainError` dwarfs the other variants (clippy
     // `large_enum_variant`).
@@ -173,14 +185,14 @@ impl From<WaxChainError> for BeekeeperProviderError {
 /// wax's `HiveRole` spans only the three key authorities, while the signer
 /// also accepts the memo key — hence a local enum.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Role {
+pub enum BeekeeperRole {
     Owner,
     Active,
     Posting,
     Memo,
 }
 
-impl Role {
+impl BeekeeperRole {
     /// Returns the role's lowercase protocol name.
     pub fn as_str(self) -> &'static str {
         match self {
@@ -192,7 +204,7 @@ impl Role {
     }
 }
 
-impl fmt::Display for Role {
+impl fmt::Display for BeekeeperRole {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(self.as_str())
     }
