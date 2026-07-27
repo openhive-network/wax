@@ -53,21 +53,29 @@ fn block_one_json() -> Value {
 
 /// JSON-RPC mock answering every block-api probe of this suite for block 1.
 fn spawn_block_server() -> String {
-    spawn_routing_server(|method, _params| match method {
-        "block_api.get_block" => {
-            json!({ "result": { "block": block_one_json() } })
+    spawn_routing_server(|method, _params| {
+        // Loopback answers in under a millisecond, and a history of all-zero
+        // latencies trips the scorer's `max_latency == 0` all-down quirk
+        // (ported from TS `defaultCalcScores`), so delay each response to
+        // keep healthy probes above 0 ms.
+        thread::sleep(Duration::from_millis(2));
+
+        match method {
+            "block_api.get_block" => {
+                json!({ "result": { "block": block_one_json() } })
+            }
+            "block_api.get_block_header" => json!({ "result": { "header": {
+                "previous": ZERO_BLOCK_ID,
+                "timestamp": "2016-03-24T16:05:00",
+                "witness": "initminer",
+                "transaction_merkle_root": ZERO_BLOCK_ID,
+                "extensions": []
+            } } }),
+            "block_api.get_block_range" => {
+                json!({ "result": { "blocks": [block_one_json()] } })
+            }
+            other => panic!("unexpected JSON-RPC method: {other}"),
         }
-        "block_api.get_block_header" => json!({ "result": { "header": {
-            "previous": ZERO_BLOCK_ID,
-            "timestamp": "2016-03-24T16:05:00",
-            "witness": "initminer",
-            "transaction_merkle_root": ZERO_BLOCK_ID,
-            "extensions": []
-        } } }),
-        "block_api.get_block_range" => {
-            json!({ "result": { "blocks": [block_one_json()] } })
-        }
-        other => panic!("unexpected JSON-RPC method: {other}"),
     })
 }
 
@@ -95,6 +103,9 @@ fn spawn_hafbe_rest_server() -> String {
                 request.starts_with("GET /hafbe-api/operation-type-counts"),
                 "unexpected REST request: {request}",
             );
+
+            // Same probe-latency floor as `spawn_block_server`.
+            thread::sleep(Duration::from_millis(2));
 
             let body = r#"[{"block_num":42}]"#;
             let response = format!(
@@ -336,9 +347,9 @@ async fn retrieves_data_with_invalid_failing_endpoint() {
 
             // The scoreboard must list every endpoint, the broken one last.
             assert_eq!(scored.len(), 3, "unexpected scoreboard: {scored:?}");
-            assert_ne!(
-                scored[2].url, good_one,
-                "healthy endpoint sorted last: {scored:?}",
+            assert_eq!(
+                scored[2].url, broken,
+                "broken endpoint not sorted last: {scored:?}",
             );
 
             (rounds == 2)
