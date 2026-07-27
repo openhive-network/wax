@@ -803,17 +803,17 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc12.dev20260511173553"
+version = "1.28.8rc12.dev20260727090705"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc12.dev20260511173553-py3-none-any.whl", hash = "sha256:68873d12d5d1d3323bc943497fbe4770adb1555f1e7a95acc30fd1bec3f224bd"},
+    {file = "hiveio_api-1.28.8rc12.dev20260727090705-py3-none-any.whl", hash = "sha256:b99b01df21a78b1c48634a1de1deaf2be7f3764a1077196cb226edac6acba5c0"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = ">=1.28.6.post20260317125034,<2.0.0"
+hiveio-beekeepy = ">=1.28.6-post.0,<2.0.0"
 
 [package.source]
 type = "legacy"
@@ -2554,4 +2554,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "63d8c8be1ab96481462caace5bdb181b14a71b0fbe887e3e770d9a26a6b51053"
+content-hash = "55f9fa01b5370afb4f3522702df607b4d28959e45bc1598273004255ae7ad4c9"
