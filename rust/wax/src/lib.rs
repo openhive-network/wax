@@ -124,3 +124,59 @@ pub mod complex_operations {
 /// }
 /// ```
 pub use wax_macros::hive_api;
+
+/// Generates a [`CustomFormatter`] implementation from an annotated impl
+/// block, for use with [`WaxFormatter::extend`].
+///
+/// This is the Rust analog of a TS custom formatter class with
+/// `@WaxFormattable` methods. Each `#[format]` method must have the shape
+/// `fn name(&self, ctx: &FormatContext, source: T) -> Option<R>`, where `T`
+/// is deserialized from the matched node (`serde_json::Value` accepts any
+/// shape) and `R` serializes into the replacement — returning `None` leaves
+/// the node unchanged. The matched property defaults to the method name:
+/// adjust it with `#[format(rename = "camelCaseProp")]` (snake_case method
+/// names can't spell camelCase properties), or match another property —
+/// optionally a specific value of it — with
+/// `#[format(match_property = "id", match_value = "rc")]`;
+/// `require_defined` skips nodes whose property value is `null`.
+///
+/// The generated `create` calls the block's `fn new(wax)` when present and
+/// `Default::default()` otherwise — the analog of the optional TS custom
+/// formatter constructor.
+///
+/// ```no_run
+/// use wax::{FormatContext, FoundationHandle, create_wax_foundation, hive_formatter};
+///
+/// struct MyFormatters {
+///     wax: FoundationHandle,
+/// }
+///
+/// #[hive_formatter]
+/// impl MyFormatters {
+///     fn new(wax: FoundationHandle) -> Self {
+///         Self { wax }
+///     }
+///
+///     /// Replaces any object carrying a `voter` property.
+///     #[format]
+///     fn voter(
+///         &self,
+///         _ctx: &FormatContext<'_>,
+///         source: serde_json::Value,
+///     ) -> Option<String> {
+///         Some(format!("@{}", source.get("voter")?.as_str()?))
+///     }
+/// }
+///
+/// # fn demo() -> Result<(), wax::WaxError> {
+/// let foundation = create_wax_foundation(None);
+/// let formatter = foundation.formatter().extend::<MyFormatters>();
+///
+/// let vote = serde_json::json!({
+///     "voter": "alice", "author": "bob", "permlink": "post", "weight": 100
+/// });
+/// println!("{}", formatter.display(&vote)?);
+/// # Ok(())
+/// # }
+/// ```
+pub use wax_macros::hive_formatter;

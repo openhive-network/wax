@@ -7,7 +7,7 @@
 //! per-entry action tags of either `follow` or `reblog`.
 
 use crate::core::proto;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
@@ -422,5 +422,146 @@ impl ComplexOperation for FollowOperation {
         _foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
         Ok(self.base.finalize())
+    }
+}
+
+/// Represents a decoded incoming `reblog`-tagged `follow` custom_json
+/// payload.
+///
+/// Mirrors `ReblogOperationData` from
+/// `ts/wasm/lib/detailed/hive_apps_operations/follow.ts`. TS only produces
+/// it inside the default `follow` formatter; Rust additionally exposes the
+/// decode as [`TryFrom`] so callers can retrieve typed data without running
+/// the formatter (see `formatters.md`, "Decode split").
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ReblogOperationData {
+    pub account: AccountName,
+    pub author: AccountName,
+    pub permlink: String,
+}
+
+impl TryFrom<&proto::CustomJson> for ReblogOperationData {
+    type Error = WaxError;
+
+    fn try_from(operation: &proto::CustomJson) -> Result<Self, WaxError> {
+        if operation.id != OPERATION_ID {
+            return Err(WaxError::new(format!(
+                "expected custom_json id \"{OPERATION_ID}\", got \"{}\"",
+                operation.id
+            )));
+        }
+
+        let payload: Value =
+            serde_json::from_str(&operation.json).map_err(|e| {
+                WaxError::new(format!("invalid follow payload: {e}"))
+            })?;
+
+        if payload.get(0).and_then(Value::as_str)
+            != Some(FollowOperationActions::Reblog.as_str())
+        {
+            return Err(WaxError::new("follow payload is not a reblog"));
+        }
+        let data = payload.get(1).ok_or_else(|| {
+            WaxError::new("follow payload is not a tagged pair")
+        })?;
+
+        let string_field = |name: &str| {
+            data.get(name)
+                .and_then(Value::as_str)
+                .map(str::to_string)
+                .ok_or_else(|| {
+                    WaxError::new(format!(
+                        "reblog payload: `{name}` must be a string"
+                    ))
+                })
+        };
+
+        Ok(Self {
+            account: string_field("account")?,
+            author: string_field("author")?,
+            permlink: string_field("permlink")?,
+        })
+    }
+}
+
+/// Represents a decoded follow-list `follow` custom_json payload.
+///
+/// Mirrors `FollowOperationData` from
+/// `ts/wasm/lib/detailed/hive_apps_operations/follow.ts`; see
+/// [`ReblogOperationData`] for the decode-split rationale.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct FollowOperationData {
+    /// The `what`-tag of the follow action.
+    ///
+    /// TS NOTE: TS casts the tag to `EFollowActions` without validating it;
+    /// the raw string is kept for the same behaviour.
+    pub action: String,
+    pub follower: AccountName,
+    pub following: Vec<AccountName>,
+}
+
+impl TryFrom<&proto::CustomJson> for FollowOperationData {
+    type Error = WaxError;
+
+    fn try_from(operation: &proto::CustomJson) -> Result<Self, WaxError> {
+        if operation.id != OPERATION_ID {
+            return Err(WaxError::new(format!(
+                "expected custom_json id \"{OPERATION_ID}\", got \"{}\"",
+                operation.id
+            )));
+        }
+
+        let payload: Value =
+            serde_json::from_str(&operation.json).map_err(|e| {
+                WaxError::new(format!("invalid follow payload: {e}"))
+            })?;
+        // TS NOTE: TS destructures `{ follower, following, what: [what] }`
+        // from the body without checking the outer tag; same here.
+        let data = payload.get(1).ok_or_else(|| {
+            WaxError::new("follow payload is not a tagged pair")
+        })?;
+
+        let action = data
+            .get("what")
+            .and_then(Value::as_array)
+            .and_then(|what| what.first())
+            .and_then(Value::as_str)
+            .ok_or_else(|| {
+                WaxError::new("follow payload: `what` must hold a string tag")
+            })?;
+        let follower = data
+            .get("follower")
+            .and_then(Value::as_str)
+            .ok_or_else(|| {
+                WaxError::new("follow payload: `follower` must be a string")
+            })?;
+
+        // TS normalizes a bare string to a one-element list.
+        let following = match data.get("following") {
+            Some(Value::String(single)) => vec![single.clone()],
+            Some(Value::Array(items)) => items
+                .iter()
+                .map(|entry| {
+                    entry.as_str().map(str::to_string).ok_or_else(|| {
+                        WaxError::new(
+                            "follow payload: `following` entries must be \
+                             strings",
+                        )
+                    })
+                })
+                .collect::<Result<Vec<AccountName>, WaxError>>()?,
+            _ => {
+                return Err(WaxError::new(
+                    "follow payload: `following` must be a string or an \
+                     array",
+                ));
+            }
+        };
+
+        Ok(Self {
+            action: action.to_string(),
+            follower: follower.to_string(),
+            following,
+        })
     }
 }

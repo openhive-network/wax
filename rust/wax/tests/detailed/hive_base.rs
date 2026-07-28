@@ -1,11 +1,7 @@
 // Rust port of `ts/wasm/__tests__/detailed/hive_base.ts`.
 //
 // Tests appear in TS source order. Each Rust test has a `// TS line N` comment
-// pointing back to the TS original. Tests that depend on Rust surface that
-// hasn't been ported yet (signing / beekeeper, complex operation builders,
-// key utilities, the `waxify` formatter, calculateAccountHp /
-// calculateWitnessVotesHp) are kept as `#[ignore]` stubs so they remain
-// visible in `cargo test` output.
+// pointing back to the TS original.
 
 use rust_decimal::Decimal;
 use wax::complex_operations::{
@@ -239,21 +235,16 @@ fn invalid_account_names_are_rejected() {
 }
 
 // TS line 103: "Should be able to convert VESTS to HP (bug)".
-//
-// TS NOTE: TS additionally pins the waxify-formatted strings
-// ("4,044,780.037 HIVE"); the formatter has no Rust counterpart (see
-// `main.rs`), so this port asserts the underlying satoshi amounts the
-// regression is about.
 #[test]
 fn vests_to_hp_regression_amounts() {
     wax_test(None, |ctx| {
         let total_fund = hive_sat(ctx, 182849539607);
         let total_shares = vests_sat(ctx, 312353953479712805);
 
-        for (vests, expected_satoshis) in [
-            (6909522651976083i64, "4044780037"),
-            (43357485398000965, "25381129821"),
-            (13261033608208, "7762904"),
+        for (vests, expected_satoshis, expected_rendered) in [
+            (6909522651976083i64, "4044780037", "4,044,780.037 HIVE"),
+            (43357485398000965, "25381129821", "25,381,129.821 HIVE"),
+            (13261033608208, "7762904", "7,762.904 HIVE"),
         ] {
             let hp = ctx
                 .base
@@ -261,6 +252,9 @@ fn vests_to_hp_regression_amounts() {
                 .expect("vests_to_hp");
             assert_eq!(hp.amount, expected_satoshis);
             assert_eq!(hp.nai, "@@000000021");
+            // The `waxify` strings the TS test pins.
+            let rendered = ctx.base.formatter().display(&hp).expect("display");
+            assert_eq!(rendered.to_string(), expected_rendered);
         }
     });
 }

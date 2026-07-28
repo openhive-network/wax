@@ -5,10 +5,12 @@ pub(crate) mod rc;
 
 pub use community::{
     AvailableCommunityRoles, CommunityOperation, CommunityOperationActions,
-    CommunityProps, SupportedLanguages,
+    CommunityOperationData, CommunityOperationDataProps, CommunityProps,
+    SupportedLanguages,
 };
 pub use factory::{HiveAppsOperation, HiveAppsOperationBase};
 pub use follow::{
     FollowActions, FollowBlogAction, FollowOperation, FollowOperationActions,
+    FollowOperationData, ReblogOperationData,
 };
-pub use rc::ResourceCreditsOperation;
+pub use rc::{ResourceCreditsOperation, ResourceCreditsOperationData};

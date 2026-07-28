@@ -7,8 +7,6 @@
 //!   propagation, `getExceptionMessage`); the portable members are covered
 //!   by `protocol.rs` (witness-props round trip, key math) and
 //!   `hive_base.rs` (public-key derivation + invalid-WIF error).
-//! - `formatters.ts` — the `waxify` template-literal formatter has no Rust
-//!   counterpart yet; nothing to port until that surface exists.
 //! - `protocol_benchmarks.ts` — performance benchmarks over the same calls
 //!   `protocol.rs` already asserts; benchmarking is out of scope for this
 //!   suite.
@@ -18,6 +16,10 @@
 //! - `hive_chain_rest_api.ts` — ported into `extend_api.rs` (see its header
 //!   for the TS-only members).
 
+// The account fixture in `formatters.rs` nests deeper than serde_json's
+// `json!` fits into the default limit.
+#![recursion_limit = "256"]
+
 mod common;
 mod complex_operations;
 mod custom_chain_online_tx;
@@ -25,6 +27,7 @@ mod custom_jsons;
 mod encrypted_operations;
 mod encryption_data;
 mod extend_api;
+mod formatters;
 mod healthchecks;
 mod hive_assertion;
 mod hive_base;

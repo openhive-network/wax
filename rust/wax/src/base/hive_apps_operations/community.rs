@@ -6,7 +6,7 @@
 //! [`super::factory::HiveAppsOperation`]), with `id="community"`.
 
 use crate::core::proto;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use super::factory::{HiveAppsOperation, HiveAppsOperationBase};
 use crate::WaxError;
@@ -412,5 +412,109 @@ impl ComplexOperation for CommunityOperation {
         _foundation: &WaxFoundation,
     ) -> Result<Vec<proto::Operation>, WaxError> {
         Ok(self.base.finalize())
+    }
+}
+
+/// Represents a decoded incoming `community` custom_json payload: the
+/// authorizing accounts, the community name and the action data.
+///
+/// Mirrors `CommunityOperationData` from
+/// `ts/wasm/lib/detailed/hive_apps_operations/community.ts`. TS only
+/// produces it inside the default `community` formatter; Rust additionally
+/// exposes the decode as [`TryFrom`] so callers can retrieve typed data
+/// without running the formatter (see `formatters.md`, "Decode split").
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommunityOperationData {
+    pub accounts: Vec<AccountName>,
+    pub community: String,
+    pub data: CommunityOperationDataProps,
+}
+
+/// Represents the action payload of a decoded `community` custom_json.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommunityOperationDataProps {
+    /// The action tag.
+    ///
+    /// TS NOTE: TS casts the tag to `ECommunityOperationActions` without
+    /// validating it; the raw string is kept for the same behaviour.
+    pub action: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account: Option<AccountName>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub permlink: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub props: Option<serde_json::Value>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub notes: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role: Option<String>,
+}
+
+impl TryFrom<&proto::CustomJson> for CommunityOperationData {
+    type Error = WaxError;
+
+    fn try_from(operation: &proto::CustomJson) -> Result<Self, WaxError> {
+        if operation.id != OPERATION_ID {
+            return Err(WaxError::new(format!(
+                "expected custom_json id \"{OPERATION_ID}\", got \"{}\"",
+                operation.id
+            )));
+        }
+
+        let payload: serde_json::Value = serde_json::from_str(&operation.json)
+            .map_err(|e| {
+                WaxError::new(format!("invalid community payload: {e}"))
+            })?;
+
+        let action = payload
+            .get(0)
+            .and_then(serde_json::Value::as_str)
+            .ok_or_else(|| {
+                WaxError::new("community payload: action tag must be a string")
+            })?;
+        let data = payload.get(1).ok_or_else(|| {
+            WaxError::new("community payload is not a tagged pair")
+        })?;
+        let community = data
+            .get("community")
+            .and_then(serde_json::Value::as_str)
+            .ok_or_else(|| {
+                WaxError::new("community payload: `community` must be a string")
+            })?;
+
+        let accounts = operation
+            .required_auths
+            .iter()
+            .chain(operation.required_posting_auths.iter())
+            .cloned()
+            .collect();
+
+        let string_prop = |name: &str| {
+            data.get(name)
+                .and_then(serde_json::Value::as_str)
+                .map(str::to_string)
+        };
+        // TS NOTE: the `typeof props === "object"` check also admits null
+        // and arrays; mirrored here.
+        let props = data
+            .get("props")
+            .filter(|v| v.is_object() || v.is_array() || v.is_null())
+            .cloned();
+
+        Ok(Self {
+            accounts,
+            community: community.to_string(),
+            data: CommunityOperationDataProps {
+                action: action.to_string(),
+                account: string_prop("account"),
+                permlink: string_prop("permlink"),
+                title: string_prop("title"),
+                props,
+                notes: string_prop("notes"),
+                role: string_prop("role"),
+            },
+        })
     }
 }

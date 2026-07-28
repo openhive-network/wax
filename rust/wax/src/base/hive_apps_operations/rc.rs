@@ -6,10 +6,12 @@
 //! `custom_json_operation` per staged `delegate_rc` entry, with `id="rc"`.
 
 use crate::core::proto;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::WaxError;
-use crate::base::foundation::WaxFoundation;
+use crate::base::foundation::{WaxFoundation, to_nai_asset};
+use crate::base::internal::protocol::rust_protocol;
+use crate::base::models::asset::NaiAsset;
 use crate::base::models::basic::AccountName;
 use crate::base::operation::ComplexOperation;
 
@@ -140,5 +142,85 @@ impl ComplexOperation for ResourceCreditsOperation {
                 value: Some(proto::operation::Value::CustomJsonOperation(cj)),
             })
             .collect())
+    }
+}
+
+/// Represents a decoded incoming `rc` custom_json payload: the delegator,
+/// the delegated resource credits as a VESTS asset and the delegatees.
+///
+/// Mirrors `ResourceCreditsOperationData` from
+/// `ts/wasm/lib/detailed/hive_apps_operations/rc.ts`. TS only produces it
+/// inside the default `rc` formatter; Rust additionally exposes the decode
+/// as [`TryFrom`] so callers can retrieve typed data without running the
+/// formatter (see `formatters.md`, "Decode split").
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ResourceCreditsOperationData {
+    pub from: AccountName,
+    pub rc: NaiAsset,
+    pub delegatees: Vec<AccountName>,
+}
+
+impl TryFrom<&proto::CustomJson> for ResourceCreditsOperationData {
+    type Error = WaxError;
+
+    fn try_from(operation: &proto::CustomJson) -> Result<Self, WaxError> {
+        if operation.id != OPERATION_ID {
+            return Err(WaxError::new(format!(
+                "expected custom_json id \"{OPERATION_ID}\", got \"{}\"",
+                operation.id
+            )));
+        }
+
+        let payload: serde_json::Value = serde_json::from_str(&operation.json)
+            .map_err(|e| WaxError::new(format!("invalid rc payload: {e}")))?;
+        // TS NOTE: the TS formatter destructures `[, body]` without checking
+        // the `delegate_rc` tag; the tag is ignored here as well.
+        let body = payload
+            .get(1)
+            .ok_or_else(|| WaxError::new("rc payload is not a tagged pair"))?;
+
+        let from = body
+            .get("from")
+            .and_then(serde_json::Value::as_str)
+            .ok_or_else(|| {
+                WaxError::new("rc payload: `from` must be a string")
+            })?;
+
+        let delegatees = body
+            .get("delegatees")
+            .and_then(serde_json::Value::as_array)
+            .ok_or_else(|| {
+                WaxError::new("rc payload: `delegatees` must be an array")
+            })?
+            .iter()
+            .map(|entry| {
+                entry.as_str().map(str::to_string).ok_or_else(|| {
+                    WaxError::new(
+                        "rc payload: `delegatees` entries must be strings",
+                    )
+                })
+            })
+            .collect::<Result<Vec<AccountName>, WaxError>>()?;
+
+        // `max_rc` arrives as a string or a number; i64 covers the satoshi
+        // range the chain accepts.
+        let max_rc = match body.get("max_rc") {
+            Some(serde_json::Value::String(s)) => s.parse::<i64>().ok(),
+            Some(serde_json::Value::Number(n)) => n.as_i64(),
+            _ => None,
+        }
+        .ok_or_else(|| {
+            WaxError::new("rc payload: `max_rc` must be an integer")
+        })?;
+        let rc = rust_protocol()
+            .cpp_vests(max_rc)
+            .map(to_nai_asset)
+            .map_err(WaxError::from)?;
+
+        Ok(Self {
+            from: from.to_string(),
+            rc,
+            delegatees,
+        })
     }
 }

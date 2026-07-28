@@ -1799,8 +1799,8 @@ fn validate_after_proto_to_api_basic_transaction() {
 }
 
 // ---------------------------------------------------------------------------
-// Unused-import sentinels (kept so the imports above stay live even while
-// some tests are #[ignore]'d).
+// Unused-import sentinels (kept so the shared proto imports above stay live
+// regardless of which tests reference them).
 // ---------------------------------------------------------------------------
 #[allow(dead_code)]
 fn _ensure_proto_types_are_used() -> (

@@ -11,6 +11,7 @@ Provides Hive Protocol features to Rust.
 - Request/response interceptors around every chain HTTP call
 - Asset (HIVE / HBD / VESTS) conversions, key derivation and manabar math
 - High-level operation builders (blog posts / replies, recurrent transfers, witness properties, hive-apps `custom_json`s, …)
+- Extensible output formatting — assets, transaction ids, hive-apps payload decoding — via the `#[hive_formatter]` attribute
 
 ## Crates
 
@@ -186,6 +187,85 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+### Use custom formatters to output data in specified format
+
+The `#[hive_formatter]` attribute is the Rust analog of a TS custom
+formatter class with `@WaxFormattable` methods, and `formatter.display()`
+plays the role of the `waxify` tagged template:
+
+```rust
+use serde_json::{Value, json};
+use wax::prelude::*;
+
+// Define custom formatters type; if you don't need the wax interface
+// inside the formatters, drop the field and `fn new` and derive `Default`
+// instead — it is the analog of the optional TS constructor
+struct MyFormatters {
+    wax: FoundationHandle,
+}
+
+#[hive_formatter]
+impl MyFormatters {
+    fn new(wax: FoundationHandle) -> Self {
+        Self { wax }
+    }
+
+    /// Matches any object carrying a `myCustomProp` property (`rename`
+    /// bridges the snake_case method name to the camelCase property).
+    #[format(rename = "myCustomProp")]
+    fn my_custom_prop(
+        &self,
+        _ctx: &FormatContext<'_>,
+        source: Value,
+    ) -> Option<String> {
+        // A `?` bailing out means no replacement takes place — the Option
+        // return plays the role of the TS `string | void` union
+        let value = source.get("myCustomProp")?.as_i64()?;
+
+        println!("You are using wax version: {}", self.wax.get_version());
+
+        Some(value.to_string())
+    }
+}
+
+let chain = create_hive_chain(None)?;
+
+let data = json!({ "myCustomProp": 12542 });
+
+// Creates and returns a new extended formatter object
+let formatter = chain.formatter().extend::<MyFormatters>();
+
+// The rule matched `data`, so this prints two lines (the first one emitted
+// by the `println!` inside the rule while formatting):
+//   You are using wax version: <crate version>
+//   12542
+println!("{}", formatter.display(&data)?);
+```
+
+The default formatter (`chain.formatter()`, also on offline foundations)
+already renders NAI assets (`"1.100 HIVE"`), replaces transactions with
+their id and decodes rc / community / follow `custom_json` payloads.
+Formatting options are overridden per derived formatter with builder-style
+setters:
+
+```rust
+// European-style report output: 100.000.000,100 HIVE, expanded txs
+let report = chain.formatter().extend_options(
+    WaxFormatterOptions::default()
+        .with_separators(".", ",")
+        .with_transaction_as_id(false),
+);
+
+// Derived from `report`'s options: same separators, amounts only
+let compact = report.extend_options(
+    report.options().clone().with_append_token_name(false),
+);
+```
+
+To *retrieve* the decoded hive-apps data instead of displaying it, use the
+typed parsers directly (e.g.
+`ResourceCreditsOperationData::try_from(&custom_json)`).
 
 ### Calculate user manabar regeneration time
 

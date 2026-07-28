@@ -16,8 +16,8 @@ on. It provides:
   `proto/`).
 
 > **Status:** the crate mirrors the TS `@hiveio/wax` package and is still
-> converging on full parity (e.g. the TS `waxify` formatters are not ported
-> yet). The crates.io name is reserved; the crate is not published yet.
+> converging on full parity. The crates.io name is reserved; the crate is
+> not published yet.
 
 ## API
 

@@ -1,8 +1,9 @@
 //! Proc-macro companion of the `hiveio-wax` crate.
 //!
-//! Exposes the [`macro@hive_api`] attribute, re-exported by `hiveio-wax` as
-//! `wax::hive_api`. Do not depend on this crate directly — the generated code
-//! references `::wax::` items, so it only works together with that crate.
+//! Exposes the [`macro@hive_api`] and [`macro@hive_formatter`] attributes,
+//! re-exported by `hiveio-wax` as `wax::hive_api` / `wax::hive_formatter`.
+//! Do not depend on this crate directly — the generated code references
+//! `::wax::` items, so it only works together with that crate.
 
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
@@ -10,9 +11,9 @@ use quote::{format_ident, quote};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
 use syn::{
-    Attribute, Error, Expr, ExprLit, Fields, FnArg, Ident, Item, ItemStruct,
-    ItemTrait, Lit, LitStr, Meta, Pat, ReturnType, Token, TraitItem,
-    TraitItemFn, Type,
+    Attribute, Error, Expr, ExprLit, Fields, FnArg, Ident, ImplItem, Item,
+    ItemImpl, ItemStruct, ItemTrait, Lit, LitStr, Meta, Pat, ReturnType, Token,
+    TraitItem, TraitItemFn, Type,
 };
 
 /// Generates a typed Hive API surface from idiomatic declarations. See the
@@ -555,4 +556,206 @@ fn expand_struct(
 
         #deref
     })
+}
+
+/// Generates a `CustomFormatter` implementation from an annotated inherent
+/// impl block. See the re-export documentation in the `hiveio-wax` crate
+/// (`wax::hive_formatter`) for the full guide; in short:
+///
+/// Each `#[format]` method must have the shape
+/// `fn name(&self, ctx: &FormatContext, source: T) -> Option<R>`. The
+/// matched property defaults to the method name, adjustable with
+/// `#[format(rename = "camelCaseProp")]` or matched elsewhere with
+/// `#[format(match_property = "id", match_value = "rc")]`;
+/// `require_defined` skips nodes whose property value is `null`. The
+/// generated `create` calls the block's `fn new(wax)` when present, falling
+/// back to `Default::default()`.
+#[proc_macro_attribute]
+pub fn hive_formatter(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let attr: TokenStream2 = attr.into();
+    let expanded = if attr.is_empty() {
+        syn::parse::<ItemImpl>(item).and_then(expand_formatter)
+    } else {
+        Err(Error::new_spanned(
+            attr,
+            "#[hive_formatter] takes no arguments",
+        ))
+    };
+
+    expanded.unwrap_or_else(|e| e.to_compile_error()).into()
+}
+
+/// Converts an annotated impl block into itself (with the `#[format]`
+/// attributes consumed) plus the generated `CustomFormatter` impl.
+fn expand_formatter(mut item: ItemImpl) -> syn::Result<TokenStream2> {
+    if item.trait_.is_some() {
+        return Err(Error::new(
+            item.span(),
+            "#[hive_formatter] must be applied to an inherent impl block",
+        ));
+    }
+    if !item.generics.params.is_empty() {
+        return Err(Error::new(
+            item.generics.span(),
+            "#[hive_formatter] does not support generic impl blocks",
+        ));
+    }
+
+    let self_ty = item.self_ty.clone();
+    let mut has_new = false;
+    let mut registrations = Vec::new();
+
+    for entry in &mut item.items {
+        let ImplItem::Fn(method) = entry else {
+            continue;
+        };
+        if method.sig.ident == "new" {
+            has_new = true;
+        }
+
+        let format_attrs: Vec<Attribute> = method
+            .attrs
+            .iter()
+            .filter(|a| a.path().is_ident("format"))
+            .cloned()
+            .collect();
+        method.attrs.retain(|a| !a.path().is_ident("format"));
+
+        let Some(format_attr) = format_attrs.first() else {
+            continue;
+        };
+        if format_attrs.len() > 1 {
+            return Err(Error::new(
+                format_attrs[1].span(),
+                "duplicate #[format] attribute",
+            ));
+        }
+
+        let takes_self =
+            matches!(method.sig.inputs.first(), Some(FnArg::Receiver(_)));
+        if !takes_self || method.sig.inputs.len() != 3 {
+            return Err(Error::new(
+                method.sig.span(),
+                "#[format] methods must have the shape `fn name(&self, ctx: \
+                 &FormatContext, source: T) -> Option<R>`",
+            ));
+        }
+
+        let rule = format_rule(format_attr, &method.sig.ident)?;
+        let method_ident = &method.sig.ident;
+        registrations.push(quote! {
+            {
+                let this = ::std::sync::Arc::clone(self);
+                registry.register(
+                    #rule,
+                    move |ctx: &::wax::FormatContext<'_>, source| {
+                        this.#method_ident(ctx, source)
+                    },
+                );
+            }
+        });
+    }
+
+    // The analog of the optional TS custom-formatter constructor: `new(wax)`
+    // when declared, the default constructor otherwise.
+    let wax_param = if has_new {
+        format_ident!("wax")
+    } else {
+        format_ident!("_wax")
+    };
+    let create_body = if has_new {
+        quote!(Self::new(#wax_param))
+    } else {
+        quote!(<Self as ::std::default::Default>::default())
+    };
+
+    Ok(quote! {
+        #item
+
+        impl ::wax::CustomFormatter for #self_ty {
+            fn create(#wax_param: ::wax::FoundationHandle) -> Self {
+                #create_body
+            }
+
+            fn register(
+                self: &::std::sync::Arc<Self>,
+                registry: &mut ::wax::FormatterRegistry,
+            ) {
+                #(#registrations)*
+            }
+        }
+    })
+}
+
+/// Converts one `#[format(...)]` attribute into its `MatchRule` expression.
+fn format_rule(attr: &Attribute, method: &Ident) -> syn::Result<TokenStream2> {
+    let mut rename: Option<LitStr> = None;
+    let mut match_property: Option<LitStr> = None;
+    let mut match_value: Option<Expr> = None;
+    let mut require_defined = false;
+
+    if !matches!(attr.meta, Meta::Path(_)) {
+        let string_arg = |nv: &syn::MetaNameValue, name: &str| {
+            if let Expr::Lit(ExprLit {
+                lit: Lit::Str(lit), ..
+            }) = &nv.value
+            {
+                Ok(lit.clone())
+            } else {
+                Err(Error::new(
+                    nv.value.span(),
+                    format!("`{name}` expects a string literal"),
+                ))
+            }
+        };
+
+        let parser = Punctuated::<Meta, Token![,]>::parse_terminated;
+        for meta in attr.parse_args_with(parser)? {
+            match &meta {
+                Meta::Path(path) if path.is_ident("require_defined") => {
+                    require_defined = true;
+                }
+                Meta::NameValue(nv) if nv.path.is_ident("rename") => {
+                    rename = Some(string_arg(nv, "rename")?);
+                }
+                Meta::NameValue(nv) if nv.path.is_ident("match_property") => {
+                    match_property = Some(string_arg(nv, "match_property")?);
+                }
+                Meta::NameValue(nv) if nv.path.is_ident("match_value") => {
+                    match_value = Some(nv.value.clone());
+                }
+                other => {
+                    return Err(Error::new(
+                        other.span(),
+                        "expected `rename = \"...\"`, `match_property = \
+                         \"...\"`, `match_value = ...` and/or \
+                         `require_defined`",
+                    ));
+                }
+            }
+        }
+    }
+
+    if rename.is_some() && match_property.is_some() {
+        return Err(Error::new(
+            attr.span(),
+            "`rename` and `match_property` are mutually exclusive",
+        ));
+    }
+
+    let property = match_property
+        .or(rename)
+        .unwrap_or_else(|| LitStr::new(&method.to_string(), method.span()));
+    let rule = match match_value {
+        Some(value) => {
+            quote!(::wax::MatchRule::property_value(#property, #value))
+        }
+        None => quote!(::wax::MatchRule::property(#property)),
+    };
+
+    if require_defined {
+        return Ok(quote!(#rule.require_defined()));
+    }
+
+    Ok(rule)
 }

@@ -21,9 +21,11 @@ pub use crate::complex_operations::*;
 pub use crate::constants::MAINNET_CHAIN_ID;
 pub use crate::hive_apps_operations::{
     AvailableCommunityRoles, CommunityOperation, CommunityOperationActions,
-    CommunityProps, FollowActions, FollowBlogAction, FollowOperation,
-    FollowOperationActions, HiveAppsOperation, HiveAppsOperationBase,
-    ResourceCreditsOperation, SupportedLanguages,
+    CommunityOperationData, CommunityOperationDataProps, CommunityProps,
+    FollowActions, FollowBlogAction, FollowOperation, FollowOperationActions,
+    FollowOperationData, HiveAppsOperation, HiveAppsOperationBase,
+    ReblogOperationData, ResourceCreditsOperation,
+    ResourceCreditsOperationData, SupportedLanguages,
 };
 pub use crate::models::{
     AccountAuthorityInfo, AssetAmount, AssetName, Authorities, HiveDateTime,
@@ -33,10 +35,13 @@ pub use crate::models::{
 pub use crate::proto::operation::Value;
 pub use crate::proto::*;
 pub use crate::{
-    AuthorityDataProvider, ComplexOperation, HiveChain, HiveChainOptions,
-    Manabar, OnlineTransaction, Operation, SignatureProvider, Transaction,
-    WaxChainError, WaxError, WaxFoundation, WaxOptions, create_hive_chain,
-    create_wax_foundation, hive_api, proto,
+    AssetFormatterOptions, AuthorityDataProvider, ComplexOperation,
+    CustomFormatter, FormatContext, FormatterRegistry, FoundationHandle,
+    HiveChain, HiveChainOptions, Manabar, MatchRule, OnlineTransaction,
+    Operation, SignatureProvider, Transaction, TransactionFormatterOptions,
+    WaxChainError, WaxError, WaxFormatter, WaxFormatterOptions, WaxFoundation,
+    WaxOptions, create_hive_chain, create_wax_foundation, hive_api,
+    hive_formatter, proto,
 };
 
 #[cfg(test)]
@@ -70,6 +75,15 @@ mod tests {
         resolves::<HiveRoles<'static>>();
         resolves::<LegacyVoteOperation>();
         resolves::<api::FindAccountsRequest>();
+        resolves::<WaxFormatter>();
+        resolves::<WaxFormatterOptions>();
+        resolves::<FormatterRegistry>();
+        resolves::<FormatContext<'static>>();
+        resolves::<FoundationHandle>();
+        resolves::<ResourceCreditsOperationData>();
+        resolves::<CommunityOperationData>();
+        resolves::<FollowOperationData>();
+        resolves::<ReblogOperationData>();
 
         assert_eq!(MAINNET_CHAIN_ID.len(), 64);
     }

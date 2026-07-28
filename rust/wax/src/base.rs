@@ -10,6 +10,7 @@
 pub(crate) mod complex_operations;
 pub mod constants;
 mod error;
+pub mod formatters;
 mod foundation;
 pub mod hive_apps_operations;
 // pub(crate): the online layer reuses the FFI conversion and construction
@@ -22,6 +23,11 @@ pub mod result;
 pub(crate) mod transaction;
 
 pub use error::WaxError;
+pub use formatters::{
+    AssetFormatterOptions, CustomFormatter, FormatContext, FormattedDisplay,
+    FormatterRegistry, FoundationHandle, MatchRule, NumberSeparators,
+    TransactionFormatterOptions, WaxFormatter, WaxFormatterOptions,
+};
 pub use foundation::WaxFoundation;
 // The online `create_transaction` factory shares the offline construction
 // helper but needs the internal `RustTransaction` it returns.

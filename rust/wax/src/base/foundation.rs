@@ -2,7 +2,7 @@
 //! [`create_wax_foundation`](crate::create_wax_foundation).
 
 use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::sync::{Arc, OnceLock};
 
 use crate::core::ffi::{
     RustCryptoMemo, RustJsonAsset, RustJsonPrice, RustWitnessPropEntry,
@@ -19,6 +19,7 @@ use crate::base::constants::{
     DEFAULT_CHAIN_ID, DEFAULT_COMMENT_MAX_ACCEPTED_PAYOUT_SATOSHIS,
     DEFAULT_COMMENT_PERCENT_HBD,
 };
+use crate::base::formatters::WaxFormatter;
 use crate::base::internal::authority::to_rust_authorities;
 use crate::base::internal::protocol::rust_protocol;
 use crate::base::models::asset::{
@@ -49,6 +50,10 @@ pub struct WaxFoundation {
     // `config()` call (TS caches identically in WaxBaseApi, Python in
     // base_api._cached_config).
     cached_config: OnceLock<ChainConfig>,
+    // Lazily-built default formatter (TS initializes `this.formatter` in the
+    // WaxBaseApi constructor; here the default-rule registration is deferred
+    // to the first `formatter()` call).
+    cached_formatter: OnceLock<WaxFormatter>,
     // Zero-amount NaiAsset templates. Eagerly populated in `new()` to match
     // how TS sets `this.ASSETS` in its constructor and Python in `Asset.__init__`.
     assets: Assets,
@@ -81,8 +86,25 @@ impl WaxFoundation {
         Self {
             options,
             cached_config: OnceLock::new(),
+            cached_formatter: OnceLock::new(),
             assets,
         }
+    }
+
+    /// Returns the default output formatter bound to this foundation's chain
+    /// context. Cached per foundation; derive configured or extended
+    /// formatters from it with [`WaxFormatter::extend`] /
+    /// [`WaxFormatter::extend_options`].
+    pub fn formatter(&self) -> &WaxFormatter {
+        self.cached_formatter.get_or_init(|| {
+            // The formatter needs an owned foundation handle; deriving one
+            // from the options is lossless — they are the whole identity of
+            // a foundation.
+            WaxFormatter::new(
+                Arc::new(WaxFoundation::new(self.options.clone())),
+                None,
+            )
+        })
     }
 
     /// Returns the chain id this foundation was constructed with.

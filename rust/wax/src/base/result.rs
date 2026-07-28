@@ -23,7 +23,7 @@ pub struct Assets {
 pub type ChainConfig = HashMap<String, String>;
 
 /// Represents a price as a base/quote pair of assets.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct JsonPrice {
     pub base: NaiAsset,
     pub quote: NaiAsset,
@@ -128,20 +128,31 @@ pub struct MinimizeRequiredSignaturesData {
 /// Mirrors the C++ `witness_set_properties_data` struct — every field except
 /// `key` (the current signing key, used to gate the operation) is optional,
 /// and the serializer only packs the subset the caller actually provided.
-#[derive(Debug, Clone, PartialEq)]
+// The serde derives serve the default `props` formatter, which emits the
+// deserialized struct as JSON; absent optional props stay out of the output
+// like in the TS `Record` form.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct WitnessSetPropertiesProps {
     /// Current witness signing public key. Used by hived to authorise the
     /// update; always required.
     pub key: PublicKey,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub new_signing_key: Option<PublicKey>,
     /// HIVE-denominated. Caller is expected to have already coerced the asset
     /// to the HIVE symbol (the builder does this in `finalize`).
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub account_creation_fee: Option<NaiAsset>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
     /// Price pair with `base` in HBD and `quote` in HIVE.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hbd_exchange_rate: Option<JsonPrice>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub maximum_block_size: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub hbd_interest_rate: Option<u16>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub account_subsidy_budget: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub account_subsidy_decay: Option<u32>,
 }
