@@ -54,7 +54,7 @@ types-protobuf = "^5.29.1"
 grpc-stubs = "^1.53.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^8.3.5"
+pytest = "^9.0.0"
 pytest-asyncio = "^1.0.0"
 pytest-xdist = "^3.6.1"
 grpcio = "^1.76.0"
