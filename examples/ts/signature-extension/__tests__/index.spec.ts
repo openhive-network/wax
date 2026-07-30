@@ -1,5 +1,8 @@
 import { test } from "./assets/fixture";
 import { BrowserContext, expect, Page } from "@playwright/test";
+import { createHiveChain } from "@hiveio/wax";
+import createBeekeeper from "@hiveio/beekeeper";
+import { memoTestMessage } from "../common-data";
 
 const configureUserAccount = async (page: Page, accountName: string, privateKey: string): Promise<void> => {
     const useButton = page.getByTestId('add-by-keys-button');
@@ -186,5 +189,119 @@ test.describe('Signature extension tests', () => {
 
     expect(tx.signatures).toHaveLength(1);
     expect(keyMatchText).toBe('Decoded and signing key match. Remote endpoint accepted transaction authority. Transaction has been signed using: HF26 serialization form');
+  });
+
+  test('Should encrypt a memo for another account via Keychain using the memo role, decryptable by the real recipient memo key.', async ({ page, extensionId, context, baseDirectoryPath, testedAccountAuthorityData }) => {
+    page.on("console", (msg) => {
+      console.log(`[${msg.type()}]>> Page console: ${msg.text()}`);
+    });
+
+    page.setViewportSize({ width: 500, height: 700 });
+
+    {
+    await page.goto(`chrome-extension://${extensionId}/popup.html`, { waitUntil: 'load' });
+
+    const input = page.getByPlaceholder('New Password');
+    const confirm = page.getByPlaceholder('Confirm');
+    await input.fill('Password123');
+    await confirm.fill('Password123');
+    const checkbox = page.locator('#accept-terms-and-condition-inner-input');
+    await checkbox.click();
+
+    await page.getByTestId('signup-button').click();
+    }
+
+    await page.goto(`chrome-extension://${extensionId}/popup.html`, { waitUntil: 'load' });
+
+    await configureUserAccount(page, 'hive.fund', testedAccountAuthorityData.privateKey);
+
+    await page.waitForLoadState('domcontentloaded');
+
+    /// Imported via its MEMO key (not posting) to exercise the memo-role request path.
+    let retries = 0;
+    while(++retries < 5){
+
+    try {
+      const skip = page.getByText('Skip');
+      await skip.waitFor({ timeout: 3000 });
+      await skip.click();
+      break;
+    } catch {
+      console.log('Skip button not found...');
+    }
+
+    await importPreferences(context, extensionId, baseDirectoryPath);
+
+    await page.goto(`chrome-extension://${extensionId}/popup.html`, { waitUntil: 'load' });
+
+    try{
+    const settingsCtrl = page.getByTestId('clickable-settings').locator('path');
+    await settingsCtrl.waitFor({ timeout: 1000 });
+    await settingsCtrl.click();
+    await page.getByText('Accounts').click();
+    await page.getByText('Add account').click();
+  }
+    catch(e){
+      console.log('Settings navigation failed, Keychain UI may have changed, attempting direct account configuration...');
+    }
+
+    try {
+      await configureUserAccount(page, testedAccountAuthorityData.accountName, testedAccountAuthorityData.memoPrivateKey);
+      console.log('Account config passed... Await skip button');
+    }
+    catch(e){
+      console.log(`Account configuration attempt failed: ${e}, retrying...`);
+    }
+  }
+
+    await page.getByTestId('selected-account-name').click();
+    await page.getByRole('button', { name: testedAccountAuthorityData.accountName }).click();
+
+    const testPage: Page = page;
+
+    await testPage.goto('http://127.0.0.1:1234', { waitUntil: 'load' });
+
+    console.log("Acquiring a popupPromise");
+
+    const popupPromise = context.waitForEvent('page');
+
+    const memoEncryptButton = testPage.getByRole('button', {name: 'Encrypt Memo Via Keychain'});
+    await memoEncryptButton.waitFor();
+
+    console.log("Attempting to press 'Encrypt Memo Via Keychain'");
+
+    await memoEncryptButton.focus();
+    await memoEncryptButton.click({delay: 750});
+
+    console.log("Awaiting popupPromise");
+
+    const popup = await popupPromise;
+
+    console.log("new popup detected");
+    const popupSubmitButton = popup.getByRole('button', {name: 'Confirm'});
+    await popupSubmitButton.waitFor();
+    await popupSubmitButton.focus();
+    await popupSubmitButton.click({delay: 750});
+
+    await popup.waitForEvent('close');
+
+    const memoResultElement = await testPage.waitForSelector('#memo-encrypt-result');
+    const encryptedMemo = await memoResultElement.textContent() as string;
+
+    console.log(`Received encrypted memo: ${encryptedMemo}`);
+
+    expect(encryptedMemo.startsWith('#')).toBe(true);
+
+    /// Decrypt with the real recipient's memo key, independent of Keychain - pre-fix this
+    /// used the recipient's posting key instead, so their real memo key couldn't decrypt it.
+    const chain = await createHiveChain({chainId: "4200000000000000000000000000000000000000000000000000000000000000", apiEndpoint: "https://api.fake.openhive.network"});
+    const beekeeperInstance = await createBeekeeper({inMemory: true});
+    const session = beekeeperInstance.createSession("recipient salt and pepper");
+    const {wallet: recipientWallet} = await session.createWallet("recipient-wallet", "somePass", true);
+    await recipientWallet.importKey(testedAccountAuthorityData.recipient.memoPrivateKey);
+
+    const decrypted = await chain.decrypt(recipientWallet, encryptedMemo);
+
+    expect(decrypted).toBe(memoTestMessage);
   });
 });

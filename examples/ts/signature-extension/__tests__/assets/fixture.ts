@@ -2,14 +2,14 @@ import { chromium, test as base, type BrowserContext } from "@playwright/test";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 
-import { type TTestAccountAuthorityData, prepareTestingEnvironemnt } from "../../common-data"; 
+import { type TTestEnvData, type TMemoRecipientData, prepareTestingEnvironemnt, prepareMemoRecipient } from "../../common-data";
 import { _ } from "@hiveio/wax";
 
 export const test = base.extend<{
   context: BrowserContext,
   extensionId: string
   ,baseDirectoryPath: string
-  ,testedAccountAuthorityData: TTestAccountAuthorityData
+  ,testedAccountAuthorityData: TTestEnvData & { recipient: TMemoRecipientData }
 }>({
   context: async ({}, use) => {
     console.log('Launched browser');
@@ -35,6 +35,7 @@ export const test = base.extend<{
   },
   testedAccountAuthorityData: async ({}, use) => {
     const data = await prepareTestingEnvironemnt();
-    await use(data);
+    const recipient = await prepareMemoRecipient(data);
+    await use({...data, recipient});
   }
 });

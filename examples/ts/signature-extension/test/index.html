@@ -14,14 +14,16 @@
   <button onclick="usePeakVault()">Use Peak Vault</button>
   <button onclick="useMetaMask()">Use MetaMask</button>
   <button onclick="useBeekeeper()">Use Beekeeper</button>
+  <button onclick="useKeychainMemoEncrypt()">Encrypt Memo Via Keychain</button>
 
   <pre><code id="operating-private-key"></code></pre>
   <pre><code id="tx-result"></code></pre>
   <pre><code id="key-matching-result"></code></pre>
+  <pre><code id="memo-encrypt-result"></code></pre>
 
   <script type="module">
     import { createHiveChain } from "@hiveio/wax";
-    import { prepareTestingEnvironemnt, voteData } from "../common-data";
+    import { prepareTestingEnvironemnt, prepareMemoRecipient, voteData, memoTestMessage } from "../common-data";
     import KeychainProvider from "@hiveio/wax-signers-keychain";
     import PeakVaultProvider from "@hiveio/wax-signers-peakvault";
     import MetaMaskProvider from "@hiveio/wax-signers-metamask";
@@ -30,6 +32,7 @@
     const txResult = document.getElementById('tx-result');
     const operatingPrivateKeyPlaceholder = document.getElementById('operating-private-key');
     const keyMatchingPlaceholder = document.getElementById('key-matching-result');
+    const memoEncryptResult = document.getElementById('memo-encrypt-result');
 
     (async()=> {
       const testEnv = await prepareTestingEnvironemnt();
@@ -92,6 +95,22 @@
       const keychainProvider = KeychainProvider.for(accountName, testEnv.role);
 
       window.useKeychain = () => void sign(keychainProvider);
+
+      // Encrypting for another account (by name) hits Keychain's requestEncodeMessage,
+      // the handler the KeychainKeyTypes casing fix targeted.
+      const keychainMemoProvider = KeychainProvider.for(accountName, "memo");
+
+      window.useKeychainMemoEncrypt = async () => {
+        try {
+          memoEncryptResult.textContent = 'Encrypting...';
+          const recipient = await prepareMemoRecipient(testEnv); // lazy: don't delay useKeychain wiring above
+          const encrypted = await keychainMemoProvider.encryptData(memoTestMessage, recipient.accountName);
+          memoEncryptResult.textContent = encrypted;
+        } catch (error) {
+          console.error('Error encrypting memo:', error);
+          memoEncryptResult.textContent = `Error: ${error.message}`;
+        }
+      };
 
       let beekeeperProvider;
       try {
