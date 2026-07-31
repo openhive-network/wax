@@ -345,7 +345,7 @@ deploy_rust_crate_to_gitlab:
     # --workspace packages hiveio-wax-macros alongside hiveio-wax and verifies
     # wax's exact-version dependency on it against the just-packaged copy
     # instead of a registry index (stable since cargo 1.90).
-    - cargo package --workspace --allow-dirty
+    - cargo package -p hiveio-wax -p hiveio-wax-macros --allow-dirty
     # --fail-with-body needs curl >= 7.76 and the pypa_2_28 image ships 7.61,
     # so replicate it: print the response body, fail on non-2xx. Both crates
     # are uploaded: consumers extracting hiveio-wax need hiveio-wax-macros
