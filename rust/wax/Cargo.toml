@@ -37,7 +37,7 @@ futures-util = { version = "0.3", default-features = false, features = ["alloc"]
 # Proc-macro companion (the #[hive_api] attribute). Pinned exactly: the
 # generated code and this crate's items must move in lockstep.
 hiveio-wax-macros = { version = "=0.0.0", path = "../wax_macros" }
-pbjson = "0.7"
+pbjson = "0.9"
 percent-encoding = "2"
 prost = "0.13"
 prost-reflect = { version = "0.16", features = ["serde"] }
