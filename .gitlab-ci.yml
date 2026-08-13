@@ -368,6 +368,10 @@ wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
   variables:
+    # sccache's redis backend is intermittently unreachable from some runners
+    # and every compile stalls on server-startup timeout (3 consecutive
+    # pipelines); the wasm build is small enough to run uncached
+    WAX_DISABLE_COMPILER_CACHE: "1"
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
