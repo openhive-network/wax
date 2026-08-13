@@ -23,7 +23,7 @@ include:
 
   # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
   - project: 'hive/hive'
-    ref: 32854ea2c99dc05b8076e871101c5cd005343c3f
+    ref: 0694aa54501d6544ae5cbc504f45a354f2493618
     file:
       - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
@@ -48,10 +48,10 @@ variables:
   # Single image supports multiple Python versions via PYTHON_VERSION variable.
 
   # Base image from common-ci-configuration (used to build wax ci-base-image)
-  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-4"
+  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-pg18-4"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
-  CI_BASE_IMAGE_TAG: "pypa_2_28-13"
+  CI_BASE_IMAGE_TAG: "pypa_2_28-15"  # built on common-ci pypa_2_28-pg18-4, boost 1.88
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
   # wax-rust-builder image: the wax ci-base-image plus a stable Rust toolchain and
@@ -204,12 +204,15 @@ build_wheel:
   stage: build
   image: "${CI_BASE_IMAGE}"
   script:
+    # Workspaces/artifacts cached before the hived_admin(2001)->hived(1000)
+    # image user consolidation are not writable by the new uid
+    - sudo chown -R "$(id -u):$(id -g)" "${CI_PROJECT_DIR}" || true
     - echo "Building wheel for Python ${PYTHON_VERSION}"
     - python3 --version
     - ./python/wax/scripts/build_wax.sh 1
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+      - PYTHON_VERSION: ["3.14"]
   artifacts:
     when: always
     paths:
@@ -553,14 +556,14 @@ push_to_wiki:
   image: ${CI_BASE_IMAGE}
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+      - PYTHON_VERSION: ["3.14"]
 
 test_installing_wax_from_registry:
   stage: .post
   image: quay.io/pypa/manylinux_2_28:2026.01.16-1
   parallel:
     matrix:
-      - PYTHON_VERSION: ["3.12", "3.14"]
+      - PYTHON_VERSION: ["3.14"]
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   needs:
@@ -850,6 +853,9 @@ deploy_python_docs:
   variables:
     PAGES_URL: "${CI_PAGES_URL}/${CURRENT_URL}"
   script:
+    # See build_wheel: repair workspace ownership after the image uid change
+    - sudo chown -R "$(id -u):$(id -g)" "${CI_PROJECT_DIR}" || true
+    - sudo rm -rf "${CI_PROJECT_DIR}/public" || true
     - echo "Directory used for gitlab pages publishing ${PAGES_CONTENT_PATH}"
     - rm -rf $PAGES_CONTENT_PATH
     - mkdir -p $PAGES_CONTENT_PATH

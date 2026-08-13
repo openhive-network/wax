@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 
-import { initminerAccountApi, naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
+import { naiAsset, serialization_sensitive_transaction, serialization_sensitive_transaction_proto, transfer_operation, vote_operation, serializedWitnessSetProperties, realSerializedWitnessSetProperties } from "../assets/data.protocol";
 import type { IFormatFunctionArguments, ResourceCreditsOperationData, operation } from '../../dist/bundle/index';
 
 const {
@@ -285,18 +285,6 @@ test.describe('Wax object interface formatters tests', () => {
       extensions: [],
       signatures: []
     });
-  });
-
-  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ waxTest }) => {
-    const retVal = await waxTest(async({ chain }) => {
-      const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ], delayed_votes_active: true });
-
-      return chain.formatter.extend({ asset: { displayAsNai: false, appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(response.accounts[0]);
-    });
-
-    expect(
-      retVal
-    ).toEqual(initminerAccountApi);
   });
 
   test('Should be able to format custom JSON rc delegation operation using default formatter from the hive chain interface', async({ waxTest }) => {

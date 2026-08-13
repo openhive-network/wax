@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "core/foundation.hpp"
 
 #include "core/types.hpp"

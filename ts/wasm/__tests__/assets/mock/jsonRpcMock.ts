@@ -1,6 +1,7 @@
 import type { IJsonRpcMockData } from "../api-mock";
 import sunnyvo from "./data/sunnyvo";
 import steem from "./data/steem";
+import initminer from "./data/initminer";
 import data4nonexistingAccount from "./data/data4nonexistingaccount";
 import andablackwidow from "./data/andablackwidow";
 import sunnyvoAccounts from "./data/sunnyvoAccounts";
@@ -118,6 +119,9 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'steem')
       return steem;
+
+    if (accounts.length === 1 && accounts[0] === 'initminer')
+      return initminer;
 
     if (accounts.length === 1 && accounts[0] === '0steem')
       return data4nonexistingAccount;

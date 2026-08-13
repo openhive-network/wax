@@ -180,7 +180,6 @@ files = [
 
 [package.dependencies]
 frozenlist = ">=1.1.0"
-typing-extensions = {version = ">=4.2", markers = "python_version < \"3.13\""}
 
 [[package]]
 name = "anyio"
@@ -196,7 +195,6 @@ files = [
 
 [package.dependencies]
 idna = ">=2.8"
-typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
 trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
@@ -582,17 +580,17 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc12.dev20260402073300"
+version = "1.28.8rc12.dev20260727090705"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc12.dev20260402073300-py3-none-any.whl", hash = "sha256:ed4b180acf9c8fd90dfbdd3aceec5fbacfcb7ed865de6346250021c4c256518e"},
+    {file = "hiveio_api-1.28.8rc12.dev20260727090705-py3-none-any.whl", hash = "sha256:b99b01df21a78b1c48634a1de1deaf2be7f3764a1077196cb226edac6acba5c0"},
 ]
 
 [package.dependencies]
-hiveio-beekeepy = ">=1.28.6.post20260317125034,<2.0.0"
+hiveio-beekeepy = ">=1.28.6-post.0,<2.0.0"
 
 [package.source]
 type = "legacy"
@@ -644,7 +642,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "0.0.0"
+version = "2.0.2.dev20260803065659+dirty"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
@@ -653,7 +651,7 @@ files = []
 develop = true
 
 [package.dependencies]
-hiveio-api = "==1.28.8rc12.dev20260402073300"
+hiveio-api = "1.28.8rc12.dev20260727090705"
 httpx = {version = "^0.28.0", extras = ["http2"]}
 loguru = "^0.7.2"
 protobuf = "^6.33.0"
@@ -1898,5 +1896,5 @@ propcache = ">=0.2.1"
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.12,<4"
-content-hash = "bd0efe6673b9cd050f0e3124f80a07d27cd578e978429bbfecc62f13d661ef65"
+python-versions = ">=3.14,<4"
+content-hash = "dd0eca714a9c1b28c8e573a9975d7c3627efdedb2e8636ee4ff3568381418a5e"

@@ -1,16 +1,16 @@
 ARG BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:pypa_2_28-2
 FROM $BASE_IMAGE AS base_builder
 
-USER hived_admin
-WORKDIR /home/hived_admin
+USER hived
+WORKDIR /home/hived
 SHELL ["/bin/bash", "-c"]
 
 FROM base_builder AS boost_lib_source
 
-ARG BOOST_VERSION_TAG=boost-1.83.0
+ARG BOOST_VERSION_TAG=boost-1.88.0
 ENV BOOST_VERSION_TAG=${BOOST_VERSION_TAG}
 
-ENV TMP_SRC=/home/hived_admin/tmp_src
+ENV TMP_SRC=/home/hived/tmp_src
 
 RUN <<-EOF
   set -e
@@ -19,7 +19,7 @@ RUN <<-EOF
   cd "${TMP_SRC}"
 
   # Download release tarball instead of cloning ~180 submodules
-  curl -fSL "https://github.com/boostorg/boost/releases/download/${BOOST_VERSION_TAG}/${BOOST_VERSION_TAG}.tar.gz" \
+  curl -fSL "https://github.com/boostorg/boost/releases/download/${BOOST_VERSION_TAG}/${BOOST_VERSION_TAG}-b2-nodocs.tar.gz" \
     | tar xz
   mv "${BOOST_VERSION_TAG}" boost
 EOF
@@ -30,16 +30,16 @@ USER root
 
 ENV WAX_BOOST_ROOT=/wax_boost_root/
 
-ADD ./python/wax/scripts/prepare_boost.sh /home/hived_admin/prepare_boost.sh
+ADD ./python/wax/scripts/prepare_boost.sh /home/hived/prepare_boost.sh
 
 RUN mkdir -vp "${WAX_BOOST_ROOT}" && \
     chmod -R a+w "${WAX_BOOST_ROOT}" && \
-    /home/hived_admin/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}"
+    /home/hived/prepare_boost.sh "${TMP_SRC}" "${WAX_BOOST_ROOT}"
 
 FROM base_builder AS ci-base-image
 
 USER root
-WORKDIR /home/hived_admin
+WORKDIR /home/hived
 SHELL ["/bin/bash", "-c"]
 
 ENV WAX_BOOST_ROOT=/wax_boost_root/
@@ -72,11 +72,11 @@ RUN <<-EOF
   cd /tmp && rm -rf bzip2-1.0.8 bzip2-1.0.8.tar.gz
 EOF
 
-RUN curl -fsSL https://rpm.nodesource.com/setup_20.x | bash - && \
+RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && \
     yum install -y nodejs && \
     npm install -g npm@latest && \
     npm install -g pnpm typescript tsx
 
-USER hived_admin
+USER hived
 
-COPY --chown=hived_admin --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"
+COPY --chown=hived --from=boost_lib_builder "${WAX_BOOST_ROOT}" "${WAX_BOOST_ROOT}"

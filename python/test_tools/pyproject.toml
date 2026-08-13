@@ -26,7 +26,7 @@ packages = [
 poetry-dynamic-versioning = { version = "1.9.1", extras = ["plugin"] }
 
 [tool.poetry.dependencies]
-python = ">=3.12,<4"
+python = ">=3.14,<4"
 python-dateutil = "^2.8.2"
 abstractcp = "^1.0.0"
 msgspec = "^0.20.0"

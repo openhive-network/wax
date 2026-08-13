@@ -4,6 +4,7 @@ import { test } from '../assets/jest-helper';
 import { createServer } from '../assets/proxy-mock-server';
 import { JsonRpcMock } from '../assets/api-mock';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
+import { initminerAccountApi } from '../assets/data.protocol';
 import steem from '../assets/mock/data/steem';
 import data4nonexistingAccount from "../assets/mock/data/data4nonexistingaccount";
 import type { claim_account, operation } from '../../dist/bundle';
@@ -14,6 +15,22 @@ let closeServer: () => Promise<void>;
 test.describe('Wax base mock tests', () => {
   test.beforeAll(async () => {
     closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000);
+  });
+
+  // Moved from formatters.ts: retrieves "initminer" through the API and
+  // formats it with the default formatter. Runs against the mock (canned
+  // fixture) because the live account's vesting_withdraw_rate drifted
+  // on-chain, breaking the snapshot.
+  test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ waxTest }) => {
+    const retVal = await waxTest(async({ chain }) => {
+      const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ], delayed_votes_active: true });
+
+      return chain.formatter.extend({ asset: { displayAsNai: false, appendTokenName: true, formatAmount: true, locales: "en-US" } }).format(response.accounts[0]);
+    });
+
+    expect(
+      retVal
+    ).toEqual(initminerAccountApi);
   });
 
   test('Should be able to create proper legacy vote operation', async ({ waxTest }) => {
