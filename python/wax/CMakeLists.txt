@@ -67,7 +67,7 @@ LIST( APPEND  BOOST_COMPONENTS
       # iostreams
       # locale
       # regex
-      system
+      # system: header-only since boost 1.69; stub + cmake config removed in 1.89
       thread
       # program_options
       unit_test_framework )
