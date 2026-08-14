@@ -1,8 +1,7 @@
 // Canned database_api.find_accounts response for "initminer", captured from
-// api.hive.blog. vesting_withdraw_rate.amount is pinned to "1" (1 microVEST)
-// on purpose: the formatter snapshot exercises rendering of the smallest
-// non-zero VESTS value, and the live account's rate drifted to 0 on-chain
-// (which is exactly why this test must not hit a live endpoint).
+// api.hive.blog, so the formatter test is hermetic (the live account's
+// vesting_withdraw_rate previously drifted on-chain and broke the snapshot).
+// Values match the initminerAccountApi snapshot in ../../data.protocol.ts.
 export default {
   "id": 1,
   "jsonrpc": "2.0",
@@ -128,7 +127,7 @@ export default {
           "nai": "@@000000037"
         },
         "vesting_withdraw_rate": {
-          "amount": "1",
+          "amount": "0",
           "precision": 6,
           "nai": "@@000000037"
         },
