@@ -32,7 +32,7 @@ abstractcp = "^1.0.0"
 msgspec = "^0.20.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = "^1.28.6.dev0" # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
+hiveio-beekeepy = "^1.28.6-alpha.0" # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
 hiveio-schemas = "^1.28.2-post.0"
 hiveio-api = ">=1.28.8rc12.dev0"
 
