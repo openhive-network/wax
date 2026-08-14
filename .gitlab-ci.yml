@@ -54,6 +54,12 @@ variables:
   CI_BASE_IMAGE_TAG: "pypa_2_28-15"  # built on common-ci pypa_2_28-pg18-4, boost 1.88
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
+  # sccache's redis backend is intermittently unreachable from some runners;
+  # wasm-compiling jobs then either fail outright or eat the 60-minute job
+  # timeout on per-TU server-startup stalls. The emscripten build is small;
+  # run it uncached everywhere (toggle honored by ts/wasm/src/CMakeLists.txt).
+  WAX_DISABLE_COMPILER_CACHE: "1"
+
   # wax-rust-builder image: the wax ci-base-image plus a stable Rust toolchain and
   # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
   # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
@@ -368,10 +374,6 @@ wax_wasm_proto_tsc_generation:
   extends: .npm_build_template
   stage: build
   variables:
-    # sccache's redis backend is intermittently unreachable from some runners
-    # and every compile stalls on server-startup timeout (3 consecutive
-    # pipelines); the wasm build is small enough to run uncached
-    WAX_DISABLE_COMPILER_CACHE: "1"
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
     NPM_PACKAGE_SCOPE: "@hiveio"
