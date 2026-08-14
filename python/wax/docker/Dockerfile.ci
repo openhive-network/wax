@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-c"]
 
 FROM base_builder AS boost_lib_source
 
-ARG BOOST_VERSION_TAG=boost-1.88.0
+ARG BOOST_VERSION_TAG=boost-1.90.0
 ENV BOOST_VERSION_TAG=${BOOST_VERSION_TAG}
 
 ENV TMP_SRC=/home/hived/tmp_src

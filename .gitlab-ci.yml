@@ -48,17 +48,12 @@ variables:
   # Single image supports multiple Python versions via PYTHON_VERSION variable.
 
   # Base image from common-ci-configuration (used to build wax ci-base-image)
-  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-pg18-4"
+  COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-pg18-5"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
-  CI_BASE_IMAGE_TAG: "pypa_2_28-15"  # built on common-ci pypa_2_28-pg18-4, boost 1.88
+  CI_BASE_IMAGE_TAG: "pypa_2_28-16"  # built on common-ci pypa_2_28-pg18-5, boost 1.90
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
-  # sccache's redis backend is intermittently unreachable from some runners;
-  # wasm-compiling jobs then either fail outright or eat the 60-minute job
-  # timeout on per-TU server-startup stalls. The emscripten build is small;
-  # run it uncached everywhere (toggle honored by ts/wasm/src/CMakeLists.txt).
-  WAX_DISABLE_COMPILER_CACHE: "1"
 
   # wax-rust-builder image: the wax ci-base-image plus a stable Rust toolchain and
   # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
