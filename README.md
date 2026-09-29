@@ -1,8 +1,30 @@
-# wax
+# Wax
 
-An extension module to call hived cpp source code from Python and JavaScript.
+Wax provides Hive blockchain protocol features to **Python** and **TypeScript/JavaScript**. It wraps hived C++ source via Cython (Python) and WebAssembly (TypeScript).
 
-## Building
+## Packages for consumers
+
+| Language | Package | Registry README |
+|----------|---------|-----------------|
+| TypeScript / JavaScript | [`@hiveio/wax`](https://www.npmjs.com/package/@hiveio/wax) | [ts/README.md](ts/README.md) |
+| Python | [`hiveio-wax`](https://pypi.org/project/hiveio-wax/) | [python/wax/README.md](python/wax/README.md) |
+
+```bash
+npm install @hiveio/wax
+pip install hiveio-wax
+```
+
+## High-level documentation
+
+- Versioned docs with snippets: [https://doc.openhive.network/wax/](https://doc.openhive.network/wax/)
+- Latest / develop docs: [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
+- Building agents (WAX + Beekeeper + WorkerBee): [developers.hive.io — Building agents](https://developers.hive.io/quickstart/#quickstart-building-agents)
+
+TypeScript usage, frameworks, signers, and examples are documented in [ts/README.md](ts/README.md). Python usage is documented in [python/wax/README.md](python/wax/README.md).
+
+---
+
+## Building (contributors)
 
 You need to install protobuf compiler first:
 
@@ -10,7 +32,7 @@ You need to install protobuf compiler first:
 apt install protobuf-compiler
 ```
 
-### Python building and instaling
+### Python building and installing
 
 First, we need to have installed `poetry`. To do that, simply type:
 
@@ -31,7 +53,7 @@ In order to build wax python package, one need to simply type from root project 
 
 This script will generate wheel file using virtual environment of poetry  which will be saved in ./dist directory.
 
-#### Instaling
+#### Installing
 
 It is recomended to create python virtual env, and install wax package it there, for example:
 
@@ -103,7 +125,7 @@ cygdb . -- --args python3.12d ./test_pure_tx.py
 
 ### TypeScript Building
 
-All of the required TypeScript-related information is available in the [npm.ts.md](npm.ts.md) file
+All of the required TypeScript-related information is available in [ts/README.md](ts/README.md) (the same file published to npm as the `@hiveio/wax` README).
 
 ## Testing
 

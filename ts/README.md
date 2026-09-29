@@ -25,7 +25,11 @@ You can find the high-level documentation with snippets for this library at [htt
 
 where you can choose a version matching to this package.
 
-Latest, usualy not yet released/developer version of documenatation can be found at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
+Latest, usually not yet released / developer documentation can be found at [https://hive.pages.syncad.com/wax-doc](https://hive.pages.syncad.com/wax-doc)
+
+For building bots and automation on Hive (WAX + Beekeeper + WorkerBee), see [Building agents on developers.hive.io](https://developers.hive.io/quickstart/#quickstart-building-agents).
+
+Python consumers should use [`hiveio-wax`](https://pypi.org/project/hiveio-wax/) — see the [Python README](https://gitlab.syncad.com/hive/wax/-/blob/develop/python/wax/README.md).
 
 ## 🚀 Getting Started
 
@@ -39,6 +43,10 @@ Node.js 20.11 or higher is required.
 
 Installation is done using the
 [`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+
+```bash
+npm install @hiveio/wax
+```
 
 If you want to use development versions of our packages, set `@hiveio` scope to use our GitLab registry:
 
