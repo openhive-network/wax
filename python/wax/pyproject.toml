@@ -12,9 +12,13 @@ build-backend = "poetry_dynamic_versioning.backend"
 requires-poetry = "2.1.3"
 name = "hiveio-wax"
 version = "0.0.0"
-description = ""
+description = "Provides Hive Protocol features to Python"
+readme = "README.md"
+homepage = "https://gitlab.syncad.com/hive/wax"
 repository = "https://gitlab.syncad.com/hive/wax"
-authors = []
+documentation = "https://doc.openhive.network/wax/"
+authors = ["Hive Community <hive@openhive.network>"]
+keywords = ["hive", "blockchain", "wax", "transactions", "protocol"]
 packages = [{ include = "wax"}]
 include = [
     "wax/_private/proto/*",
