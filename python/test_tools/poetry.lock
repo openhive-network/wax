@@ -642,7 +642,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "2.0.2.dev20260803065659+dirty"
+version = "2.0.3rc0.dev20260814235539+dirty"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
@@ -1897,4 +1897,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<4"
-content-hash = "dd0eca714a9c1b28c8e573a9975d7c3627efdedb2e8636ee4ff3568381418a5e"
+content-hash = "a66d4577ce249587cb802657767a5f6b7298a37e3f9bc9cf7fca7d7628d2f725"
