@@ -180,6 +180,7 @@ files = [
 
 [package.dependencies]
 frozenlist = ">=1.1.0"
+typing-extensions = {version = ">=4.2", markers = "python_version < \"3.13\""}
 
 [[package]]
 name = "anyio"
@@ -195,6 +196,7 @@ files = [
 
 [package.dependencies]
 idna = ">=2.8"
+typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
 trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python_version >= \"3.10\""]
@@ -642,7 +644,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "1.28.8rc2.dev20260930141958+dirty"
+version = "1.28.8rc2.dev20261002075414+dirty"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
@@ -1896,5 +1898,5 @@ propcache = ">=0.2.1"
 
 [metadata]
 lock-version = "2.1"
-python-versions = ">=3.14,<4"
-content-hash = "a66d4577ce249587cb802657767a5f6b7298a37e3f9bc9cf7fca7d7628d2f725"
+python-versions = ">=3.12,<4"
+content-hash = "cf650f35579cbd64ec28f4293f12a862c629c3911f238db0502c117813e503b9"
