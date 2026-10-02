@@ -216,7 +216,7 @@ build_wheel:
   - ./python/wax/scripts/build_wax.sh 1
   parallel:
     matrix:
-    - PYTHON_VERSION: ["3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
   artifacts:
     when: always
     paths:
@@ -560,14 +560,14 @@ push_to_wiki:
   image: ${CI_BASE_IMAGE}
   parallel:
     matrix:
-    - PYTHON_VERSION: ["3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
 
 test_installing_wax_from_registry:
   stage: .post
   image: quay.io/pypa/manylinux_2_28:2026.01.16-1
   parallel:
     matrix:
-    - PYTHON_VERSION: ["3.14"]
+    - PYTHON_VERSION: ["3.12", "3.14"]
   variables:
     PYPROJECT_DIR: "${WAX_DIR}"
   needs:

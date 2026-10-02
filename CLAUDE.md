@@ -154,7 +154,7 @@ Key jobs:
 
 ## Development Notes
 
-- Python requires Python 3.14+ (check `python = ">=3.14,<4"` in pyproject.toml)
+- Python requires Python 3.12+ (check `python = ">=3.12,<4"` in pyproject.toml); wheels are built and tested for both 3.12 and 3.14
 - TypeScript requires Node.js 20.11+ or 21.2+
 - Tests use mock server for API calls (see `ts/wasm/__tests__/assets/proxy-mock-server.ts`)
 - Devcontainer available at `.devcontainer/devcontainer.json`
