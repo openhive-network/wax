@@ -564,7 +564,7 @@ push_to_wiki:
 
 test_installing_wax_from_registry:
   stage: .post
-  image: quay.io/pypa/manylinux_2_28:2026.01.16-1
+  image: quay.io/pypa/manylinux_2_28:2026.10.03-1
   parallel:
     matrix:
     - PYTHON_VERSION: ["3.12", "3.14"]
