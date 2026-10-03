@@ -21,6 +21,14 @@ All contributions must follow the established workflow rules from the [hive/hive
 - Keep commits atomic; use fixup commits for review feedback
 - Follow fast-forward merge strategy (rebase before merge)
 
+## Working in an AIDEV workflow
+When AIDEV runs you on an issue, no one is there to answer questions. GitLab CI doesn't run for AIDEV branches (`ai/*`, `session/*`, pushes to `aidev/integration`), so the pipeline and MR steps above don't apply there; the checks below are the verification.
+
+- **Check your change:** run `aidev test run --slot quick` once, after your last edit. It builds the TypeScript package the way CI's `wax_wasm_proto_tsc_generation` does (ts-proto, the emscripten wasm build of `core/` and the hive protocol, `tsc`), then builds the tests and runs the Playwright projects that need no network. `--slot full` adds the bundle (rollup, terser, `size-limit`) and the protobuf pattern check.
+- **Iterate:** `.aidev/run-checks.sh dev proto wasm tsc` (any prefix of `proto wasm tsc bundle proto-pattern build-tests tests`) runs those steps; each step needs the ones before it. The wasm build is incremental while `ts/wasm/build_wasm` survives.
+- **Not covered by the slots:** the Playwright projects that call `api.hive.blog` (`wax_testsuite`, `healthchecker_tests`, `wax_custom_chain_online_tx`, ...), the npm examples, and the Python and Rust packages. Say in the issue when a change needs one of them checked by hand.
+- **Dependencies:** a change to `ts/pnpm-lock.yaml`, the workspace file or `.npmrc` in `ts/npm-common-config`, or `packageManager` needs a new test image. Run `.aidev/runtime/build.sh --push` and put the printed reference in `.aidev/project.yaml` `environment.image` in the same commit (see `.aidev/README.md`).
+
 
 ## Overview
 

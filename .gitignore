@@ -250,3 +250,6 @@ storage_root-node
 /rust/crates/
 
 .DS_Store
+
+# AIDEV suite results (.aidev/run-checks.sh)
+/test-results/
