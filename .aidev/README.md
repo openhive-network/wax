@@ -56,7 +56,7 @@ the junit carries the property `fc-git-revision: fallback`.
 The suites run in a container with `--network none` and your uid. The image is the emsdk
 image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE` at the
 `hive/common-ci-configuration` ref `.gitlab-ci.yml` includes): emscripten 5.0.2, cmake,
-ninja, protoc, Boost for wasm, Node 22.21.1, pnpm 10.0.0 and Playwright's chromium. It
+ninja, protoc, Boost for wasm, Node 24.21.0, pnpm 10.0.0 and Playwright's chromium. It
 adds a pnpm store filled with `pnpm fetch`; `pnpm-deps.sh` installs `ts/node_modules`
 offline from it.
 

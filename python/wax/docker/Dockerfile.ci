@@ -72,7 +72,7 @@ RUN <<-EOF
   cd /tmp && rm -rf bzip2-1.0.8 bzip2-1.0.8.tar.gz
 EOF
 
-RUN curl -fsSL https://rpm.nodesource.com/setup_22.x | bash - && \
+RUN curl -fsSL https://rpm.nodesource.com/setup_24.x | bash - && \
     yum install -y nodejs && \
     npm install -g npm@latest && \
     npm install -g pnpm typescript tsx
