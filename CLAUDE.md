@@ -163,7 +163,7 @@ Key jobs:
 ## Development Notes
 
 - Python requires Python 3.12+ (check `python = ">=3.12,<4"` in pyproject.toml); wheels are built and tested for both 3.12 and 3.14
-- TypeScript requires Node.js 20.11+ or 21.2+
+- TypeScript requires Node.js 22+ (`engines.node` in ts/package.json); it is built and tested on Node.js 24 LTS (24.21.0, from the emsdk CI image)
 - Tests use mock server for API calls (see `ts/wasm/__tests__/assets/proxy-mock-server.ts`)
 - Devcontainer available at `.devcontainer/devcontainer.json`
 - once updating common-ci-configuration submodule both: ts/npm-common-config and gitlab-ci.yml include must be adjusted

@@ -1,7 +1,7 @@
 # Published as registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}.
 # When editing this file, bump the -rustN suffix of WAX_RUST_BUILDER_IMAGE_TAG in .gitlab-ci.yml:
 # CI runners pull with policy if-not-present, so a rebuild pushed under the same tag is ignored.
-FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-13
+FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-17
 
 ARG USER_NAME=user
 ARG USER_ID=1000

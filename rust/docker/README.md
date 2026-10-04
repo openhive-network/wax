@@ -4,7 +4,7 @@ This directory contains the container recipe used by [`rust/build.sh`](../build.
 
 ## Files
 
-- [`wax-rust-builder.dockerfile`](wax-rust-builder.dockerfile) — image definition. Based on the wax CI base image (`registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-13`) which ships prebuilt Boost, OpenSSL, CMake and gcc-toolset-14. Adds `protobuf-compiler`, a stable Rust toolchain and a non-root user whose UID/GID match the host.
+- [`wax-rust-builder.dockerfile`](wax-rust-builder.dockerfile) — image definition. Based on the wax CI base image (`registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-17`) which ships prebuilt Boost, OpenSSL, CMake and gcc-toolset-14. Adds `protobuf-compiler`, a stable Rust toolchain and a non-root user whose UID/GID match the host.
 
 ## Usage
 

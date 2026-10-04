@@ -15,8 +15,8 @@ RUN groupadd -g $GROUP_ID usergroup && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
     export NVM_DIR="/root/.nvm" && \
     . "$NVM_DIR/nvm.sh" && \
-    nvm install --lts && \
-    nvm use --lts
+    nvm install 24.21.0 && \
+    nvm use 24.21.0
 
 
 # Switch to created user

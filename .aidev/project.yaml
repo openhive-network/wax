@@ -30,7 +30,7 @@ branches:
 # (.aidev/runtime; rebuild and re-pin with .aidev/runtime/build.sh --push).
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:8741c7f770ea30f5646c179fa6062d268405d67c0d6a2c3080a03bbfedf5adff"
+  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:27eb4fb08b06bdf31cecb7041d37aed872a1afe02b3319194da8b34877843a8d"
   inputs: ["ts/pnpm-lock.yaml"]
 
 issues:
