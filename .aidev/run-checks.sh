@@ -42,8 +42,7 @@ fi
 
 # The Playwright projects CI runs (test_wax_wasm's matrix) whose tests need no
 # network: they call the wasm module itself or the local mock server
-# (wax_mock_tests, localhost:8000). wax_hive_assertion is not in CI's matrix and
-# is not run here either.
+# (wax_mock_tests, localhost:8000).
 OFFLINE_PROJECTS=(
     wax_utils
     wax_non_encrypted_operations
@@ -52,6 +51,7 @@ OFFLINE_PROJECTS=(
     wax_regression_tests
     wax_mock_tests
     wax_testsuite_protocol_benchmarks
+    wax_hive_assertion
 )
 # Tests in those projects that still reach api.hive.blog: the account-authority
 # builders read accounts from the chain, and the mock server proxies requests it

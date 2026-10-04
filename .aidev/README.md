@@ -37,8 +37,8 @@ Suites run with `--network none`. These parts of CI's `test_wax_wasm` matrix cal
 `api.hive.blog` and are not run: the projects `wax_testsuite`, `healthchecker_tests`,
 `wax_custom_chain_online_tx` and `wax_testsuite_custom_chain_options`, and the seven tests in
 `NETWORK_TESTS` (account-authority builders that read accounts from the chain, and two
-mock tests whose requests the mock server proxies upstream). `wax_hive_assertion` is
-not in CI's matrix and is not run either. On 2026-10-03 the bound set was 158 tests.
+mock tests whose requests the mock server proxies upstream). On 2026-10-03 the bound set
+was 158 tests.
 
 Also not run: the npm examples (`test_wax_wasm_examples`, they `pnpm install` from the
 network), the signature-extension example, and the npm-pack file listing.
