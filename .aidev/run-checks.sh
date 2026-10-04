@@ -84,20 +84,40 @@ step() {
 }
 
 # hive's fc reads its git revision at configure time. In a workflow container
-# the workspace is mounted without the gitdirs its submodules point to, so when
-# git can't read hive/libraries/fc the configure loads .aidev/cmake/git-fallback.cmake
+# its git metadata may not be readable the way fc reads it, so when fc's lookup
+# finds no HEAD (fc_git_head_readable) the configure loads .aidev/cmake/git-fallback.cmake
 # (through a `cmake` shim on PATH), which answers with a placeholder revision.
 # A marker in the build dir records which way it was configured; switching
 # rebuilds from scratch, because CMAKE_PROJECT_INCLUDE_BEFORE stays in the cache.
+# Ask fc's own GetGitRevisionDescription.cmake whether it finds a HEAD hash, not
+# git: fc resolves the `gitdir:` of hive/libraries/fc/.git as a path relative to
+# that directory and reads <gitdir>/HEAD itself. When the container gets git
+# metadata as link files with absolute gitdirs (ai/aidev#14661), `git rev-parse`
+# succeeds but fc's lookup still finds nothing and the configure stops with
+# "Git HEAD file not found".
+fc_git_head_readable() {
+    local probe rc=0
+    probe="$(mktemp -d)"
+    printf '%s\n' \
+        "include(\"$root/hive/libraries/fc/GitVersionGen/GetGitRevisionDescription.cmake\")" \
+        "get_git_head_revision(\"$root/hive/libraries/fc\" refspec hash)" \
+        'if(NOT hash OR hash MATCHES "NOTFOUND")' \
+        '  message(FATAL_ERROR "fc finds no git HEAD")' \
+        'endif()' > "$probe/probe.cmake"
+    (cd "$probe" && /usr/bin/cmake -P probe.cmake) > /dev/null 2>&1 || rc=1
+    rm -rf "$probe"
+    return "$rc"
+}
+
 wasm_build() {
     local build_dir=ts/wasm/build_wasm mode=git shim=""
-    if ! git -C hive/libraries/fc rev-parse --verify -q HEAD > /dev/null 2>&1; then
+    if ! fc_git_head_readable; then
         mode=fallback
         shim="$(mktemp -d)"
         printf '#!/bin/sh\nfor a in "$@"; do case "$a" in --install|--build|-E|-P) exec /usr/bin/cmake "$@" ;; esac; done\nexec /usr/bin/cmake -DCMAKE_PROJECT_INCLUDE_BEFORE=%s "$@"\n' \
             "$root/.aidev/cmake/git-fallback.cmake" > "$shim/cmake"
         chmod +x "$shim/cmake"
-        echo "git can't read hive/libraries/fc: configuring with .aidev/cmake/git-fallback.cmake" >&2
+        echo "fc finds no git HEAD in hive/libraries/fc: configuring with .aidev/cmake/git-fallback.cmake" >&2
         printf 'property\tfc-git-revision\tfallback (no git in the container)\n' >> "$cases"
     fi
     if [ -d "$build_dir" ] && [ "$(cat "$build_dir/.aidev-git-mode" 2>/dev/null)" != "$mode" ]; then

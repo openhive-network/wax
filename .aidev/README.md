@@ -45,11 +45,14 @@ network), the signature-extension example, and the npm-pack file listing.
 
 ### hive's fc and git
 
-hive's `libraries/fc` asks git for its revision at configure time and stops when git
-can't answer. A workflow container mounts the workspace without the gitdirs its
-submodules point to, so when `git -C hive/libraries/fc rev-parse HEAD` fails, `wasm`
-configures with `.aidev/cmake/git-fallback.cmake` (revision `000…0`, timestamp 0) and
-the junit carries the property `fc-git-revision: fallback`.
+hive's `libraries/fc` reads its revision at configure time and stops when it finds no
+HEAD. It does not ask git for this. It resolves the `gitdir:` of `hive/libraries/fc/.git`
+as a path relative to that directory and reads `<gitdir>/HEAD` itself. A workflow
+container's git metadata can be unreadable that way (no gitdirs mounted, or link files
+with absolute gitdirs, ai/aidev#14661) even when `git` itself works. So `wasm` runs fc's
+own `get_git_head_revision` first, and when that finds no hash it configures with
+`.aidev/cmake/git-fallback.cmake` (revision `000…0`, timestamp 0). The junit then
+carries the property `fc-git-revision: fallback`.
 
 ## The test runtime image (`runtime/`)
 

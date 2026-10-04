@@ -1,8 +1,9 @@
-# Loaded by .aidev/run-checks.sh (CMAKE_PROJECT_INCLUDE_BEFORE) only when git
-# cannot read hive/libraries/fc, as in an AIDEV workflow container: the workspace
-# is mounted alone, without the gitdirs its submodules point to. hive's fc asks
-# git for its revision and commit time at configure time and stops the build
-# when it gets no answer; this answers for it, and nothing else changes.
+# Loaded by .aidev/run-checks.sh (CMAKE_PROJECT_INCLUDE_BEFORE) only when fc's
+# own git lookup finds no HEAD in hive/libraries/fc, as in an AIDEV workflow
+# container: its git metadata is missing there, or comes as link files with
+# absolute gitdirs that fc's relative-path lookup can't follow. hive's fc reads
+# its revision and commit time at configure time and stops the build when it
+# gets no answer; this answers for it, and nothing else changes.
 #
 # Setting the include guard of fc's GetGitRevisionDescription.cmake makes its
 # INCLUDE() a no-op, so these definitions are the ones fc calls.
