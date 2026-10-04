@@ -10,7 +10,7 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
 
   const txValidate = async ({ chain, wax }: { chain: IWaxGlobals["chain"]; wax: IWaxGlobals["wax"] }, testedOp: operation) => {
     // Create transaction
-    const tx = await chain.createTransaction();
+    const tx = chain.createTransactionWithTaPoS('04c507a8c7fe5be96be64ce7c86855e1806cbde3', '2023-11-09T21:51:27');
     tx.pushOperation(testedOp);
 
     try {
@@ -26,6 +26,7 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
               detectedError: {
                 source: caughtAssertion.category,
                 expression: caughtAssertion.raw.extension.assertion_expression || "Unknown assertion expression",
+                context: caughtAssertion.extras.context,
                 hash: caughtAssertion.assertHash
               }
             };
@@ -50,10 +51,14 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
     };
     const op: operation = { claim_account_operation: testedOp };
     const retVal = await waxTest(txValidate, op);
+    // claim_account_operation::validate() checks the fee through the shared validate_asset_type()
+    // helper (hive 477d717460e7), so the expression and hash name the helper's assertion and
+    // the operation-specific message arrives as its context.
     expect(retVal.detectedError).toStrictEqual({
       source: "protocol",
-      expression: "is_asset_type( fee, HIVE_SYMBOL ) && \"Account claiming fee must be HIVE\"",
-      hash: "14687464191050907756"
+      expression: "is_asset_type( asset, symbol)",
+      context: "Account claiming fee must be HIVE",
+      hash: "7633970631494007356"
     });
 
     // Validate another invalid operation to trigger a different assertion ...
@@ -81,6 +86,7 @@ test.describe('WASM Protocol assertions', () => {
             detectedError: {
               type: d[0],
               expression: objectMsg.extension.assertion_expression || "Unknown assertion expression",
+              context: objectMsg.stack[0].data.context,
               hash: objectMsg.assert_hash || "Unknown assertion hash"
             }
           };
@@ -107,10 +113,14 @@ test.describe('WASM Protocol assertions', () => {
       }
     } as operation);
 
+    // claim_account_operation::validate() checks the fee through the shared validate_asset_type()
+    // helper (hive 477d717460e7), so the expression and hash name the helper's assertion and
+    // the operation-specific message arrives as its context.
     expect(retVal.detectedError).toStrictEqual({
       type: "cpp::wax_protocol_assertion",
-      expression: "is_asset_type( fee, HIVE_SYMBOL ) && \"Account claiming fee must be HIVE\"",
-      hash: "14687464191050907756"
+      expression: "is_asset_type( asset, symbol)",
+      context: "Account claiming fee must be HIVE",
+      hash: "7633970631494007356"
     });
   });
 });
