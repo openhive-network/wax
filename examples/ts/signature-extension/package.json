@@ -21,7 +21,7 @@
     "@parcel/transformer-typescript-tsc": "2.14.2",
     "playwright": "1.59.1",
     "@playwright/test": "1.59.1",
-    "@types/node": "^22.13.9",
+    "@types/node": "^24",
     "buffer": "^5.5.0||^6.0.0",
     "events": "^3.1.0",
     "parcel": "2.14.2",

@@ -26,7 +26,7 @@ workflow:
 include:
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
 - project: 'hive/common-ci-configuration'
-  ref: 4fd0bd8c4d3eedeb342f4cfa411726a3ae3ed662
+  ref: 1c0dc43e07ed44a5f87fe5d0b6a39ca0795f9ea6
   file:
   - '/templates/npm_projects.gitlab-ci.yml'
   - '/templates/wasm_build.gitlab-ci.yml'
@@ -65,7 +65,7 @@ variables:
   COMMON_CI_BASE_IMAGE_TAG: "pypa_2_28-pg18-5"
   COMMON_CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/common-ci-configuration/ci-base-image:${COMMON_CI_BASE_IMAGE_TAG}"
 
-  CI_BASE_IMAGE_TAG: "pypa_2_28-16"  # built on common-ci pypa_2_28-pg18-5, boost 1.90
+  CI_BASE_IMAGE_TAG: "pypa_2_28-17"  # built on common-ci pypa_2_28-pg18-5, boost 1.90, Node 24
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/wax/ci-base-image:${CI_BASE_IMAGE_TAG}"
 
 
@@ -73,7 +73,7 @@ variables:
   # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
   # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
   # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
-  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-13-rust2"
+  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-17-rust2"
   WAX_RUST_BUILDER_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}"
 
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
