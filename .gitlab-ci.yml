@@ -26,7 +26,7 @@ workflow:
 include:
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
 - project: 'hive/common-ci-configuration'
-  ref: 1c0dc43e07ed44a5f87fe5d0b6a39ca0795f9ea6
+  ref: 7dffa23eb3612b0e2f049e98260028c0134c0156
   file:
   - '/templates/npm_projects.gitlab-ci.yml'
   - '/templates/wasm_build.gitlab-ci.yml'
@@ -778,7 +778,6 @@ deploy_wax_wasm_production_public_npm:
   - .registry_npmjs_org_deploy_package_template
   stage: deploy
   variables:
-    NPM_PUBLISH_TOKEN: "$INTERNAL_HIDDEN_PUBLISH_TOKEN"
     NPM_PACKAGE_NAME: "wax"
     SOURCE_DIR: "${TS_SOURCE_DIR}"
     DIST_DIR: "${TS_DIST_DIR}"
