@@ -73,7 +73,7 @@ variables:
   # protobuf-compiler, used to build the rust/ wax package (its build.rs compiles C++ via CMake).
   # Built by the build_wax_rust_builder_image job from rust/docker/wax-rust-builder.dockerfile.
   # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
-  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-17-rust2"
+  WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-17-rust3"
   WAX_RUST_BUILDER_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}"
 
   # first party libraries gitlab index (group-level registry aggregating all hive packages):

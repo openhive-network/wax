@@ -10,9 +10,22 @@ ARG RUST_TOOLCHAIN=stable
 
 USER root
 
-RUN groupadd -g $GROUP_ID usergroup && \
-    useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
-    usermod -a -G $(id -g hived_admin) ${USER_NAME} && \
+# The base image may already own USER_ID/GROUP_ID (ci-base-image ships hived as UID 1000).
+# Such a user is renamed to USER_NAME; its old home stays reachable through a symlink
+# because the base image's PATH points into it.
+RUN set -e && \
+    if ! getent group "${GROUP_ID}" >/dev/null; then groupadd -g "${GROUP_ID}" usergroup; fi && \
+    existing_user=$(getent passwd "${USER_ID}" | cut -d: -f1) && \
+    if [ -z "${existing_user}" ]; then \
+      useradd -m -s /bin/bash -u "${USER_ID}" -g "${GROUP_ID}" "${USER_NAME}"; \
+    elif [ "${existing_user}" != "${USER_NAME}" ]; then \
+      old_home=$(getent passwd "${existing_user}" | cut -d: -f6) && \
+      old_group=$(id -gn "${existing_user}") && \
+      usermod -l "${USER_NAME}" -d "/home/${USER_NAME}" -m -s /bin/bash \
+        -g "${GROUP_ID}" -a -G "${old_group}" "${existing_user}" && \
+      ln -s "/home/${USER_NAME}" "${old_home}"; \
+    fi && \
+    if id hived_admin >/dev/null 2>&1; then usermod -a -G "$(id -g hived_admin)" "${USER_NAME}"; fi && \
     dnf install -y gdb curl protobuf-compiler && \
     dnf clean all
 
