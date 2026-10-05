@@ -34,7 +34,7 @@ set(BOOST_COMPONENTS
   context
   coroutine
   filesystem
-  system
+  # system: header-only since boost 1.69; stub + cmake config removed in 1.89
   thread
   unit_test_framework
 )
