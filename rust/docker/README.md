@@ -69,7 +69,7 @@ The dockerfile:
 - inherits `WAX_BOOST_ROOT=/wax_boost_root/` (set by the base image, points at the prebuilt Boost 1.83 install) and re-exports it as `BOOST_ROOT` so CMake's `find_package(Boost)` finds it
 - installs `protobuf-compiler` (required by `prost-build` in `proto_builder`, which regenerates the committed proto sources)
 - installs Rust via rustup with the `RUST_TOOLCHAIN` build-arg (default: `stable`)
-- creates a `user` account with build-arg `USER_ID` / `GROUP_ID` so files written through the bind mount are owned by the host user
+- creates a `user` account with build-arg `USER_ID` / `GROUP_ID` so files written through the bind mount are owned by the host user; if the base image already has a user with that UID (the ci-base-image ships `hived` as UID 1000), that user is renamed to `user` and its old home becomes a symlink to `/home/user`
 
 Build-args (with defaults):
 
