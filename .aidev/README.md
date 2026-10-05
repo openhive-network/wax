@@ -43,17 +43,6 @@ was 158 tests.
 Also not run: the npm examples (`test_wax_wasm_examples`, they `pnpm install` from the
 network), the signature-extension example, and the npm-pack file listing.
 
-### hive's fc and git
-
-hive's `libraries/fc` reads its revision at configure time and stops when it finds no
-HEAD. It does not ask git for this. It resolves the `gitdir:` of `hive/libraries/fc/.git`
-as a path relative to that directory and reads `<gitdir>/HEAD` itself. A workflow
-container's git metadata can be unreadable that way (no gitdirs mounted, or link files
-with absolute gitdirs, ai/aidev#14661) even when `git` itself works. So `wasm` runs fc's
-own `get_git_head_revision` first, and when that finds no hash it configures with
-`.aidev/cmake/git-fallback.cmake` (revision `000…0`, timestamp 0). The junit then
-carries the property `fc-git-revision: fallback`.
-
 ## The test runtime image (`runtime/`)
 
 The suites run in a container with `--network none` and your uid. The image is the emsdk

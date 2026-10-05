@@ -83,54 +83,15 @@ step() {
     fi
 }
 
-# hive's fc reads its git revision at configure time. In a workflow container
-# its git metadata may not be readable the way fc reads it, so when fc's lookup
-# finds no HEAD (fc_git_head_readable) the configure loads .aidev/cmake/git-fallback.cmake
-# (through a `cmake` shim on PATH), which answers with a placeholder revision.
-# A marker in the build dir records which way it was configured; switching
-# rebuilds from scratch, because CMAKE_PROJECT_INCLUDE_BEFORE stays in the cache.
-# Ask fc's own GetGitRevisionDescription.cmake whether it finds a HEAD hash, not
-# git: fc resolves the `gitdir:` of hive/libraries/fc/.git as a path relative to
-# that directory and reads <gitdir>/HEAD itself. When the container gets git
-# metadata as link files with absolute gitdirs (ai/aidev#14661), `git rev-parse`
-# succeeds but fc's lookup still finds nothing and the configure stops with
-# "Git HEAD file not found".
-fc_git_head_readable() {
-    local probe rc=0
-    probe="$(mktemp -d)"
-    printf '%s\n' \
-        "include(\"$root/hive/libraries/fc/GitVersionGen/GetGitRevisionDescription.cmake\")" \
-        "get_git_head_revision(\"$root/hive/libraries/fc\" refspec hash)" \
-        'if(NOT hash OR hash MATCHES "NOTFOUND")' \
-        '  message(FATAL_ERROR "fc finds no git HEAD")' \
-        'endif()' > "$probe/probe.cmake"
-    (cd "$probe" && /usr/bin/cmake -P probe.cmake) > /dev/null 2>&1 || rc=1
-    rm -rf "$probe"
-    return "$rc"
-}
-
 wasm_build() {
-    local build_dir=ts/wasm/build_wasm mode=git shim=""
-    if ! fc_git_head_readable; then
-        mode=fallback
-        shim="$(mktemp -d)"
-        printf '#!/bin/sh\nfor a in "$@"; do case "$a" in --install|--build|-E|-P) exec /usr/bin/cmake "$@" ;; esac; done\nexec /usr/bin/cmake -DCMAKE_PROJECT_INCLUDE_BEFORE=%s "$@"\n' \
-            "$root/.aidev/cmake/git-fallback.cmake" > "$shim/cmake"
-        chmod +x "$shim/cmake"
-        echo "fc finds no git HEAD in hive/libraries/fc: configuring with .aidev/cmake/git-fallback.cmake" >&2
-        printf 'property\tfc-git-revision\tfallback (no git in the container)\n' >> "$cases"
-    fi
-    if [ -d "$build_dir" ] && [ "$(cat "$build_dir/.aidev-git-mode" 2>/dev/null)" != "$mode" ]; then
-        rm -rf "$build_dir"
-    fi
-    mkdir -p "$build_dir" && echo "$mode" > "$build_dir/.aidev-git-mode"
+    local build_dir=ts/wasm/build_wasm
+    # A build dir configured by the former git fallback keeps its
+    # CMAKE_PROJECT_INCLUDE_BEFORE (a file no longer present) in the cache.
+    if [ -f "$build_dir/.aidev-git-mode" ]; then rm -rf "$build_dir"; fi
     # Direct execution (`1 <repo root>`): we are already inside the emsdk image.
     # No compiler cache: the slot has no sccache redis.
-    local rc=0
-    PATH="${shim:+$shim:}$PATH" AIDEV_FC_GIT_REVISION=0000000000000000000000000000000000000000 AIDEV_FC_GIT_TIMESTAMP=0 \
-        WAX_DISABLE_COMPILER_CACHE=1 bash ts/wasm/build_wasm_wax.sh 1 "$root" || rc=$?
-    [ -n "$shim" ] && rm -rf "$shim"
-    [ "$rc" -eq 0 ] && test -s ts/wasm/lib/build_wasm/wax.common.wasm
+    WAX_DISABLE_COMPILER_CACHE=1 bash ts/wasm/build_wasm_wax.sh 1 "$root" \
+        && test -s ts/wasm/lib/build_wasm/wax.common.wasm
 }
 
 # package.json `postbuild`, through `pnpm exec` rather than `pnpm run`: CI's
