@@ -89,7 +89,7 @@ done < <(find "${OUT_DIR}/build" -name '*.a' | sort)
 # corresponding -dev package requirement from consuming machines. libstdc++
 # and libc deliberately stay dynamic: bundling a second C++ runtime breaks
 # exception handling and RTTI in processes containing other C++ code.
-for component in chrono context coroutine filesystem system thread; do
+for component in chrono context coroutine filesystem thread; do
   ARCHIVES+=("$(find_static_lib "libboost_${component}.a")")
 done
 for lib in libssl.a libcrypto.a libz.a libbz2.a; do

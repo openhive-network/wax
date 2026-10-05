@@ -140,7 +140,6 @@ fn build_from_source(manifest_dir: &Path, repo_root: &Path) {
         "context",
         "coroutine",
         "filesystem",
-        "system",
         "thread",
     ] {
         println!("cargo:rustc-link-lib=boost_{component}");
