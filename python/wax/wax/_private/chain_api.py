@@ -120,7 +120,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             await transaction.perform_on_chain_verification()
 
         await self._internal_api.network_broadcast_api.broadcast_transaction(
-            trx=ApiTransaction(**transaction.to_dict()), max_block_age=-1
+            trx=ApiTransaction.from_builtins(transaction.to_dict()), max_block_age=-1
         )
 
     async def collect_account_authorities(

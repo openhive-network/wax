@@ -37,7 +37,7 @@ include:
 
   # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
 - project: 'hive/hive'
-  ref: 66c735a9c42cace2def83df3d373d608f018ea5f
+  ref: 96f04804395015ac449088f53d7ffa793818617d
   file:
   - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 

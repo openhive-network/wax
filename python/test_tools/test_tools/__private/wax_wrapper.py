@@ -37,7 +37,9 @@ from wax.wax_result import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from schemas.apis.wallet_bridge_api.fundaments_of_responses import Account as AccountSchema
+    from hiveio_api._validation.wallet_bridge_api import AccountDefault as AccountSchema
+    from hiveio_api._validation.wallet_bridge_api import Active, Owner, Posting
+
     from schemas.fields.assets._base import AssetHbd
     from schemas.fields.basic import PublicKey
     from schemas.fields.compound import Authority, Price
@@ -64,7 +66,7 @@ class WaxEncryptedMemo:
     encrypted_content: str
 
 
-def to_wax_authority(account_authority: Authority) -> wax_authority:
+def to_wax_authority(account_authority: Authority | Owner | Active | Posting) -> wax_authority:
     """
     Convert the given account authority (api form) to python authority (wax form).
 

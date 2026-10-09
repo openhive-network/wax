@@ -6,13 +6,18 @@ import shutil
 import subprocess
 import typing
 from pathlib import Path
-from typing import ClassVar, Final, Literal, overload
+from typing import Any, ClassVar, Final, Literal, overload
 
-from schemas.apis.block_api.fundaments_of_responses import (
-    BlockLogUtilSignedBlockBaseTransaction,
-    BlockLogUtilSignedBlockBaseTransactionLegacy,
-)
+from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.errors import ValidationError
+from schemas.fields.basic import AccountName, PublicKey  # noqa: TCH001  # runtime types of msgspec models below
+from schemas.fields.hex import (  # noqa: TCH001  # runtime types of msgspec models below
+    BlockId,
+    Signature,
+    TransactionId,
+)
+from schemas.fields.hive_datetime import HiveDateTime  # noqa: TCH001  # runtime types of msgspec models below
+from schemas.transaction import Transaction, TransactionLegacy  # noqa: TCH001  # runtime types of msgspec models below
 from test_tools.__private import paths_to_executables
 from test_tools.__private.exceptions import BlockLogError, BlockLogUtilError, MissingBlockLogArtifactsError
 from wax.helpy._interfaces.time import Time, TimeFormats
@@ -20,8 +25,26 @@ from wax.helpy._interfaces.time import Time, TimeFormats
 if typing.TYPE_CHECKING:
     from datetime import datetime
 
-BlockLogUtilResultTransaction = BlockLogUtilSignedBlockBaseTransaction
-BlockLogUtilResultTransactionLegacy = BlockLogUtilSignedBlockBaseTransactionLegacy
+
+class _BlockLogUtilSignedBlockBase(PreconfiguredBaseModel):
+    """Block printed by block_log_util (not an API response, so it is not generated from openapi.json)."""
+
+    extensions: list[Any]
+    previous: TransactionId
+    timestamp: HiveDateTime
+    transaction_merkle_root: TransactionId
+    witness: AccountName
+    block_id: BlockId
+    signing_key: PublicKey
+    witness_signature: Signature
+
+
+class BlockLogUtilResultTransaction(_BlockLogUtilSignedBlockBase):
+    transactions: list[Transaction]
+
+
+class BlockLogUtilResultTransactionLegacy(_BlockLogUtilSignedBlockBase):
+    transactions: list[TransactionLegacy]
 
 
 class BlockLog:

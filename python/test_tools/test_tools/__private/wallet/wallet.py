@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Final, get_args
 from beekeepy import Beekeeper
 from beekeepy.exceptions import WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
+from msgspec import UnsetType
 
 from schemas.fields.basic import PublicKey
 from schemas.fields.hex import Hex
@@ -349,7 +350,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
                     ),
                     block_num=broadcast_response.block_num,
                     transaction_num=broadcast_response.trx_num,
-                    rc_cost=broadcast_response.rc_cost,
+                    rc_cost=None if isinstance(broadcast_response.rc_cost, UnsetType) else broadcast_response.rc_cost,
                     ref_block_num=transaction.ref_block_num,
                     ref_block_prefix=transaction.ref_block_prefix,
                     expiration=transaction.expiration,

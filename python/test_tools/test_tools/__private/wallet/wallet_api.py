@@ -4,13 +4,15 @@ import time
 import warnings
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import TYPE_CHECKING, Annotated, Any, ParamSpec, cast
+from typing import TYPE_CHECKING, Annotated, Any, ParamSpec, TypeAlias, cast
+
+from msgspec import UnsetType
 
 from schemas.decoders import is_matching_model
 from schemas.fields.assets import AssetHive
 from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.basic import AccountName, EmptyList, PrivateKey, PublicKey
-from schemas.fields.compound import Authority, HbdExchangeRate, LegacyChainProperties, Proposal
+from schemas.fields.compound import Authority, HbdExchangeRate, LegacyChainProperties
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.integers import Int64t
 from schemas.fields.resolvables import JsonString
@@ -93,37 +95,9 @@ from wax.exceptions import WaxValidationFailedError
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    import hiveio_api._validation.wallet_bridge_api as wallet_bridge_models
     from beekeepy import UnlockedWallet
 
-    import schemas.apis.database_api.fundaments_of_reponses as fundaments_database_api
-    from schemas.apis.block_api.fundaments_of_responses import Hf26Block
-    from schemas.apis.wallet_bridge_api.response_schemas import (
-        FindProposals,
-        FindRcAccounts,
-        FindRecurrentTransfers,
-        GetAccount,
-        GetAccountHistory,
-        GetAccounts,
-        GetActiveWitnesses,
-        GetBlock,
-        GetCollateralizedConversionRequests,
-        GetConversionRequests,
-        GetFeedHistory,
-        GetOpenOrders,
-        GetOpsInBlock,
-        GetOrderBook,
-        GetOwnerHistory,
-        GetTransaction,
-        GetWithdrawRoutes,
-        GetWitness,
-        ListAccounts,
-        ListMyAccounts,
-        ListProposals,
-        ListProposalVotes,
-        ListRcAccounts,
-        ListRcDirectDelegations,
-        ListWitnesses,
-    )
     from schemas.base import Meta
     from schemas.fields.assets import AssetHbd, AssetVests
     from schemas.fields.hex import Hex
@@ -133,6 +107,34 @@ if TYPE_CHECKING:
     from schemas.transaction import Transaction
     from test_tools.__private.hived.api.metadata_api.models import FindAccountMetadata, GetAccountMetadata
     from test_tools.__private.hived.api.wallet_bridge_api.sync_api import WalletBridgeApi
+
+    # response types of wallet_bridge_api (validation models - Hive types)
+    FindProposals: TypeAlias = wallet_bridge_models.FindProposalsResponse
+    FindRcAccounts: TypeAlias = list[wallet_bridge_models.RcAccountDefault]
+    FindRecurrentTransfers: TypeAlias = list[wallet_bridge_models.RecurrentTransferDefault]
+    GetAccount: TypeAlias = wallet_bridge_models.WalletBridgeGetAccountResponse1 | None
+    GetAccountHistory: TypeAlias = list[list[int | wallet_bridge_models.AccountHistoryArray1]]
+    GetAccounts: TypeAlias = list[wallet_bridge_models.AccountDefault]
+    GetActiveWitnesses: TypeAlias = wallet_bridge_models.GetActiveWitnessesResponse
+    GetBlock: TypeAlias = wallet_bridge_models.GetBlockResponse
+    GetCollateralizedConversionRequests: TypeAlias = list[wallet_bridge_models.CollateralizedConversionRequestsDefault]
+    GetConversionRequests: TypeAlias = list[wallet_bridge_models.HbdConversion]
+    GetFeedHistory: TypeAlias = wallet_bridge_models.GetFeedHistoryResponse
+    GetOpenOrders: TypeAlias = list[wallet_bridge_models.LimitOrderDefault]
+    GetOpsInBlock: TypeAlias = wallet_bridge_models.GetOpsInBlockResponse
+    GetOrderBook: TypeAlias = wallet_bridge_models.MarketHistoryGetOrderBookResponse
+    GetOwnerHistory: TypeAlias = wallet_bridge_models.FindOwnerHistoriesResponse
+    GetTransaction: TypeAlias = wallet_bridge_models.GetTransactionResponse
+    GetWithdrawRoutes: TypeAlias = list[wallet_bridge_models.WithdrawVestingRoutes]
+    GetWitness: TypeAlias = wallet_bridge_models.WalletBridgeGetWitnessResponse1 | None
+    ListAccounts: TypeAlias = list[str]
+    ListMyAccounts: TypeAlias = list[wallet_bridge_models.AccountDefault]
+    ListProposals: TypeAlias = wallet_bridge_models.ListProposalsResponse
+    ListProposalVotes: TypeAlias = wallet_bridge_models.ListProposalVotesResponse
+    ListRcAccounts: TypeAlias = list[wallet_bridge_models.RcAccountDefault]
+    ListRcDirectDelegations: TypeAlias = list[wallet_bridge_models.RcAccountDelegation]
+    ListWitnesses: TypeAlias = wallet_bridge_models.ListWitnessesResponse
+    Hf26Block: TypeAlias = wallet_bridge_models.Block2
     from test_tools.__private.node import Node
     from test_tools.__private.remote_node import RemoteNode
     from test_tools.__private.wallet.single_transaction_context import SingleTransactionContext
@@ -1202,7 +1204,7 @@ class Api:
         proposal_ids: list[int],
         as_list: bool = False,
         only_result: bool | None = None,  # noqa: ARG002
-    ) -> FindProposals | HiveList[Proposal]:
+    ) -> FindProposals | list[wallet_bridge_models.Proposal]:
         """
         Finds proposals by their IDs.
 
@@ -1367,7 +1369,7 @@ class Api:
         """
         block = self.__wallet._force_connected_node.api.wallet_bridge.get_block(num)
         if only_block:
-            assert block.block is not None, "Block not exist"
+            assert not isinstance(block.block, UnsetType), "Block not exist"
             return block.block
         return block
 
@@ -1524,7 +1526,7 @@ class Api:
         account: AccountNameApiType,
         as_list: bool = False,
         only_result: bool | None = None,  # noqa: ARG002
-    ) -> HiveList[fundaments_database_api.OwnerHistoriesFundament] | GetOwnerHistory:
+    ) -> HiveList[wallet_bridge_models.OwnerAuth] | GetOwnerHistory:
         """
         Retrieves the owner history for a given account.
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from beekeepy.handle.remote import AbstractAsyncApi
+from wax.api.collection import WaxApiCollection
 
 if TYPE_CHECKING:
     from wax import IHiveChainInterface
@@ -54,3 +55,23 @@ def test_double_extend_api(remote_chain: IHiveChainInterface[ApiCollectionT]) ->
     assert hasattr(extended_chain_twice.api, "second_mock_api"), "Extended API should have second_mock_api attribute."
 
     assert_have_base_apis_available(extended_chain)
+
+
+class CondenserApiCollection(WaxApiCollection):
+    def __init__(self) -> None:
+        from hiveio_api.condenser_api import CondenserApi
+
+        self.condenser_api = CondenserApi
+
+
+def test_validate_schema_accepts_endpoints_of_extended_apis(remote_chain: IHiveChainInterface[ApiCollectionT]) -> None:
+    # ARRANGE
+    from hiveio_api import validate_schema
+
+    api = remote_chain.extends(CondenserApiCollection).api
+    assert isinstance(api, CondenserApiCollection)
+
+    # ACT & ASSERT
+    assert validate_schema({"accounts": []}, api.database_api.find_accounts) == []
+    assert validate_schema([], api.condenser_api.get_accounts) == []
+    assert validate_schema([{"name": "Invalid Name!"}], api.condenser_api.get_accounts) != []

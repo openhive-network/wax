@@ -11,8 +11,11 @@ if TYPE_CHECKING:
 
 
 class HasVestingInfo(Protocol):
-    total_vesting_shares: Any
-    total_vesting_fund_hive: Any
+    @property
+    def total_vesting_shares(self) -> Any: ...
+
+    @property
+    def total_vesting_fund_hive(self) -> Any: ...
 
 
 @dataclass

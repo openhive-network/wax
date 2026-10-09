@@ -34,11 +34,11 @@ def _warmup_msgspec_decoders() -> None:
     with contextlib.suppress(Exception):
         # Import and access schemas types to trigger annotation resolution
         # This ensures msgspec decoders are initialized before parallel operations
-        import schemas.apis.app_status_api  # Used by beekeepy.__discover_ports()
-        import schemas.apis.database_api.fundaments_of_reponses
-        import schemas.apis.database_api.response_schemas
-        import schemas.apis.network_node_api
-        import schemas.apis.wallet_bridge_api
+        import hiveio_api._validation.network_node_api
+        import hiveio_api._validation.wallet_bridge_api
+        import hiveio_api.app_status_api.app_status_api_description  # Used by beekeepy.__discover_ports()
+        import hiveio_api.database_api.database_api_description  # noqa: F401
+
         import schemas.transaction  # noqa: F401
 
         # Warm up the decoder cache by parsing sample responses

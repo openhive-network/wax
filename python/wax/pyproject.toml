@@ -41,7 +41,11 @@ loguru = "^0.7.2"
 python-dateutil = "^2.8.2"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"
-hiveio-api = {version = "1.28.8rc3", source = "gitlab-hive"}  # pinned: must match the version built from the hived submodule
+hiveio-api = {version = "1.28.8rc3.dev20261009134135", source = "gitlab-hive"}  # pinned: must match the version built from the hived submodule
+hiveio-beekeepy = {version = "1.28.6.dev20261007142719", source = "gitlab-hive"}
+# Ranges admit only development builds of the related merge requests - final and .post releases of these versions
+# predate them.
+hiveio-schemas = {version = ">=1.28.2.dev20261009130646,<1.28.2.dev99999999999999", source = "gitlab-hive", allow-prereleases = true}
 
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"

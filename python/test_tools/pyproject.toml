@@ -32,9 +32,11 @@ abstractcp = "^1.0.0"
 msgspec = "^0.20.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = "^1.28.6.dev0" # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
-hiveio-schemas = "^1.28.2-post.0"
-hiveio-api = ">=1.28.8rc1.dev0"
+hiveio-beekeepy = {version = "1.28.6.dev20261007142719", source = "gitlab-hive"} # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
+# Ranges admit only development builds of the related merge requests - final and .post releases of these versions
+# predate them.
+hiveio-schemas = {version = ">=1.28.2.dev20261009130646,<1.28.2.dev99999999999999", source = "gitlab-hive", allow-prereleases = true}
+hiveio-api = {version = ">=1.28.8rc3.dev20261009134135,<1.28.8rc3.dev99999999999999", source = "gitlab-hive", allow-prereleases = true}
 
 
 [tool.poetry.group.static-analysis.dependencies]
