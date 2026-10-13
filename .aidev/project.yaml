@@ -59,6 +59,18 @@ verification:
   quick:
     adapter: command
     args: [".aidev/run-checks.sh", "quick", "proto", "wasm", "tsc", "bundle", "build-tests", "tests"]
+    # The approved scope: the offline Playwright projects, in OFFLINE_PROJECTS
+    # order. run-checks.sh restricts `tests` to the projects it is given and runs
+    # them all when it is given every one, so `args` + `targets` is today's work.
+    targets:
+      - wax_utils
+      - wax_non_encrypted_operations
+      - wax_encrypted_operations
+      - wax_operation_factories
+      - wax_regression_tests
+      - wax_mock_tests
+      - wax_testsuite_protocol_benchmarks
+      - wax_hive_assertion
     artifacts: ["test-results/aidev-quick/"]
   full:
     adapter: command
@@ -84,6 +96,15 @@ verification:
     adapter: command
     args: [".aidev/run-checks.sh", "system", "proto", "wasm", "tsc", "bundle"]
     artifacts: ["test-results/aidev-system/"]
+
+# What quick could run for a change, proposed by .aidev/selector.py (a path table
+# over the targets above). `observe` only records the proposal; quick still runs
+# the whole approved scope. See .aidev/README.md.
+selection:
+  quick:
+    selector: .aidev/selector.py:select
+    mode: observe
+    on_empty: no_evidence
 
 # Capability grants for target-side code. Empty until this project needs one.
 capabilities: []

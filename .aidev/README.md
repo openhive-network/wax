@@ -9,10 +9,15 @@ Rust (`rust/`) packages are verified by CI only.
 
 ## Suites
 
-`.aidev/run-checks.sh <suite> <step>...` runs the named steps and writes
+`.aidev/run-checks.sh <suite> <step>... [<project>...]` runs the named steps and writes
 `test-results/aidev-<suite>/junit.xml`, one test case per step with the step's log tail
 as the failure body. `tests` adds `playwright-junit.xml` beside it, one case per test.
 A step after a failed one is reported as skipped.
+
+A `<project>` is a name in `OFFLINE_PROJECTS`. Naming any restricts `tests` to those
+Playwright projects; naming none runs them all. The other steps run whenever they are
+listed, because every test needs them. An argument that is neither a step nor an offline
+project exits 2 before anything runs.
 
 | Step | What | CI job it mirrors |
 |---|---|---|
@@ -30,6 +35,37 @@ A step after a failed one is reported as skipped.
 | full, canary | proto wasm tsc bundle proto-pattern build-tests tests |
 | static | proto wasm tsc proto-pattern |
 | system | proto wasm tsc bundle |
+
+`verification.quick` lists the eight offline projects as its `targets` (the approved
+scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs the
+same work as without them.
+
+### Test selection (`selector.py`, `observe`)
+
+`selection.quick` binds `.aidev/selector.py:select`. For each change it proposes which
+of quick's targets the change needs. In `observe` AIDEV only records the proposal
+(`proposed_targets`, `degenerate`, `unrecognised`) and quick still runs every target.
+Moving to `enforce` is a separate change, made with the observe evidence and its own
+`on_empty` decision. The selector is a path table walked by testbed-runner's `path_map`
+(longest prefix wins):
+
+| Changed path | Proposal |
+|---|---|
+| `ts/wasm/__tests__/detailed/<name>.ts` | the offline project whose `testMatch` in `ts/playwright.config.ts` matches `<name>.js` (`utils.ts` → `wax_utils`, `mock_base.ts` → `wax_mock_tests`); nothing when none does, as the online projects alone run it |
+| anything else under `ts/`, `core/`, `hive`, `.aidev/`, `.gitlab-ci.yml`, `.gitmodules` | all eight, `degenerate`: most tests run against the whole bundle through the `wasmTest` fixture, so a library change cannot be narrowed by imports |
+| `python/`, `rust/`, `examples/`, `.md` files outside `ts/` | nothing, `irrelevant`: no slot builds them |
+| any other path | nothing, `unrecognised` |
+
+Before proposing anything, `stale_rules()` checks the table against the checkout: each
+prefix must exist, and each approved target must be a project with a `testMatch` in
+`ts/playwright.config.ts`. If any check fails, the selector proposes the whole scope and
+names what failed. With no approved scope at all it proposes nothing but marks the
+proposal `degenerate`. When you add, remove or rename an offline project, change
+`OFFLINE_PROJECTS` and `verification.quick.targets` together.
+
+`test_selector.py` holds the selector's tests. Run them with an interpreter that has
+aidev's `testbed_runner`; no slot runs them. To see what a diff proposes, run
+`aidev test explain --diff <ref>`.
 
 ### What `tests` leaves out
 
