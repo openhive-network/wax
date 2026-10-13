@@ -4,7 +4,11 @@
 # the failure body), and the Playwright step adds one case per test in
 # test-results/aidev-<suite>/playwright-junit.xml.
 #
-#   .aidev/run-checks.sh <suite> <step>...
+#   .aidev/run-checks.sh <suite> <step>... [<project>...]
+#
+# A <project> is a name in OFFLINE_PROJECTS: naming any restricts the `tests` step
+# to those projects (the targets of verification.quick in project.yaml); naming
+# none runs them all. Any other argument exits 2 before anything runs.
 #
 # Steps, in the order the TypeScript package builds (each needs the ones before it):
 #   proto        ts/scripts/compile_proto_ts.sh: ts-proto from hive/libraries/protocol/proto
@@ -16,7 +20,7 @@
 #   proto-pattern  generated protobuf output equals ts/protobuf_patterns/proto
 #                (CI's test_wax_wasm_proto_pattern, without its npm-pack listing)
 #   build-tests  package.json `build:test`: the beekeeper signer and the test sources
-#   tests        Playwright, the projects in OFFLINE_PROJECTS below
+#   tests        Playwright, the projects in OFFLINE_PROJECTS below (or the named ones)
 #
 # Suites run with --network none. The Playwright projects that call api.hive.blog
 # (wax_testsuite, healthchecker_tests, wax_custom_chain_online_tx, ...) can't run
@@ -26,19 +30,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 root="$PWD"
 
-suite="${1:?usage: $0 <suite> <step>...}"; shift
-out="$root/test-results/aidev-$suite"
-rm -rf "$out"; mkdir -p "$out"
-cases="$out/cases.tsv"; : > "$cases"
-
-source .aidev/junit-helpers.sh
-# shellcheck source=pnpm-deps.sh
-if ! (cd ts && source ../.aidev/pnpm-deps.sh) > "$out/install.log" 2>&1; then
-    tail -40 "$out/install.log" >&2
-    printf 'case\tinstall\tfail\t0\tpnpm install --offline failed\t%s\n' "$out/install.log" >> "$cases"
-    junit_write_cases "$out/junit.xml" "$suite" "$cases"
-    exit 1
-fi
+suite="${1:?usage: $0 <suite> <step>... [<project>...]}"; shift
 
 # The Playwright projects CI runs (test_wax_wasm's matrix) whose tests need no
 # network: they call the wasm module itself or the local mock server
@@ -63,6 +55,35 @@ NETWORK_TESTS=(
     "authority trace with mock data with delegated authority where 2 accounts"
     "authority trace with mock data for 5 signatures where one of the public keys"
 )
+
+steps=()
+projects=()
+for a in "$@"; do
+    case "$a" in
+        proto|wasm|tsc|bundle|proto-pattern|build-tests|tests) steps+=("$a") ;;
+        *)
+            known=0
+            for p in "${OFFLINE_PROJECTS[@]}"; do [ "$a" = "$p" ] && known=1; done
+            if [ "$known" -eq 0 ]; then
+                echo "unknown step or offline Playwright project: $a" >&2; exit 2
+            fi
+            projects+=("$a") ;;
+    esac
+done
+[ "${#projects[@]}" -eq 0 ] && projects=("${OFFLINE_PROJECTS[@]}")
+
+out="$root/test-results/aidev-$suite"
+rm -rf "$out"; mkdir -p "$out"
+cases="$out/cases.tsv"; : > "$cases"
+
+source .aidev/junit-helpers.sh
+# shellcheck source=pnpm-deps.sh
+if ! (cd ts && source ../.aidev/pnpm-deps.sh) > "$out/install.log" 2>&1; then
+    tail -40 "$out/install.log" >&2
+    printf 'case\tinstall\tfail\t0\tpnpm install --offline failed\t%s\n' "$out/install.log" >> "$cases"
+    junit_write_cases "$out/junit.xml" "$suite" "$cases"
+    exit 1
+fi
 
 status=0
 failed=0
@@ -108,7 +129,7 @@ proto_pattern() {
 
 playwright_tests() {
     local rc=0 args=()
-    for p in "${OFFLINE_PROJECTS[@]}"; do args+=("--project=$p"); done
+    for p in "${projects[@]}"; do args+=("--project=$p"); done
     local invert; invert="$(IFS='|'; echo "${NETWORK_TESTS[*]}")"
     args+=(--grep-invert "$invert")
     rm -f ts/results.xml ts/results.json
@@ -120,7 +141,7 @@ playwright_tests() {
     return "$rc"
 }
 
-for s in "$@"; do
+for s in "${steps[@]}"; do
     case "$s" in
         proto) step proto bash -c 'cd ts && rm -rf wasm/dist && ./scripts/compile_proto_ts.sh' ;;
         wasm) step wasm wasm_build ;;
@@ -129,7 +150,6 @@ for s in "$@"; do
         proto-pattern) step proto-pattern proto_pattern ;;
         build-tests) step build-tests bash -c 'cd ts && pnpm run build:test' ;;
         tests) step tests playwright_tests ;;
-        *) echo "unknown step: $s" >&2; exit 2 ;;
     esac
 done
 junit_write_cases "$out/junit.xml" "$suite" "$cases"
