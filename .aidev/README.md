@@ -63,7 +63,7 @@ names what failed. With no approved scope at all it proposes nothing but marks t
 proposal `degenerate`. When you add, remove or rename an offline project, change
 `OFFLINE_PROJECTS` and `verification.quick.targets` together.
 
-`test_selector.py` holds the selector's tests. Run them with an interpreter that has
+`tests/test_selector.py` holds the selector's tests. Run them with an interpreter that has
 aidev's `testbed_runner`; no slot runs them. To see what a diff proposes, run
 `aidev test explain --diff <ref>`.
 

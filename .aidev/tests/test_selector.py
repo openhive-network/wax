@@ -1,7 +1,7 @@
 """Tests for selector.py, over the real checkout and over trees built to go stale.
 
 Run with an interpreter that has aidev's testbed_runner:
-``python -m pytest .aidev/test_selector.py``.
+``python -m pytest .aidev/tests/test_selector.py``.
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import pytest
 import yaml
 from testbed_runner.selection import Change, ChangedFile, Selection, SelectorContext
 
-_AIDEV = Path(__file__).resolve().parent
+_AIDEV = Path(__file__).resolve().parent.parent
 _ROOT = _AIDEV.parent
 
 _spec = importlib.util.spec_from_file_location("wax_selector", _AIDEV / "selector.py")
