@@ -37,13 +37,13 @@ export class WaxRequestError<T extends (object | string) = string> extends WaxEr
 
 export class WaxMalformedJsonError<T extends (object | string) = string> extends WaxRequestError<T> {
   public constructor(request: IRequestOptions, response: Partial<IDetailedResponseData<T>>) {
-    super(request, response, `Received malformed JSON while requesting given resource "${request.method} ${request.endpoint + request.url}": #${response.status!}`);
+    super(request, response, `Received malformed JSON in HTTP ${response.status!} response from "${request.method} ${request.endpoint + request.url}"`);
   }
 }
 
 export class WaxNon_2XX_3XX_ResponseCodeError<T extends (object | string) = string> extends WaxRequestError<T> {
-  public constructor(request: IRequestOptions, response: Partial<IDetailedResponseData<T>>) {
-    super(request, response, `Received non 2xx-3xx http response code while requesting given resource "${request.method} ${request.endpoint + request.url}": #${response.status!}`);
+  public constructor(request: IRequestOptions, response: Partial<IDetailedResponseData<T>>, statusText?: string) {
+    super(request, response, `HTTP ${response.status!}${statusText ? ` ${statusText}` : ""} from "${request.method} ${request.endpoint + request.url}"`);
   }
 }
 
