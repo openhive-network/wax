@@ -161,7 +161,7 @@ class TestApiExceptionParity:
         try:
             internal_api = remote_chain.api
             await internal_api.network_broadcast_api.broadcast_transaction(
-                trx=ApiTransaction(**tx_dict), max_block_age=-1
+                trx=ApiTransaction.from_builtins(tx_dict), max_block_age=-1
             )
         except WaxInvalidAccountNameError as ex:
             api_exception = ex

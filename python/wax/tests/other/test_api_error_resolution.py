@@ -255,7 +255,6 @@ class TestCommunicationErrorFallback:
                     caller._async_send(
                         method=("condenser_api", "get_version"),
                         expected_type=dict,
-                        serialization_type="hf26",
                     )
                 )
             assert isinstance(exc_info.value, WaxError)
