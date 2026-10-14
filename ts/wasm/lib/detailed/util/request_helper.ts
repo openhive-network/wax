@@ -1,4 +1,4 @@
-import { WaxMalformedJsonError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxRequestTimeoutError, WaxUnknownRequestError } from "../healthchecker/errors.js";
+import { WaxMalformedJsonError, WaxNon_2XX_3XX_ResponseCodeError, WaxRequestAbortedByUser, WaxRequestError, WaxRequestTimeoutError, WaxUnknownRequestError } from "../healthchecker/errors.js";
 
 export interface ISingleJitterData {
   loaded: number;
@@ -72,22 +72,29 @@ export class RequestHelper {
       const responseText = await response.text();
       runningData.response = responseText as T;
 
+      const isSuccessStatus = response.status >= 200 && response.status <= 399;
+
       // 204 No Content responses have no body
       if ((runningData.response as string).length > 0 && runningData.status !== 204) {
         try {
           runningData.response = JSON.parse(responseText);
         } catch {
-          throw new WaxMalformedJsonError<T>(config, runningData);
+          // Error responses (e.g. 503 from a proxy) often carry a non-JSON body - report the HTTP status for them instead
+          if (isSuccessStatus)
+            throw new WaxMalformedJsonError<T>(config, runningData);
         }
       }
 
       runningData.end = Date.now();
 
-      if(response.status < 200 || response.status > 399)
-        throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData);
+      if(!isSuccessStatus)
+        throw new WaxNon_2XX_3XX_ResponseCodeError<T>(config, runningData, response.statusText);
 
       return runningData as IDetailedResponseData<T>;
     } catch (error) {
+      if (error instanceof WaxRequestError)
+        throw error;
+
       if (typeof error !== "object" || !(error instanceof Error))
         throw new WaxUnknownRequestError<T>(config, runningData);
 
@@ -110,6 +117,10 @@ export class RequestHelper {
    * @returns {IDetailedResponseData<TResponse>} data for the account retrieval
    *
    * @throws {WaxNon_2XX_3XX_ResponseCodeError} HTTP Response code is not in range 200-399 (inclusive)
+   * @throws {WaxMalformedJsonError} HTTP Response code is in range 200-399 (inclusive), but the response body is not a valid JSON
+   * @throws {WaxRequestTimeoutError} Request did not complete within the configured timeout
+   * @throws {WaxRequestAbortedByUser} Request was aborted by the user agent
+   * @throws {WaxUnknownRequestError} Request failed without receiving a response (e.g. network or CORS error)
    */
   public async request<TResponse extends (object | string) = string>(config: IRequestOptions): Promise<IDetailedResponseData<TResponse>> {
     return await this.requestHandler(config);
