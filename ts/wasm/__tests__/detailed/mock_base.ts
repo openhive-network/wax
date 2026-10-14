@@ -2,7 +2,8 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { createServer } from '../assets/proxy-mock-server';
-import { JsonRpcMock } from '../assets/api-mock';
+import { AProxyMockResolver, JsonRpcMock } from '../assets/api-mock';
+import type { Request, Response } from 'express';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
 import { initminerAccountApi } from '../assets/data.protocol';
 import steem from '../assets/mock/data/steem';
@@ -11,10 +12,25 @@ import type { claim_account, operation } from '../../dist/bundle';
 import type { WaxAssertionError } from '../../dist/bundle';
 
 let closeServer: () => Promise<void>;
+let closeRawHttpServer: () => Promise<void>;
+
+class RawHttpResponseMock extends AProxyMockResolver {
+  public hasHandler(): boolean {
+    return true;
+  }
+
+  public handle(req: Request, res: Response): void {
+    if (req.path === "/unavailable")
+      res.status(503).type('text/plain').send('Service Unavailable');
+    else
+      res.status(200).type('text/plain').send('not a json');
+  }
+}
 
 test.describe('Wax base mock tests', () => {
   test.beforeAll(async () => {
     closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000);
+    closeRawHttpServer = await createServer(new RawHttpResponseMock(), 'api.hive.blog', 8001);
   });
 
   // Moved from formatters.ts: retrieves "initminer" through the API and
@@ -1164,7 +1180,40 @@ test.describe('Wax base mock tests', () => {
     ]);
   });
 
+  test('Should report HTTP error status instead of malformed JSON for non-JSON error responses', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax, chain }) => {
+      const failingChain = await wax.createHiveChain({ apiEndpoint: "http://localhost:8001/unavailable", chainId: chain.chainId, apiTimeout: 0 });
+
+      try {
+        await failingChain.api.database_api.get_dynamic_global_properties({});
+      } catch(error) {
+        return { message: (error as Error).message, hasCause: (error as Error).cause !== undefined, status: (error as { response?: { status?: number } }).response?.status };
+      }
+
+      return {};
+    });
+
+    expect(retVal).toStrictEqual({ message: 'HTTP 503 Service Unavailable from "POST http://localhost:8001/unavailable"', hasCause: false, status: 503 });
+  });
+
+  test('Should report malformed JSON for successful non-JSON responses', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ wax, chain }) => {
+      const failingChain = await wax.createHiveChain({ apiEndpoint: "http://localhost:8001", chainId: chain.chainId, apiTimeout: 0 });
+
+      try {
+        await failingChain.api.database_api.get_dynamic_global_properties({});
+      } catch(error) {
+        return { message: (error as Error).message, hasCause: (error as Error).cause !== undefined, status: (error as { response?: { status?: number } }).response?.status };
+      }
+
+      return {};
+    });
+
+    expect(retVal).toStrictEqual({ message: 'Received malformed JSON in HTTP 200 response from "POST http://localhost:8001"', hasCause: false, status: 200 });
+  });
+
   test.afterAll(async () => {
     await closeServer();
+    await closeRawHttpServer();
   });
 });
