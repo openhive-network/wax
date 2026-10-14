@@ -66,7 +66,7 @@ class UpdateProposalOperation(OperationBase):
         """Adds an end date to the proposal extensions, formatted to HIVE_TIME_FORMAT."""
         if self.data.end_date is None:
             return
-        hive_dt = HiveDateTime.resolve(HiveDateTime, self.data.end_date)
+        hive_dt = HiveDateTime(self.data.end_date)
         iso_without_ms = hive_dt.serialize()
         self.data.end_date = iso_without_ms
         self._add_end_date_extension()

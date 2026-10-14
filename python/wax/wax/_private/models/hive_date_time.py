@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from schemas.fields.resolvables import Resolvable
+from schemas.fields.serializable import Serializable
 
 from wax._private.core.constants import HIVE_TIME_FORMAT
 
@@ -12,7 +12,7 @@ __all__ = [
 ]
 
 
-class HiveDateTime(datetime, Resolvable["HiveDateTime", str | datetime]):
+class HiveDateTime(datetime, Serializable):
     def __new__(cls, value: str | datetime | HiveDateTime, *args: Any) -> HiveDateTime:  # NOQA: PYI034
         # source: https://stackoverflow.com/a/45981230
         if len(args) > 0:
@@ -32,7 +32,7 @@ class HiveDateTime(datetime, Resolvable["HiveDateTime", str | datetime]):
         )
 
     def __copy__(self) -> HiveDateTime:
-        return HiveDateTime.resolve(HiveDateTime, self.serialize())
+        return HiveDateTime(self.serialize())
 
     def __deepcopy__(self, memo: Any) -> HiveDateTime:  # NOQA: ANN401
         return self.__copy__()
@@ -51,10 +51,6 @@ class HiveDateTime(datetime, Resolvable["HiveDateTime", str | datetime]):
     @classmethod
     def __normalize(cls, value: datetime) -> datetime:
         return value.replace(tzinfo=timezone.utc)
-
-    @staticmethod
-    def resolve(incoming_cls: type, value: str | datetime) -> HiveDateTime:  # noqa: ARG004
-        return HiveDateTime(value=value)
 
     @staticmethod
     def now() -> HiveDateTime:  # type: ignore[override]

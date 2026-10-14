@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import atexit
 from functools import partial
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from beekeepy.exceptions import CommunicationError
 from beekeepy.handle.remote import AbstractAsyncHandle, AsyncBatchHandle, RemoteHandleSettings
@@ -11,7 +11,7 @@ from wax.exceptions.wax_error import WaxCommunicationError
 from wax.interfaces import ApiCollectionT
 
 if TYPE_CHECKING:
-    from schemas.jsonrpc import ExpectResultT, JSONRPCResult
+    from hiveio_api._communication.jsonrpc import ExpectResultT, JSONRPCResult
 
     from beekeepy._communication.abc.communicator_models import AsyncCallbacks, Methods
     from beekeepy._communication.url import HttpUrl as CommunicationHttpUrl
@@ -20,14 +20,23 @@ if TYPE_CHECKING:
 
 
 def api_collection_factory(api_collection: ApiCollectionT, owner: AsyncSendable) -> ApiCollectionT:
-    """Initializes the API collection with the owner."""
-    api_map = getattr(type(api_collection), "_API_MAP", None)
-    if api_map is not None:
-        items = api_map.items()
-    else:
-        items = ((k, v) for k, v in api_collection.__dict__.items() if callable(v) and not k.startswith("_"))
+    """
+    Initializes the API collection with the owner.
 
-    for api_name, api_definition in items:
+    APIs are declared by `_API_MAP` of collection classes (e.g. WaxApiCollection; maps of collections joined by
+    `extends` are merged) and by API classes assigned to the collection in its `__init__` (as in the example of
+    `extends`). Later declarations take precedence, so an extension can replace an API of the same name.
+    """
+    api_map: dict[str, type] = {}
+    for collection_class in reversed(type(api_collection).__mro__):
+        api_map.update(vars(collection_class).get("_API_MAP", {}))
+    api_map.update(
+        (name, definition)
+        for name, definition in api_collection.__dict__.items()
+        if callable(definition) and not name.startswith("_")
+    )
+
+    for api_name, api_definition in api_map.items():
         setattr(api_collection, api_name, api_definition(owner=owner))
 
     return api_collection
@@ -64,12 +73,11 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
             delay_error_on_data_access=delay_error_on_data_access,
         )
 
-    async def _async_send(  # noqa: PLR0913
+    async def _async_send(
         self,
         *,
         method: Methods,
         expected_type: type[ExpectResultT],
-        serialization_type: Literal["hf26", "legacy"],
         data: str | None = None,
         url: CommunicationHttpUrl | None = None,
         callbacks: AsyncCallbacks | None = None,
@@ -78,7 +86,6 @@ class WaxApiCaller(AbstractAsyncHandle[RemoteHandleSettings, ApiCollectionT]):  
             return await super()._async_send(
                 method=method,
                 expected_type=expected_type,
-                serialization_type=serialization_type,
                 data=data,
                 url=url,
                 callbacks=callbacks,

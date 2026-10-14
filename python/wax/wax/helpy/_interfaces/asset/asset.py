@@ -4,6 +4,7 @@ import contextlib
 from typing import Any, TypeAlias, TypeVar
 
 from schemas.fields.assets import (
+    AnyAsset,
     AssetHbd,
     AssetHive,
     AssetTbd,
@@ -11,7 +12,6 @@ from schemas.fields.assets import (
     AssetVests,
 )
 from schemas.fields.assets._base import AssetNaiAmount
-from schemas.fields.resolvables import AnyAsset
 
 from wax.helpy._interfaces.asset.decimal_converter import (
     DecimalConversionNotANumberError,
