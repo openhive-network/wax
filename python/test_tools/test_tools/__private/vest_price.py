@@ -3,16 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
-from schemas.fields.compound import Price
+from hiveio_api.operations import Price
 
 if TYPE_CHECKING:
     from schemas.fields.assets._base import AssetNaiAmount
+    from schemas.fields.base_type_mappings import NaiAsset
     from wax.helpy import Hf26Asset
 
 
 class HasVestingInfo(Protocol):
-    total_vesting_shares: Any
-    total_vesting_fund_hive: Any
+    @property
+    def total_vesting_shares(self) -> NaiAsset: ...
+
+    @property
+    def total_vesting_fund_hive(self) -> NaiAsset: ...
 
 
 @dataclass
@@ -40,4 +44,6 @@ class VestPrice:
         return {"quote": self.quote.as_nai(), "base": self.base.as_nai()}
 
     def as_schema(self) -> Price:
-        return Price(base=self.base, quote=self.quote)
+        from test_tools.__private.wallet.constants import as_nai_asset
+
+        return Price(base=as_nai_asset(self.base), quote=as_nai_asset(self.quote))

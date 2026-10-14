@@ -2,19 +2,17 @@ from __future__ import annotations
 
 import concurrent
 import concurrent.futures
+import dataclasses
 import os
 import time
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
+from hiveio_api.operations import AccountCreateOperation, Authority
 from loguru import logger
 
 from schemas.fields.assets import AssetHive
 from schemas.fields.assets._base import AssetNaiAmount
-from schemas.fields.compound import Authority
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.hive_int import HiveInt
-from schemas.operations.account_create_operation import AccountCreateOperation
 from test_tools.__private.account import Account
 from test_tools.__private.remote_node import RemoteNode
 from test_tools.__private.wallet.constants import (
@@ -22,6 +20,7 @@ from test_tools.__private.wallet.constants import (
     MULTIPLE_IMPORT_KEYS_BATCH_SIZE,
     SimpleTransaction,
     WalletResponseBase,
+    as_nai_asset,
 )
 from test_tools.__private.wax_wrapper import (
     calculate_sig_digest,
@@ -29,15 +28,16 @@ from test_tools.__private.wax_wrapper import (
     get_tapos_data,
     validate_transaction,
 )
+from wax.helpy import Time
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from beekeepy import Beekeeper, PackedSyncBeekeeper, UnlockedWallet
     from beekeepy.interfaces import HttpUrl
+    from hiveio_api.operations import Hf26OperationValue
 
     from schemas.fields.basic import PublicKey
-    from schemas.operations import Hf26Operations
     from test_tools.__private.node import Node
 
     AnyNode = Node | RemoteNode
@@ -60,9 +60,9 @@ def generate_transaction_template(node: RemoteNode) -> SimpleTransaction:
     assert ref_block_prefix > 0, f"ref_block_prefix value `{ref_block_prefix}` is invalid`"
 
     return SimpleTransaction(
-        ref_block_num=HiveInt(ref_block_num),
-        ref_block_prefix=HiveInt(ref_block_prefix),
-        expiration=HiveDateTime(datetime.fromisoformat(gdpo.time) + timedelta(seconds=1800)),
+        ref_block_num=ref_block_num,
+        ref_block_prefix=ref_block_prefix,
+        expiration=Time.serialize(datetime.fromisoformat(gdpo.time) + timedelta(seconds=1800)),
         extensions=[],
         signatures=[],
         operations=[],
@@ -84,22 +84,22 @@ def sign_transaction(
 
     transaction.signatures.append(signature)
 
-    transaction.signatures = list(set(transaction.signatures))
+    transaction.signatures[:] = dict.fromkeys(transaction.signatures)
     validate_transaction(transaction)
 
     return transaction
 
 
 def prepare_transaction(
-    operations: list[Hf26Operations], node: RemoteNode, beekeeper_wallet: UnlockedWallet
+    operations: list[Hf26OperationValue], node: RemoteNode, beekeeper_wallet: UnlockedWallet
 ) -> WalletResponseBase:
     transaction = generate_transaction_template(node)
 
-    account_creation_fee = node.api.wallet_bridge.get_chain_properties().account_creation_fee
+    account_creation_fee = as_nai_asset(node.api.wallet_bridge.get_chain_properties().account_creation_fee)
 
     for operation in operations:
         if isinstance(operation, AccountCreateOperation):
-            operation.fee = account_creation_fee
+            operation = dataclasses.replace(operation, fee=account_creation_fee)  # noqa: PLW2901
         transaction.add_operation(operation)
     transaction = sign_transaction(node, transaction, beekeeper_wallet)
 
@@ -140,7 +140,7 @@ def send_transaction(  # noqa: C901
             logger.debug(f"Accounts created: {accounts_range_message}")
 
     def broadcast_transaction(
-        operations: list[Hf26Operations], node: RemoteNode, beekeeper_wallet: UnlockedWallet
+        operations: list[Hf26OperationValue], node: RemoteNode, beekeeper_wallet: UnlockedWallet
     ) -> bool:
         def prepare_and_broadcast() -> None:
             trx = prepare_transaction(operations, node, beekeeper_wallet)
@@ -153,7 +153,7 @@ def send_transaction(  # noqa: C901
             fail_message=f"Failed to send transaction: {accounts_range_message}",
         )
 
-    operations: list[Hf26Operations] = []
+    operations: list[Hf26OperationValue] = []
     beekeeper = packed_beekeeper.unpack()
     node = RemoteNode(http_endpoint=node_address)
 
@@ -163,7 +163,7 @@ def send_transaction(  # noqa: C901
             creator="initminer",
             new_account_name=account.name,
             json_metadata="{}",
-            fee=AssetHive(AssetNaiAmount(1)),
+            fee=as_nai_asset(AssetHive(AssetNaiAmount(1))),  # replaced with the current fee before sending
             owner=get_authority(account.public_key),
             active=get_authority(account.public_key),
             posting=get_authority(account.public_key),

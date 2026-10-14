@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime  # noqa: TCH003
-from typing import Literal
 
 from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
 from hiveio_api import condenser_api
+from hiveio_api.operations import LegacyTransaction
 
-from schemas.transaction import TransactionLegacy
 from test_tools.__private.hived.api.condenser_api.common import CondenserApiCommons
 
 
 class CondenserApi(AbstractSyncApi, CondenserApiCommons):
     api = AbstractSyncApi.endpoint_jsonrpc
-
-    def _serialize_type(self) -> Literal["legacy"]:
-        return "legacy"
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.ARRAY
@@ -183,7 +179,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
 
     @api
     def get_transaction_hex(
-        self, transaction: TransactionLegacy, /
+        self, transaction: LegacyTransaction, /
     ) -> condenser_api.CondenserGetTransactionHexResponse:
         raise NotImplementedError
 
@@ -193,22 +189,22 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
 
     @api
     def get_required_signatures(
-        self, transaction: TransactionLegacy, public_key: str, /
+        self, transaction: LegacyTransaction, public_key: str, /
     ) -> condenser_api.CondenserGetRequiredSignaturesResponse:
         raise NotImplementedError
 
     @api
     def get_potential_signatures(
-        self, transaction: TransactionLegacy, /
+        self, transaction: LegacyTransaction, /
     ) -> condenser_api.CondenserGetPotentialSignaturesResponse:
         raise NotImplementedError
 
     @api
-    def verify_authority(self, transaction: TransactionLegacy, /) -> condenser_api.CondenserVerifyAuthorityResponse:
+    def verify_authority(self, transaction: LegacyTransaction, /) -> condenser_api.CondenserVerifyAuthorityResponse:
         raise NotImplementedError
 
     @api
-    def verify_account_authority(self, transaction: TransactionLegacy, /) -> bool:
+    def verify_account_authority(self, transaction: LegacyTransaction, /) -> bool:
         raise NotImplementedError
 
     @api
@@ -228,13 +224,13 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
 
     @api
     def broadcast_transaction(
-        self, transaction: TransactionLegacy, /
+        self, transaction: LegacyTransaction, /
     ) -> condenser_api.CondenserBroadcastTransactionResponse:
         raise NotImplementedError
 
     @api
     def broadcast_transaction_synchronous(
-        self, transaction: TransactionLegacy, /
+        self, transaction: LegacyTransaction, /
     ) -> condenser_api.CondenserBroadcastTransactionSynchronousResponse:
         raise NotImplementedError
 

@@ -10,9 +10,9 @@ from typing import Any, Callable
 import requests
 
 from schemas.fields.assets import AssetBase
-from schemas.fields.resolvables import JsonString
+from schemas.fields.json_string import JsonString
 from schemas._preconfigured_base_model import PreconfiguredBaseModel
-from schemas.operations import AnyLegacyOperation
+from hiveio_api import HiveModel
 from beekeepy.exceptions import UnableToAcquireDatabaseLockError, UnableToAcquireForkdbLockError, CommunicationError
 from loguru import logger
 from wax.helpy import Time
@@ -26,6 +26,8 @@ class CommonJsonEncoder(json.JSONEncoder):
             return o.serialize()
         if isinstance(o, PreconfiguredBaseModel):
             return o.dict()
+        if isinstance(o, HiveModel):  # public models (e.g. operations) - JSON keys of the API, assets in their form
+            return json.loads(o.json())
 
         return super().default(o)
 
@@ -34,8 +36,6 @@ class LegacyJsonEncoder(CommonJsonEncoder):
     def default(self, o: Any):
         if isinstance(o, AssetBase):
             return o.as_legacy()
-        if isinstance(o, AnyLegacyOperation):
-            return (o[0], o[1].dict(exclude_none=True))
         return super().default(o)
 
 

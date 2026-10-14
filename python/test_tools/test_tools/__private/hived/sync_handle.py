@@ -3,8 +3,12 @@ from __future__ import annotations
 import math
 from typing import TYPE_CHECKING, Generic
 
+import msgspec
 from beekeepy.handle.remote import AbstractSyncHandle, RemoteHandleSettings, RemoteSettingsT, SyncBatchHandle
+from hiveio_api import UnsupportedTypeError
+from hiveio_api._communication.jsonrpc import ExpectResultT, JSONRPCResult
 
+from schemas.decoders import dec_hook_hf26
 from test_tools.__private.hived.api.api_collection import HivedSyncApiCollection
 from test_tools.__private.hived.common_helpers import HiveHandleCommonHelpers
 from wax.helpy._interfaces.time import Time
@@ -12,6 +16,8 @@ from wax.helpy.exceptions import BlockWaitTimeoutError
 
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
+
+    from beekeepy.exceptions import Json
 
     from schemas.fields.basic import AccountName
 
@@ -24,6 +30,26 @@ class HivedTemplate(
 
     def _target_service(self) -> str:
         return self._hived_target_service_name()
+
+    @classmethod
+    def _response_handle(
+        cls,
+        response: Json | list[Json],
+        expected_type: type[ExpectResultT],
+        *,
+        is_jsonrpc: bool,
+    ) -> JSONRPCResult[ExpectResultT]:
+        """
+        Build the response - with validation when the expected type is a validation model.
+
+        API wrappers of test_tools are annotated with validation models (Hive types, `hiveio_api._validation`), which
+        cannot be built without validation - their results are converted with validation, as msgspec decodes them.
+        """
+        try:
+            return super()._response_handle(response, expected_type, is_jsonrpc=is_jsonrpc)
+        except UnsupportedTypeError:
+            result = response["result"] if is_jsonrpc and isinstance(response, dict) else response
+            return JSONRPCResult(result=msgspec.convert(result, type=expected_type, dec_hook=dec_hook_hf26))
 
     def get_dynamic_global_properties(self) -> HiveHandleCommonHelpers.GetDynamicGlobalPropertiesT:
         return self.api.database.get_dynamic_global_properties()

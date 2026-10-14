@@ -14,6 +14,7 @@ from beekeepy.exceptions import CommunicationError, FailedToStartExecutableError
 from beekeepy.handle.runnable import RunnableHandle
 from beekeepy.interfaces import AnyUrl, HttpUrl, P2PUrl, Stopwatch, WsUrl
 from beekeepy.settings import RunnableHandleSettings as Settings
+from msgspec import UnsetType
 
 from test_tools.__private import cleanup_policy, paths_to_executables
 from test_tools.__private.base_node import BaseNode
@@ -33,15 +34,20 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from beekeepy.handle.runnable import PortMatchingResult
+    from hiveio_api._validation.network_node_api import NetworkNodeSetAllowedPeersResponse as SetAllowedPeers
+    from hiveio_api.app_status_api.app_status_api_description import HTTP, P2P, WS
+    from hiveio_api.app_status_api.app_status_api_description import AppStatusGetAppStatusResponse as GetAppStatus
 
-    from schemas.apis.app_status_api.fundaments_of_responses import WebserverItem
-    from schemas.apis.app_status_api.response_schemas import GetAppStatus
-    from schemas.apis.network_node_api.response_schemas import SetAllowedPeers
+    WebserverItem = HTTP | WS | P2P
     from test_tools.__private.alternate_chain_specs import AlternateChainSpecs
     from test_tools.__private.executable_info import ExecutableInfo
     from test_tools.__private.user_handles.handles.network_handle import NetworkHandle
     from test_tools.__private.user_handles.handles.node_handles.node_handle_base import NodeHandleBase as NodeHandle
     from test_tools.__private.wallet.wallet import Wallet
+
+
+def _has_status(app_status: GetAppStatus, status: str) -> bool:
+    return any(item.status == status for item in app_status.statuses)
 
 
 class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], BaseNode, ScopedObject):
@@ -164,8 +170,9 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         return self.__process.get_supported_plugins()
 
     def get_id(self) -> str:
-        response = self.api.network_node.get_info()
-        return response.node_id
+        node_id = self.api.network_node.get_info().node_id
+        assert not isinstance(node_id, UnsetType), "network_node_api.get_info did not report node_id"
+        return node_id
 
     def set_allowed_nodes(self, nodes: list[Node]) -> SetAllowedPeers:
         return self.api.network_node.set_allowed_peers(allowed_peers=[node.get_id() for node in nodes])
@@ -424,7 +431,7 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         with Stopwatch() as sw:
             self.__wait_for_status(
                 deadline=math.inf,
-                predicate=lambda _, s: "finished replaying" in s.statuses,
+                predicate=lambda _, s: _has_status(s, "finished replaying"),
                 message="replay was not finished",
             )
         self.logger.info(f"Replay for {self.get_name()} finished; took {sw.seconds_delta :.6f} seconds")
@@ -669,7 +676,7 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         self.__validate_timeout(timeout)
         self.__wait_for_status(
             timeout=timeout,
-            predicate=lambda _, s: "entering live mode" in s.statuses,
+            predicate=lambda _, s: _has_status(s, "entering live mode"),
             message=f"{self.get_name()}: Live mode not activated on time.",
         )
 
@@ -677,7 +684,7 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         self.__validate_timeout(timeout)
         self.__wait_for_status(
             timeout=timeout,
-            predicate=lambda _, s: (("entering live mode" in s.statuses) or ("entering API mode" in s.statuses)),
+            predicate=lambda _, s: ((_has_status(s, "entering live mode")) or (_has_status(s, "entering API mode"))),
             message=f"{self.get_name()}: API or live mode not activated on time.",
         )
 
@@ -685,7 +692,7 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         self.__validate_timeout(timeout)
         self.__wait_for_status(
             timeout=timeout,
-            predicate=lambda _, s: "chain API ready" in s.statuses,
+            predicate=lambda _, s: _has_status(s, "chain API ready"),
             message=f"{self.get_name()}: Chain API not activated on time.",
         )
 
@@ -693,7 +700,7 @@ class Node(RunnableHandle[NodeProcess, NodeConfig, NodeArguments, Settings], Bas
         self.__validate_timeout(timeout)
         self.__wait_for_status(
             timeout=timeout,
-            predicate=lambda _, s: "entering API mode" in s.statuses,
+            predicate=lambda _, s: _has_status(s, "entering API mode"),
             message=f"{self.get_name()}: API mode not activated on time.",
         )
 

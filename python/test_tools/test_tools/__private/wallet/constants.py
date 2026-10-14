@@ -2,16 +2,27 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, Protocol, TypedDict, get_args
 
+from hiveio_api.operations import (
+    Authority,
+    Hf26Operation,
+    Hf26OperationValue,
+    Hf26Transaction,
+    LegacyChainProperties,
+    LegacyOperation,
+    LegacyTransaction,
+    Price,
+)
+
+from schemas.fields.assets import AssetBase
+from schemas.fields.base_type_mappings import NaiAsset
 from schemas.fields.basic import AccountName, EmptyString, PrivateKey, PublicKey, WitnessUrl
-from schemas.fields.compound import HbdExchangeRate
 from schemas.fields.hive_datetime import HiveDateTime
-from schemas.operations import convert_to_representation, convert_to_representation_legacy
-from schemas.transaction import Transaction, TransactionLegacy
 
 if TYPE_CHECKING:
-    from schemas.operation import Operation
+    from collections.abc import Sequence
+
     from test_tools.__private.node import Node
     from test_tools.__private.remote_node import RemoteNode
 
@@ -28,7 +39,7 @@ EmptyStringApiType = EmptyString | str
 HiveDateTimeApiType = HiveDateTime | datetime | str
 PublicKeyApiType = PublicKey | str
 WitnessUrlApiType = WitnessUrl | str
-HbdExchangeRateApiType = HbdExchangeRate | dict[str, str]
+HbdExchangeRateApiType = Price | dict[str, AssetBase]
 
 AuthorityType = Literal["active", "owner", "posting"]
 TransactionSerializationTypes = Literal["hf26", "legacy"]
@@ -57,22 +68,94 @@ class AuthorityHolder:
         return result
 
 
-class SimpleTransaction(Transaction):
-    def add_operation(self, operation: Operation) -> None:
-        representation = convert_to_representation(operation)
-        self.operations.append(representation)
+def as_nai_asset(asset: AssetBase) -> NaiAsset:
+    """Asset (e.g. `tt.Asset.Test(1)`) in the form of fields of public models."""
+    return NaiAsset(amount=str(asset.amount), precision=int(asset.precision()), nai=asset.nai())
 
 
-class SimpleTransactionLegacy(TransactionLegacy):
-    def add_operation(self, operation: Operation) -> None:
-        representation = convert_to_representation_legacy(operation)
-        self.operations.append(representation)
+def as_time(value: HiveDateTimeApiType) -> str:
+    """Time (e.g. `datetime`) in the form of fields of public models (`2026-01-01T00:00:00`)."""
+    return (value if isinstance(value, HiveDateTime) else HiveDateTime(value)).serialize()
 
 
+class ApiAuthority(Protocol):
+    """Authority of an account given by an API (e.g. `owner` of `wallet_bridge_api.get_account`)."""
+
+    @property
+    def weight_threshold(self) -> int: ...
+
+    @property
+    def account_auths(self) -> Sequence[Sequence[str | int]]: ...
+
+    @property
+    def key_auths(self) -> Sequence[Sequence[str | int]]: ...
+
+
+def as_authority(authority: ApiAuthority) -> Authority:
+    """Authority of an account given by an API (`weight_threshold`, `account_auths`, `key_auths`) as a public model."""
+    return Authority(
+        weight_threshold=authority.weight_threshold,
+        account_auths=[(str(account), int(weight)) for account, weight in authority.account_auths],
+        key_auths=[(str(key), int(weight)) for key, weight in authority.key_auths],
+    )
+
+
+class ChainProperties(TypedDict, total=False):
+    """Properties proposed by a witness given as a dict - the fee also as an asset of test_tools (`tt.Asset.Test`)."""
+
+    account_creation_fee: NaiAsset | AssetBase
+    maximum_block_size: int
+    hbd_interest_rate: int
+
+
+def as_chain_properties(props: LegacyChainProperties | ChainProperties) -> LegacyChainProperties:
+    """Properties proposed by a witness, also given as a dict with assets of test_tools, as a public model."""
+    if isinstance(props, LegacyChainProperties):
+        return props
+    if unknown := props.keys() - ChainProperties.__optional_keys__:
+        raise TypeError(f"Unknown properties of a witness: {sorted(unknown)}")
+    defaults = LegacyChainProperties()
+    fee = props.get("account_creation_fee", defaults.account_creation_fee)
+    return LegacyChainProperties(
+        account_creation_fee=as_nai_asset(fee) if isinstance(fee, AssetBase) else fee,
+        maximum_block_size=props.get("maximum_block_size", defaults.maximum_block_size),
+        hbd_interest_rate=props.get("hbd_interest_rate", defaults.hbd_interest_rate),
+    )
+
+
+HF26_FORMS: Final[dict[str, type[Hf26Operation]]] = {hf26_form.type: hf26_form for hf26_form in get_args(Hf26Operation)}
+"""HF26 forms of operations by their names (`transfer_operation`)."""
+
+
+def as_hf26_operation(operation: Hf26OperationValue) -> Hf26Operation:
+    """Operation (e.g. `TransferOperation`) in its HF26 form (`{"type": "transfer_operation", "value": ...}`)."""
+    return HF26_FORMS[operation.get_name_with_suffix()](value=operation)  # type: ignore[arg-type]
+
+
+@dataclass(frozen=True, kw_only=True)
+class SimpleTransaction(Hf26Transaction):
+    def add_operation(self, operation: Hf26OperationValue) -> None:
+        self.operations.append(as_hf26_operation(operation))
+
+
+@dataclass(frozen=True, kw_only=True)
+class SimpleTransactionLegacy(LegacyTransaction):
+    """Transaction in legacy form with its location in the block log (e.g. to be signed by cli_wallet)."""
+
+    block_num: int
+    transaction_id: str
+    transaction_num: int
+
+    def add_operation(self, operation: LegacyOperation) -> None:
+        self.operations.append(operation)
+
+
+@dataclass(frozen=True, kw_only=True)
 class WalletResponseBase(SimpleTransaction):
     transaction_id: str
 
 
+@dataclass(frozen=True, kw_only=True)
 class WalletResponse(WalletResponseBase):
     block_num: int
     transaction_num: int

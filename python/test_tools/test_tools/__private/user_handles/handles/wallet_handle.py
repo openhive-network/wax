@@ -13,8 +13,9 @@ from test_tools.__private.wallet.wallet import Wallet
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from hiveio_api.operations import Hf26OperationValue
+
     from schemas.fields.hex import Hex
-    from schemas.operations import Hf26Operations
     from test_tools.__private.account import Account
     from test_tools.__private.type_annotations.any_node import AnyNode
     from test_tools.__private.wallet.constants import TransactionSerializationTypes, WalletResponse, WalletResponseBase
@@ -79,7 +80,7 @@ class WalletHandle(Handle):
         return self.__implementation.in_single_transaction(broadcast=broadcast, blocking=blocking)
 
     def send(
-        self, operations: list[Hf26Operations], broadcast: bool, blocking: bool = True
+        self, operations: list[Hf26OperationValue], broadcast: bool, blocking: bool = True
     ) -> WalletResponseBase | WalletResponse | None:
         """
         Enable to sign and send transaction with any operations.

@@ -8,11 +8,21 @@ import typing
 from pathlib import Path
 from typing import ClassVar, Final, Literal, overload
 
-from schemas.apis.block_api.fundaments_of_responses import (
-    BlockLogUtilSignedBlockBaseTransaction,
-    BlockLogUtilSignedBlockBaseTransactionLegacy,
+from hiveio_api._validation.operations import (  # runtime types of msgspec models below
+    Hf26Transaction,
+    LegacyTransaction,
 )
+
+from schemas._preconfigured_base_model import PreconfiguredBaseModel
 from schemas.errors import ValidationError
+from schemas.fields.basic import AccountName, PublicKey  # noqa: TCH001  # runtime types of msgspec models below
+from schemas.fields.hex import (  # noqa: TCH001  # runtime types of msgspec models below
+    BlockId,
+    Signature,
+    TransactionId,
+)
+from schemas.fields.hive_datetime import HiveDateTime  # noqa: TCH001  # runtime types of msgspec models below
+from schemas.fields.hive_int import HiveInt  # noqa: TCH001  # runtime types of msgspec models below
 from test_tools.__private import paths_to_executables
 from test_tools.__private.exceptions import BlockLogError, BlockLogUtilError, MissingBlockLogArtifactsError
 from wax.helpy._interfaces.time import Time, TimeFormats
@@ -20,8 +30,34 @@ from wax.helpy._interfaces.time import Time, TimeFormats
 if typing.TYPE_CHECKING:
     from datetime import datetime
 
-BlockLogUtilResultTransaction = BlockLogUtilSignedBlockBaseTransaction
-BlockLogUtilResultTransactionLegacy = BlockLogUtilSignedBlockBaseTransactionLegacy
+
+class _BlockLogUtilSignedBlockBase(PreconfiguredBaseModel):
+    """Block printed by block_log_util (not an API response, so it is not generated from openapi.json)."""
+
+    extensions: list[object]
+    previous: TransactionId
+    timestamp: HiveDateTime
+    transaction_merkle_root: TransactionId
+    witness: AccountName
+    block_id: BlockId
+    signing_key: PublicKey
+    witness_signature: Signature
+
+
+class BlockLogUtilTransactionLegacy(LegacyTransaction, kw_only=True):
+    """Transaction in legacy form, printed by block_log_util with its location in the block log."""
+
+    block_num: HiveInt
+    transaction_id: TransactionId
+    transaction_num: HiveInt
+
+
+class BlockLogUtilResultTransaction(_BlockLogUtilSignedBlockBase):
+    transactions: list[Hf26Transaction]
+
+
+class BlockLogUtilResultTransactionLegacy(_BlockLogUtilSignedBlockBase):
+    transactions: list[BlockLogUtilTransactionLegacy]
 
 
 class BlockLog:

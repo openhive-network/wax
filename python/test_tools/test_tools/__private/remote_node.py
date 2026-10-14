@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from beekeepy.interfaces import HttpUrl, P2PUrl, WsUrl
+from msgspec import UnsetType
 
 from schemas.convert import to_builtins
 from test_tools.__private.base_node import BaseNode
@@ -37,7 +38,9 @@ class RemoteNode(BaseNode):
         return self.http_endpoint
 
     def get_p2p_endpoint(self) -> P2PUrl:
-        return P2PUrl(self.api.network_node.get_info().listening_on)
+        listening_on = self.api.network_node.get_info().listening_on
+        assert not isinstance(listening_on, UnsetType), "network_node_api.get_info did not report listening_on"
+        return P2PUrl(listening_on)
 
     @staticmethod
     def is_running() -> bool:

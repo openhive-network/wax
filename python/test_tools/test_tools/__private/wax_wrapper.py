@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 from schemas.fields.assets import AssetHive
 from schemas.fields.assets._base import AssetNaiAmount
@@ -37,11 +37,12 @@ from wax.wax_result import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from schemas.apis.wallet_bridge_api.fundaments_of_responses import Account as AccountSchema
-    from schemas.fields.assets._base import AssetHbd
+    from hiveio_api._validation.wallet_bridge_api import AccountDefault as AccountSchema
+    from hiveio_api._validation.wallet_bridge_api import Active, Owner, Posting
+    from hiveio_api.operations import Authority, Hf26Transaction
+
+    from schemas.fields.assets._base import AssetBase, AssetHbd
     from schemas.fields.basic import PublicKey
-    from schemas.fields.compound import Authority, Price
-    from schemas.transaction import Transaction
     from test_tools.__private.wallet.constants import AccountNameApiType
     from wax.models.key_data import IBrainKeyData
     from wax.wax_result import python_ref_block_data
@@ -64,7 +65,7 @@ class WaxEncryptedMemo:
     encrypted_content: str
 
 
-def to_wax_authority(account_authority: Authority) -> wax_authority:
+def to_wax_authority(account_authority: Authority | Owner | Active | Posting) -> wax_authority:
     """
     Convert the given account authority (api form) to python authority (wax form).
 
@@ -117,7 +118,7 @@ def get_tapos_data(head_block_id: str) -> python_ref_block_data:
     return wax_get_tapos_data(head_block_id)
 
 
-def validate_transaction(transaction: Transaction) -> None:
+def validate_transaction(transaction: Hf26Transaction) -> None:
     """
     Validate the given transaction.
 
@@ -134,7 +135,7 @@ def validate_transaction(transaction: Transaction) -> None:
     validate_wax_result(result)
 
 
-def calculate_transaction_id(transaction: Transaction) -> str:
+def calculate_transaction_id(transaction: Hf26Transaction) -> str:
     """
     Calculate the transaction id from the given transaction.
 
@@ -156,7 +157,7 @@ def calculate_transaction_id(transaction: Transaction) -> str:
     return expose_result_as_python_string(result)
 
 
-def calculate_legacy_transaction_id(transaction: Transaction) -> str:
+def calculate_legacy_transaction_id(transaction: Hf26Transaction) -> str:
     """
     Calculate the transaction id from the given transaction in the legacy format.
 
@@ -178,7 +179,7 @@ def calculate_legacy_transaction_id(transaction: Transaction) -> str:
     return expose_result_as_python_string(result)
 
 
-def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
+def calculate_sig_digest(transaction: Hf26Transaction, chain_id: str) -> str:
     """
     Calculate the sig digest from the given transaction and chain id.
 
@@ -201,7 +202,7 @@ def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
     return expose_result_as_python_string(result)
 
 
-def calculate_legacy_sig_digest(transaction: Transaction, chain_id: str) -> str:
+def calculate_legacy_sig_digest(transaction: Hf26Transaction, chain_id: str) -> str:
     """
     Calculate the sig digest from the given transaction and chain id in the legacy format.
 
@@ -229,7 +230,7 @@ def get_hive_protocol_config(chain_id: str) -> dict[str, str]:
 
 
 def minimize_required_signatures(
-    transaction: Transaction,
+    transaction: Hf26Transaction,
     chain_id: str,
     available_keys: list[PublicKey],
     retrived_authorities: dict[str, wax_authorities],
@@ -264,7 +265,7 @@ def minimize_required_signatures(
 
 
 def collect_signing_keys(
-    transaction: Transaction, retrieve_authorities: Callable[[list[str]], dict[str, wax_authorities]]
+    transaction: Hf26Transaction, retrieve_authorities: Callable[[list[str]], dict[str, wax_authorities]]
 ) -> list[str]:
     """
     Collect the signing keys for the given transaction.
@@ -282,10 +283,20 @@ def collect_signing_keys(
     return list(wax_collect_signing_keys(transaction.json(), retrieve_authorities))
 
 
+class PriceOfAssets(Protocol):
+    """Price given by an API (e.g. `current_median_history` of `get_feed_history`)."""
+
+    @property
+    def base(self) -> AssetBase: ...
+
+    @property
+    def quote(self) -> AssetBase: ...
+
+
 def estimate_hive_collateral(
     hbd_amount_to_get: AssetHbd,
-    current_median_history: Price,
-    current_min_history: Price,
+    current_median_history: PriceOfAssets,
+    current_min_history: PriceOfAssets,
 ) -> AssetHive:
     """
     Estimate the hive collateral for the given HBD amount to get.

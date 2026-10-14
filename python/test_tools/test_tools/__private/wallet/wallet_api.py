@@ -1,73 +1,76 @@
 from __future__ import annotations
 
+import dataclasses
+import json
 import time
 import warnings
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import TYPE_CHECKING, Annotated, Any, ParamSpec, cast
+from typing import TYPE_CHECKING, Annotated, Any, ParamSpec, TypeAlias, get_args
 
-from schemas.decoders import is_matching_model
+from hiveio_api.operations import (
+    AccountCreateOperation,
+    AccountCreateWithDelegationOperation,
+    AccountUpdateOperation,
+    AccountWitnessProxyOperation,
+    AccountWitnessVoteOperation,
+    Authority,
+    CancelTransferFromSavingsOperation,
+    ChangeRecoveryAccountOperation,
+    ClaimAccountOperation,
+    ClaimRewardBalanceOperation,
+    CollateralizedConvertOperation,
+    CommentOperation,
+    ConvertOperation,
+    CreateClaimedAccountOperation,
+    CreateProposalOperation,
+    CustomJsonOperation,
+    DeclineVotingRightsOperation,
+    DelegateVestingSharesOperation,
+    EscrowApproveOperation,
+    EscrowDisputeOperation,
+    EscrowReleaseOperation,
+    EscrowTransferOperation,
+    FeedPublishOperation,
+    Hf26OperationValue,
+    Hf26RecurrentTransferPairId,
+    Hf26Transaction,
+    Hf26UpdateProposalEndDate,
+    LegacyChainProperties,
+    LimitOrderCancelOperation,
+    LimitOrderCreateOperation,
+    Price,
+    RecoverAccountOperation,
+    RecurrentTransferOperation,
+    RecurrentTransferPairId,
+    RemoveProposalOperation,
+    RequestAccountRecoveryOperation,
+    SetWithdrawVestingRouteOperation,
+    TransferFromSavingsOperation,
+    TransferOperation,
+    TransferToSavingsOperation,
+    TransferToVestingOperation,
+    UpdateProposalEndDate,
+    UpdateProposalOperation,
+    UpdateProposalVotesOperation,
+    VoteOperation,
+    WithdrawVestingOperation,
+    WitnessUpdateOperation,
+)
+from msgspec import UnsetType
+
 from schemas.fields.assets import AssetHive
 from schemas.fields.assets._base import AssetNaiAmount
 from schemas.fields.basic import AccountName, EmptyList, PrivateKey, PublicKey
-from schemas.fields.compound import Authority, HbdExchangeRate, LegacyChainProperties, Proposal
-from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.integers import Int64t
-from schemas.fields.resolvables import JsonString
-from schemas.operations import (
-    AnyHf26Operation,
-    Hf26Operations,
-)
-from schemas.operations.account_create_operation import AccountCreateOperation
-from schemas.operations.account_create_with_delegation_operation import AccountCreateWithDelegationOperation
-from schemas.operations.account_update_operation import AccountUpdateOperation
-from schemas.operations.account_witness_proxy_operation import AccountWitnessProxyOperation
-from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
-from schemas.operations.cancel_transfer_from_savings_operation import CancelTransferFromSavingsOperation
-from schemas.operations.change_recovery_account_operation import ChangeRecoveryAccountOperation
-from schemas.operations.claim_account_operation import ClaimAccountOperation
-from schemas.operations.claim_reward_balance_operation import ClaimRewardBalanceOperation
-from schemas.operations.collateralized_convert_operation import CollateralizedConvertOperation
-from schemas.operations.comment_operation import CommentOperation
-from schemas.operations.convert_operation import ConvertOperation
-from schemas.operations.create_claimed_account_operation import CreateClaimedAccountOperation
-from schemas.operations.create_proposal_operation import CreateProposalOperation
-from schemas.operations.custom_json_operation import CustomJsonOperation
-from schemas.operations.decline_voting_rights_operation import DeclineVotingRightsOperation
-from schemas.operations.delegate_rc_operation import DelegateRcOperation
-from schemas.operations.delegate_vesting_shares_operation import DelegateVestingSharesOperation
-from schemas.operations.escrow_approve_operation import EscrowApproveOperation
-from schemas.operations.escrow_dispute_operation import EscrowDisputeOperation
-from schemas.operations.escrow_release_operation import EscrowReleaseOperation
-from schemas.operations.escrow_transfer_operation import EscrowTransferOperation
-from schemas.operations.feed_publish_operation import FeedPublishOperation
-from schemas.operations.follow_operation import FollowOperation
-from schemas.operations.limit_order_cancel_operation import LimitOrderCancelOperation
-from schemas.operations.limit_order_create_operation import LimitOrderCreateOperation
-from schemas.operations.recover_account_operation import RecoverAccountOperation
-from schemas.operations.recurrent_transfer_operation import RecurrentTransferOperation
-from schemas.operations.remove_proposal_operation import RemoveProposalOperation
-from schemas.operations.representation_types import (
-    HF26RepresentationDelegateRcOperation,
-    HF26RepresentationFollowOperation,
-)
-from schemas.operations.request_account_recovery_operation import RequestAccountRecoveryOperation
-from schemas.operations.set_withdraw_vesting_route_operation import SetWithdrawVestingRouteOperation
-from schemas.operations.transfer_from_savings_operation import TransferFromSavingsOperation
-from schemas.operations.transfer_operation import TransferOperation
-from schemas.operations.transfer_to_savings_operation import TransferToSavingsOperation
-from schemas.operations.transfer_to_vesting_operation import TransferToVestingOperation
-from schemas.operations.update_proposal_operation import UpdateProposalOperation
-from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation
-from schemas.operations.vote_operation import VoteOperation
-from schemas.operations.withdraw_vesting_operation import WithdrawVestingOperation
-from schemas.operations.witness_update_operation import WitnessUpdateOperation
+from schemas.validation import is_matching_model
 from test_tools.__private import exceptions
 from test_tools.__private.wallet.constants import (
     HIVE_MAX_TIME_UNTIL_EXPIRATION,
     HIVE_MAX_TIME_UNTIL_SIGNATURE_EXPIRATION,
     AccountNameApiType,
     AuthorityType,
+    ChainProperties,
     EmptyStringApiType,
     HbdExchangeRateApiType,
     HiveDateTimeApiType,
@@ -76,6 +79,10 @@ from test_tools.__private.wallet.constants import (
     WalletResponse,
     WalletResponseBase,
     WitnessUrlApiType,
+    as_authority,
+    as_chain_properties,
+    as_nai_asset,
+    as_time,
 )
 from test_tools.__private.wallet.create_accounts import (
     get_authority,
@@ -93,46 +100,43 @@ from wax.exceptions import WaxValidationFailedError
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    import hiveio_api._validation.wallet_bridge_api as wallet_bridge_models
     from beekeepy import UnlockedWallet
 
-    import schemas.apis.database_api.fundaments_of_reponses as fundaments_database_api
-    from schemas.apis.block_api.fundaments_of_responses import Hf26Block
-    from schemas.apis.wallet_bridge_api.response_schemas import (
-        FindProposals,
-        FindRcAccounts,
-        FindRecurrentTransfers,
-        GetAccount,
-        GetAccountHistory,
-        GetAccounts,
-        GetActiveWitnesses,
-        GetBlock,
-        GetCollateralizedConversionRequests,
-        GetConversionRequests,
-        GetFeedHistory,
-        GetOpenOrders,
-        GetOpsInBlock,
-        GetOrderBook,
-        GetOwnerHistory,
-        GetTransaction,
-        GetWithdrawRoutes,
-        GetWitness,
-        ListAccounts,
-        ListMyAccounts,
-        ListProposals,
-        ListProposalVotes,
-        ListRcAccounts,
-        ListRcDirectDelegations,
-        ListWitnesses,
-    )
     from schemas.base import Meta
-    from schemas.fields.assets import AssetHbd, AssetVests
+    from schemas.fields.assets import AssetHbd, AssetHiveOrHbd, AssetVests
     from schemas.fields.hex import Hex
     from schemas.fields.hive_int import HiveInt
-    from schemas.fields.hive_list import HiveList
-    from schemas.fields.resolvables import AssetUnionAssetHiveAssetHbd
-    from schemas.transaction import Transaction
     from test_tools.__private.hived.api.metadata_api.models import FindAccountMetadata, GetAccountMetadata
     from test_tools.__private.hived.api.wallet_bridge_api.sync_api import WalletBridgeApi
+
+    # response types of wallet_bridge_api (validation models - Hive types)
+    FindProposals: TypeAlias = wallet_bridge_models.FindProposalsResponse
+    FindRcAccounts: TypeAlias = list[wallet_bridge_models.RcAccountDefault]
+    FindRecurrentTransfers: TypeAlias = list[wallet_bridge_models.RecurrentTransferDefault]
+    GetAccount: TypeAlias = wallet_bridge_models.WalletBridgeGetAccountResponse1 | None
+    GetAccountHistory: TypeAlias = list[list[int | wallet_bridge_models.AccountHistoryArray1]]
+    GetAccounts: TypeAlias = list[wallet_bridge_models.AccountDefault]
+    GetActiveWitnesses: TypeAlias = wallet_bridge_models.GetActiveWitnessesResponse
+    GetBlock: TypeAlias = wallet_bridge_models.GetBlockResponse
+    GetCollateralizedConversionRequests: TypeAlias = list[wallet_bridge_models.CollateralizedConversionRequestsDefault]
+    GetConversionRequests: TypeAlias = list[wallet_bridge_models.HbdConversion]
+    GetFeedHistory: TypeAlias = wallet_bridge_models.GetFeedHistoryResponse
+    GetOpenOrders: TypeAlias = list[wallet_bridge_models.LimitOrderDefault]
+    GetOpsInBlock: TypeAlias = wallet_bridge_models.GetOpsInBlockResponse
+    GetOrderBook: TypeAlias = wallet_bridge_models.MarketHistoryGetOrderBookResponse
+    GetOwnerHistory: TypeAlias = wallet_bridge_models.FindOwnerHistoriesResponse
+    GetTransaction: TypeAlias = wallet_bridge_models.GetTransactionResponse
+    GetWithdrawRoutes: TypeAlias = list[wallet_bridge_models.WithdrawVestingRoutes]
+    GetWitness: TypeAlias = wallet_bridge_models.WalletBridgeGetWitnessResponse1 | None
+    ListAccounts: TypeAlias = list[str]
+    ListMyAccounts: TypeAlias = list[wallet_bridge_models.AccountDefault]
+    ListProposals: TypeAlias = wallet_bridge_models.ListProposalsResponse
+    ListProposalVotes: TypeAlias = wallet_bridge_models.ListProposalVotesResponse
+    ListRcAccounts: TypeAlias = list[wallet_bridge_models.RcAccountDefault]
+    ListRcDirectDelegations: TypeAlias = list[wallet_bridge_models.RcAccountDelegation]
+    ListWitnesses: TypeAlias = wallet_bridge_models.ListWitnessesResponse
+    Hf26Block: TypeAlias = wallet_bridge_models.Block2
     from test_tools.__private.node import Node
     from test_tools.__private.remote_node import RemoteNode
     from test_tools.__private.wallet.single_transaction_context import SingleTransactionContext
@@ -172,13 +176,13 @@ class Api:
         """Helper class for sending multiple operations in single transaction."""
 
         def __init__(self) -> None:
-            self.__operations: EmptyList | list[AnyHf26Operation] = []
+            self.__operations: EmptyList | list[Hf26OperationValue] = []
 
         @property
-        def operations(self) -> EmptyList | list[AnyHf26Operation]:
+        def operations(self) -> EmptyList | list[Hf26OperationValue]:
             return self.__operations
 
-        def _append_operation(self, operation: AnyHf26Operation) -> None:
+        def _append_operation(self, operation: Hf26OperationValue) -> None:
             self.__operations.append(operation)  # type: ignore[arg-type]
 
     def __init__(self, wallet: Wallet) -> None:
@@ -211,18 +215,18 @@ class Api:
         return None
 
     def __send_one_op(
-        self, operation: Hf26Operations, broadcast: bool | None, blocking: bool = True
+        self, operation: Hf26OperationValue, broadcast: bool | None, blocking: bool = True
     ) -> None | WalletResponseBase | WalletResponse:
         return self._send([operation], broadcast, blocking)
 
     def _send(
-        self, operations: list[Hf26Operations], broadcast: bool | None, blocking: bool
+        self, operations: list[Hf26OperationValue], broadcast: bool | None, blocking: bool
     ) -> None | WalletResponseBase | WalletResponse:
         broadcast = self.__handle_broadcast_parameter(broadcast)
         if not self.__is_transaction_build_in_progress():
             return self.__wallet._prepare_and_send_transaction(operations, blocking, broadcast)
         for operation in operations:
-            self._transaction_builder._append_operation(operation)  # type: ignore[arg-type]
+            self._transaction_builder._append_operation(operation)
         return None
 
     def __handle_broadcast_parameter(self, broadcast: bool | None) -> bool:
@@ -383,7 +387,7 @@ class Api:
         :param only_result: This argument is no longer active and should not be provided.
         :return: Response object containing information about the transaction.
         """
-        return self.__send_one_op(ClaimAccountOperation(creator=creator, fee=fee), broadcast=broadcast)
+        return self.__send_one_op(ClaimAccountOperation(creator=creator, fee=as_nai_asset(fee)), broadcast=broadcast)
 
     @require_unlocked_wallet
     @warn_if_only_result_set()
@@ -405,7 +409,7 @@ class Api:
         :return: Response object containing information about the transaction.
         """
         return self.__send_one_op(
-            ClaimAccountOperation(creator=creator, fee=fee),
+            ClaimAccountOperation(creator=creator, fee=as_nai_asset(fee)),
             broadcast=broadcast,
             blocking=False,
         )
@@ -435,7 +439,10 @@ class Api:
         """
         return self.__send_one_op(
             ClaimRewardBalanceOperation(
-                account=account, reward_hive=reward_hive, reward_hbd=reward_hbd, reward_vests=reward_vests
+                account=account,
+                reward_hive=as_nai_asset(reward_hive),
+                reward_hbd=as_nai_asset(reward_hbd),
+                reward_vests=as_nai_asset(reward_vests),
             ),
             broadcast=broadcast,
         )
@@ -460,7 +467,7 @@ class Api:
         :return: Response object containing information about the transaction.
         """
         return self.__send_one_op(
-            ConvertOperation(owner=from_, amount=amount, requestid=time.time_ns() % (2**32)),
+            ConvertOperation(owner=from_, amount=as_nai_asset(amount), requestid=time.time_ns() % (2**32)),
             broadcast=broadcast,
         )
 
@@ -484,7 +491,9 @@ class Api:
         :return: Response object containing information about the transaction.
         """
         return self.__send_one_op(
-            CollateralizedConvertOperation(owner=from_, amount=collateral_amount, requestid=time.time_ns() % (2**32)),
+            CollateralizedConvertOperation(
+                owner=from_, amount=as_nai_asset(collateral_amount), requestid=time.time_ns() % (2**32)
+            ),
             broadcast=broadcast,
         )
 
@@ -524,7 +533,9 @@ class Api:
                 creator=creator,
                 new_account_name=new_account_name,
                 json_metadata=json_meta,
-                fee=self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee,
+                fee=as_nai_asset(
+                    self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee
+                ),
                 owner=get_authority(owner_key["pub_key"]),
                 active=get_authority(active_key["pub_key"]),
                 posting=get_authority(posting_key["pub_key"]),
@@ -573,8 +584,8 @@ class Api:
                 creator=creator,
                 new_account_name=new_account_name,
                 json_metadata=json_meta,
-                fee=hive_fee,
-                delegation=delegated_vests,
+                fee=as_nai_asset(hive_fee),
+                delegation=as_nai_asset(delegated_vests),
                 owner=get_authority(owner_key["pub_key"]),
                 active=get_authority(active_key["pub_key"]),
                 posting=get_authority(posting_key["pub_key"]),
@@ -615,7 +626,9 @@ class Api:
                 creator=creator,
                 new_account_name=newname,
                 json_metadata=json_meta,
-                fee=self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee,
+                fee=as_nai_asset(
+                    self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee
+                ),
                 owner=get_authority(owner),
                 active=get_authority(active),
                 posting=get_authority(posting),
@@ -661,8 +674,8 @@ class Api:
                 creator=creator,
                 new_account_name=newname,
                 json_metadata=json_meta,
-                fee=hive_fee,
-                delegation=delegated_vests,
+                fee=as_nai_asset(hive_fee),
+                delegation=as_nai_asset(delegated_vests),
                 owner=get_authority(owner),
                 active=get_authority(active),
                 posting=get_authority(posting),
@@ -723,7 +736,9 @@ class Api:
                         creator=creator,
                         new_account_name=new_account_name,
                         json_metadata=json_meta,
-                        fee=self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee,
+                        fee=as_nai_asset(
+                            self.__wallet._force_connected_node.api.wallet_bridge.get_chain_properties().account_creation_fee
+                        ),
                         owner=get_authority(owner_key),
                         active=get_authority(active_key),
                         posting=get_authority(posting_key),
@@ -743,8 +758,8 @@ class Api:
         self,
         owner: AccountNameApiType,
         order_id: int,
-        amount_to_sell: AssetUnionAssetHiveAssetHbd,
-        min_to_receive: AssetUnionAssetHiveAssetHbd,
+        amount_to_sell: AssetHiveOrHbd,
+        min_to_receive: AssetHiveOrHbd,
         fill_or_kill: bool,
         expiration: int,
         broadcast: bool | None = None,
@@ -767,10 +782,10 @@ class Api:
             LimitOrderCreateOperation(
                 owner=owner,
                 orderid=order_id,
-                amount_to_sell=amount_to_sell,
-                min_to_receive=min_to_receive,
+                amount_to_sell=as_nai_asset(amount_to_sell),
+                min_to_receive=as_nai_asset(min_to_receive),
                 fill_or_kill=fill_or_kill,
-                expiration=HiveDateTime(
+                expiration=as_time(
                     datetime.fromisoformat(
                         self.__wallet._force_connected_node.api.database.get_dynamic_global_properties().time
                     )
@@ -812,9 +827,9 @@ class Api:
             CreateProposalOperation(
                 creator=creator,
                 receiver=receiver,
-                start_date=start_date if isinstance(start_date, HiveDateTime) else HiveDateTime(start_date),
-                end_date=end_date if isinstance(end_date, HiveDateTime) else HiveDateTime(end_date),
-                daily_pay=daily_pay,
+                start_date=as_time(start_date),
+                end_date=as_time(end_date),
+                daily_pay=as_nai_asset(daily_pay),
                 subject=subject,
                 permlink=permlink,
             ),
@@ -885,12 +900,12 @@ class Api:
         :param only_result: This argument is no longer active and should not be provided.
         :return: Response object containing information about the transaction.
         """
-        delegate_rc_operation = DelegateRcOperation(from_=from_, delegatees=delegatees, max_rc=max_rc)
+        delegate_rc_operation = {"from": from_, "delegatees": delegatees, "max_rc": max_rc}
         operation = CustomJsonOperation(
             required_auths=[],
             required_posting_auths=[from_],
-            id_="rc",
-            json_=cast(JsonString, HF26RepresentationDelegateRcOperation(value=delegate_rc_operation).json()),
+            id="rc",
+            json_=json.dumps({"type": "delegate_rc_operation", "value": delegate_rc_operation}, separators=(",", ":")),
         )
         return self.__send_one_op(
             operation=operation,
@@ -925,7 +940,9 @@ class Api:
         if delegatee != accounts[1].name:
             raise exceptions.DelegateeIsNotRightError
         return self.__send_one_op(
-            DelegateVestingSharesOperation(delegator=delegator, delegatee=delegatee, vesting_shares=vesting_shares),
+            DelegateVestingSharesOperation(
+                delegator=delegator, delegatee=delegatee, vesting_shares=as_nai_asset(vesting_shares)
+            ),
             broadcast=broadcast,
         )
 
@@ -935,7 +952,7 @@ class Api:
         delegator: AccountNameApiType,
         delegatee: AccountNameApiType,
         vesting_shares: AssetVests,
-        transfer_amount: AssetUnionAssetHiveAssetHbd,
+        transfer_amount: AssetHiveOrHbd,
         transfer_memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -963,7 +980,7 @@ class Api:
         delegator: AccountNameApiType,
         delegatee: AccountNameApiType,
         vesting_shares: AssetVests,
-        transfer_amount: AssetUnionAssetHiveAssetHbd,
+        transfer_amount: AssetHiveOrHbd,
         transfer_memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -1005,7 +1022,9 @@ class Api:
         :return: Response object containing information about the transaction.
         """
         return self.__send_one_op(
-            DelegateVestingSharesOperation(delegator=delegator, delegatee=delegatee, vesting_shares=vesting_shares),
+            DelegateVestingSharesOperation(
+                delegator=delegator, delegatee=delegatee, vesting_shares=as_nai_asset(vesting_shares)
+            ),
             broadcast=broadcast,
             blocking=False,
         )
@@ -1108,8 +1127,8 @@ class Api:
                 who=who,
                 receiver=receiver,
                 escrow_id=escrow_id,
-                hbd_amount=hbd_amount,
-                hive_amount=hive_amount,
+                hbd_amount=as_nai_asset(hbd_amount),
+                hive_amount=as_nai_asset(hive_amount),
             ),
             broadcast=broadcast,
         )
@@ -1124,7 +1143,7 @@ class Api:
         escrow_id: int,
         hbd_amount: AssetHbd,
         hive_amount: AssetHive,
-        fee: AssetUnionAssetHiveAssetHbd,
+        fee: AssetHiveOrHbd,
         ratification_deadline: HiveDateTimeApiType,
         escrow_expiration: HiveDateTimeApiType,
         json_meta: str,
@@ -1154,15 +1173,11 @@ class Api:
                 to=to,
                 agent=agent,
                 escrow_id=escrow_id,
-                hbd_amount=hbd_amount,
-                hive_amount=hive_amount,
-                fee=fee,
-                ratification_deadline=ratification_deadline
-                if isinstance(ratification_deadline, HiveDateTime)
-                else HiveDateTime(ratification_deadline),
-                escrow_expiration=escrow_expiration
-                if isinstance(escrow_expiration, HiveDateTime)
-                else HiveDateTime(escrow_expiration),
+                hbd_amount=as_nai_asset(hbd_amount),
+                hive_amount=as_nai_asset(hive_amount),
+                fee=as_nai_asset(fee),
+                ratification_deadline=as_time(ratification_deadline),
+                escrow_expiration=as_time(escrow_expiration),
                 json_meta=json_meta,
             ),
             broadcast=broadcast,
@@ -1202,7 +1217,7 @@ class Api:
         proposal_ids: list[int],
         as_list: bool = False,
         only_result: bool | None = None,  # noqa: ARG002
-    ) -> FindProposals | HiveList[Proposal]:
+    ) -> FindProposals | list[wallet_bridge_models.Proposal1]:
         """
         Finds proposals by their IDs.
 
@@ -1266,12 +1281,12 @@ class Api:
         :param only_result: This argument is no longer active and should not be provided.
         :return: Response object containing information about the transaction.
         """
-        follow_operation = FollowOperation(follower=follower, following=following, what=what)
+        follow_operation = {"follower": follower, "following": following, "what": what}
         operation = CustomJsonOperation(
             required_auths=[],
             required_posting_auths=[follower],
-            id_="follow",
-            json_=cast(JsonString, HF26RepresentationFollowOperation(value=follow_operation).json()),
+            id="follow",
+            json_=json.dumps({"type": "follow_operation", "value": follow_operation}, separators=(",", ":")),
         )
         return self.__send_one_op(
             operation=operation,
@@ -1367,7 +1382,7 @@ class Api:
         """
         block = self.__wallet._force_connected_node.api.wallet_bridge.get_block(num)
         if only_block:
-            assert block.block is not None, "Block not exist"
+            assert not isinstance(block.block, UnsetType), "Block not exist"
             return block.block
         return block
 
@@ -1524,7 +1539,7 @@ class Api:
         account: AccountNameApiType,
         as_list: bool = False,
         only_result: bool | None = None,  # noqa: ARG002
-    ) -> HiveList[fundaments_database_api.OwnerHistoriesFundament] | GetOwnerHistory:
+    ) -> list[wallet_bridge_models.OwnerAuth] | GetOwnerHistory:
         """
         Retrieves the owner history for a given account.
 
@@ -1572,10 +1587,9 @@ class Api:
         :param only_result: This argument is no longer active and should not be provided.
         :return: A dictionary representing the prototype operation.
         """
-        operations = getattr(AnyHf26Operation, "__args__", None)
-        for operation in operations:  #  type: ignore[union-attr]
-            if operation.get_name_with_suffix() == operation_type:
-                return {"type": operation.get_name(), "value": operation.__fields__}
+        for value in get_args(Hf26OperationValue):
+            if value.get_name_with_suffix() == operation_type:
+                return {"type": value.get_name(), "value": tuple(field.name for field in dataclasses.fields(value))}
         return None
 
     @warn_if_only_result_set()
@@ -1943,10 +1957,9 @@ class Api:
         return self.__send_one_op(
             FeedPublishOperation(
                 publisher=witness,
-                exchange_rate=HbdExchangeRate(
-                    base=exchange_rate["base"],  # type: ignore[arg-type]
-                    quote=exchange_rate["quote"],  # type: ignore[arg-type]
-                ),
+                exchange_rate=exchange_rate
+                if isinstance(exchange_rate, Price)
+                else Price(base=as_nai_asset(exchange_rate["base"]), quote=as_nai_asset(exchange_rate["quote"])),
             ),
             broadcast=broadcast,
         )
@@ -1986,7 +1999,7 @@ class Api:
         self,
         from_: AccountNameApiType,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         recurrence: int,
         executions: int,
@@ -2009,7 +2022,7 @@ class Api:
         self.__check_memo(from_, memo)
         return self.__send_one_op(
             RecurrentTransferOperation(
-                from_=from_, to=to, amount=amount, memo=memo, recurrence=recurrence, executions=executions
+                from_=from_, to=to, amount=as_nai_asset(amount), memo=memo, recurrence=recurrence, executions=executions
             ),
             broadcast=broadcast,
         )
@@ -2020,7 +2033,7 @@ class Api:
         self,
         from_: AccountNameApiType,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         recurrence: int,
         executions: int,
@@ -2047,11 +2060,11 @@ class Api:
             RecurrentTransferOperation(
                 from_=from_,
                 to=to,
-                amount=amount,
+                amount=as_nai_asset(amount),
                 memo=memo,
                 recurrence=recurrence,
                 executions=executions,
-                extensions=[{"type": "recurrent_transfer_pair_id", "value": {"pair_id": pair_id}}],
+                extensions=[Hf26RecurrentTransferPairId(value=RecurrentTransferPairId(pair_id=pair_id))],
             ),
             broadcast=broadcast,
         )
@@ -2119,7 +2132,7 @@ class Api:
         raise exceptions.MethodDeprecatedInBeekeeperWalletError
 
     @warn_if_only_result_set()
-    def serialize_transaction(self, tx: Transaction, only_result: bool | None = None) -> Hex:  # noqa: ARG002
+    def serialize_transaction(self, tx: Hf26Transaction, only_result: bool | None = None) -> Hex:  # noqa: ARG002
         """
         Serializes a transaction.
 
@@ -2251,7 +2264,7 @@ class Api:
         self,
         from_: AccountNameApiType,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -2269,7 +2282,7 @@ class Api:
         """
         self.__check_memo(from_, memo)
         return self.__send_one_op(
-            TransferOperation(from_=from_, to=to, amount=amount, memo=memo),
+            TransferOperation(from_=from_, to=to, amount=as_nai_asset(amount), memo=memo),
             broadcast=broadcast,
         )
 
@@ -2280,7 +2293,7 @@ class Api:
         from_: AccountNameApiType,
         request_id: int,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -2299,7 +2312,9 @@ class Api:
         """
         self.__check_memo(from_, memo)
         return self.__send_one_op(
-            TransferFromSavingsOperation(from_=from_, request_id=request_id, to=to, amount=amount, memo=memo),
+            TransferFromSavingsOperation(
+                from_=from_, request_id=request_id, to=to, amount=as_nai_asset(amount), memo=memo
+            ),
             broadcast=broadcast,
         )
 
@@ -2309,7 +2324,7 @@ class Api:
         self,
         from_: AccountNameApiType,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -2327,7 +2342,7 @@ class Api:
         """
         self.__check_memo(from_, memo)
         return self.__send_one_op(
-            TransferOperation(from_=from_, to=to, amount=amount, memo=memo),
+            TransferOperation(from_=from_, to=to, amount=as_nai_asset(amount), memo=memo),
             broadcast=broadcast,
             blocking=False,
         )
@@ -2338,7 +2353,7 @@ class Api:
         self,
         from_: AccountNameApiType,
         to: AccountNameApiType,
-        amount: AssetUnionAssetHiveAssetHbd,
+        amount: AssetHiveOrHbd,
         memo: str,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
@@ -2356,7 +2371,7 @@ class Api:
         """
         self.__check_memo(from_, memo)
         return self.__send_one_op(
-            TransferToSavingsOperation(from_=from_, to=to, amount=amount, memo=memo),
+            TransferToSavingsOperation(from_=from_, to=to, amount=as_nai_asset(amount), memo=memo),
             broadcast=broadcast,
         )
 
@@ -2381,7 +2396,7 @@ class Api:
         :return: The response from the blockchain.
         """
         return self.__send_one_op(
-            TransferToVestingOperation(from_=from_, to=to, amount=amount),
+            TransferToVestingOperation(from_=from_, to=to, amount=as_nai_asset(amount)),
             broadcast=broadcast,
         )
 
@@ -2406,7 +2421,7 @@ class Api:
         :return: The response from the blockchain.
         """
         return self.__send_one_op(
-            TransferToVestingOperation(from_=from_, to=to, amount=amount),
+            TransferToVestingOperation(from_=from_, to=to, amount=as_nai_asset(amount)),
             broadcast=broadcast,
             blocking=False,
         )
@@ -2486,7 +2501,7 @@ class Api:
         if isinstance(auth_account, str):
             auth_account = AccountName(auth_account)
         account = self.get_account(account_name=account_name)
-        kwargs: dict[str, Authority] = {type_: account[type_]}
+        kwargs = {type_: as_authority(account[type_])}
         kwargs[type_].account_auths.append((auth_account, weight))
 
         return self.__send_one_op(
@@ -2521,7 +2536,7 @@ class Api:
         if isinstance(key, str):
             key = PublicKey(key)
         account = self.get_account(account_name=account_name)
-        kwargs: dict[str, Authority] = {type_: account[type_]}
+        kwargs = {type_: as_authority(account[type_])}
         kwargs[type_].key_auths.append((key, weight))
 
         return self.__send_one_op(
@@ -2555,8 +2570,7 @@ class Api:
         if threshold == 0:
             raise exceptions.ThresholdOutOfRangeError
 
-        kwargs: dict[str, Authority] = {type_: account[type_]}
-        kwargs[type_].weight_threshold = threshold
+        kwargs = {type_: dataclasses.replace(as_authority(account[type_]), weight_threshold=threshold)}
 
         return self.__send_one_op(
             AccountUpdateOperation(
@@ -2645,10 +2659,10 @@ class Api:
                 UpdateProposalOperation(
                     proposal_id=Int64t(proposal_id),
                     creator=creator,
-                    daily_pay=daily_pay,
+                    daily_pay=as_nai_asset(daily_pay),
                     subject=subject,
                     permlink=permlink,
-                    extensions=[{"type": "update_proposal_end_date", "value": {"end_date": end_date}}],
+                    extensions=[Hf26UpdateProposalEndDate(value=UpdateProposalEndDate(end_date=as_time(end_date)))],
                 ),
                 broadcast=broadcast,
             )
@@ -2656,7 +2670,7 @@ class Api:
             UpdateProposalOperation(
                 proposal_id=Int64t(proposal_id),
                 creator=creator,
-                daily_pay=daily_pay,
+                daily_pay=as_nai_asset(daily_pay),
                 subject=subject,
                 permlink=permlink,
             ),
@@ -2699,7 +2713,7 @@ class Api:
         witness_name: AccountNameApiType,
         url: WitnessUrlApiType,
         block_signing_key: PublicKeyApiType,
-        props: LegacyChainProperties,
+        props: LegacyChainProperties | ChainProperties,
         broadcast: bool | None = None,
         only_result: bool | None = None,  # noqa: ARG002
     ) -> None | WalletResponseBase | WalletResponse:
@@ -2715,7 +2729,13 @@ class Api:
         :return: The response from the blockchain.
         """
         return self.__send_one_op(
-            WitnessUpdateOperation(owner=witness_name, url=url, block_signing_key=block_signing_key, props=props),
+            WitnessUpdateOperation(
+                owner=witness_name,
+                url=url,
+                block_signing_key=block_signing_key,
+                props=as_chain_properties(props),
+                fee=as_nai_asset(AssetHive(AssetNaiAmount(0))),
+            ),
             broadcast=broadcast,
         )
 
@@ -2814,6 +2834,6 @@ class Api:
         :return: The response from the blockchain.
         """
         return self.__send_one_op(
-            WithdrawVestingOperation(account=from_, vesting_shares=vesting_shares),
+            WithdrawVestingOperation(account=from_, vesting_shares=as_nai_asset(vesting_shares)),
             broadcast=broadcast,
         )

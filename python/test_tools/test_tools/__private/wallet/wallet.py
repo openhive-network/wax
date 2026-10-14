@@ -8,11 +8,10 @@ from typing import TYPE_CHECKING, Any, Final, get_args
 from beekeepy import Beekeeper
 from beekeepy.exceptions import WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
+from msgspec import UnsetType
 
 from schemas.fields.basic import PublicKey
 from schemas.fields.hex import Hex
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.hive_int import HiveInt
 from test_tools.__private import exceptions
 from test_tools.__private.account import Account
 from test_tools.__private.node import Node
@@ -45,13 +44,14 @@ from test_tools.__private.wax_wrapper import (
 )
 from wax._private.api.overseer import WaxAssertionInResponseError, WaxOverseer
 from wax.helpy import Hf26Asset as Asset
+from wax.helpy import Time
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from beekeepy import Session, UnlockedWallet
+    from hiveio_api.operations import Hf26OperationValue
 
-    from schemas.operations import Hf26Operations
     from test_tools.__private.user_handles.handles.wallet_handle import WalletHandle
 
     AnyNode = Node | RemoteNode
@@ -145,7 +145,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         return self._beekeeper_wallet
 
     def send(
-        self, operations: list[Hf26Operations], broadcast: bool, blocking: bool
+        self, operations: list[Hf26OperationValue], broadcast: bool, blocking: bool
     ) -> None | WalletResponseBase | WalletResponse:
         return self.api._send(operations, broadcast, blocking)
 
@@ -311,16 +311,16 @@ class Wallet(UserHandleImplementation, ScopedObject):
         assert ref_block_num >= 0, f"ref_block_num value `{ref_block_num}` is invalid`"
 
         return SimpleTransaction(
-            ref_block_num=HiveInt(ref_block_num),
-            ref_block_prefix=HiveInt(ref_block_prefix),
-            expiration=HiveDateTime(datetime.fromisoformat(gdpo.time) + self._transaction_expiration_offset),
+            ref_block_num=ref_block_num,
+            ref_block_prefix=ref_block_prefix,
+            expiration=Time.serialize(datetime.fromisoformat(gdpo.time) + self._transaction_expiration_offset),
             extensions=[],
             signatures=[],
             operations=[],
         )
 
     def _prepare_and_send_transaction(
-        self, operations: list[Hf26Operations], blocking: bool, broadcast: bool
+        self, operations: list[Hf26OperationValue], blocking: bool, broadcast: bool
     ) -> WalletResponseBase | WalletResponse:
         transaction = self.__generate_transaction_template(self._force_connected_node)
         for operation in operations:
@@ -349,7 +349,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
                     ),
                     block_num=broadcast_response.block_num,
                     transaction_num=broadcast_response.trx_num,
-                    rc_cost=broadcast_response.rc_cost,
+                    rc_cost=None if isinstance(broadcast_response.rc_cost, UnsetType) else broadcast_response.rc_cost,
                     ref_block_num=transaction.ref_block_num,
                     ref_block_prefix=transaction.ref_block_prefix,
                     expiration=transaction.expiration,
@@ -397,7 +397,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         for key in keys_to_sign_with:
             signature = self._beekeeper_wallet.sign_digest(sig_digest=sig_digest, key=key)
             transaction.signatures.append(signature)
-        transaction.signatures = list(set(transaction.signatures))
+        transaction.signatures[:] = dict.fromkeys(transaction.signatures)
 
         validate_transaction(transaction)
         return transaction

@@ -5,8 +5,8 @@ from typing import Literal
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import database_api
+from hiveio_api.operations import Hf26Transaction
 
-from schemas.transaction import Transaction
 from test_tools.__private.hived.api.database_api.common import DatabaseApiCommons
 from wax.helpy._interfaces.asset import Hf26Asset
 
@@ -135,11 +135,11 @@ class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
         raise NotImplementedError
 
     @api
-    def get_potential_signatures(self, *, trx: Transaction) -> database_api.GetPotentialSignaturesResponse:
+    def get_potential_signatures(self, *, trx: Hf26Transaction) -> database_api.GetPotentialSignaturesResponse:
         raise NotImplementedError
 
     @api
-    def get_required_signatures(self, *, trx: Transaction) -> database_api.GetPotentialSignaturesResponse:
+    def get_required_signatures(self, *, trx: Hf26Transaction) -> database_api.GetPotentialSignaturesResponse:
         # Both get_required_signatures and get_potential_signatures share the same response schema in OpenAPI spec
         raise NotImplementedError
 
@@ -148,7 +148,7 @@ class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
         raise NotImplementedError
 
     @api
-    def get_transaction_hex(self, *, trx: Transaction) -> database_api.GetTransactionHexResponse:
+    def get_transaction_hex(self, *, trx: Hf26Transaction) -> database_api.GetTransactionHexResponse:
         raise NotImplementedError
 
     @api
@@ -298,7 +298,7 @@ class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
 
     @api
     def verify_authority(
-        self, *, trx: Transaction, pack: DatabaseApiCommons.PACK_TYPES = "hf26"
+        self, *, trx: Hf26Transaction, pack: DatabaseApiCommons.PACK_TYPES = "hf26"
     ) -> database_api.VerifyAuthorityResponse:
         raise NotImplementedError
 
