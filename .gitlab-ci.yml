@@ -75,6 +75,12 @@ variables:
   # Bump the -rustN suffix when that Dockerfile (or its base CI_BASE_IMAGE_TAG) changes.
   WAX_RUST_BUILDER_IMAGE_TAG: "pypa_2_28-17-rust3"
   WAX_RUST_BUILDER_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-builder:${WAX_RUST_BUILDER_IMAGE_TAG}"
+  # wax-rust-aidev-tests image: wax-rust-builder plus the crates rust/Cargo.lock pins and the
+  # hiveio-beekeeper crate, so AIDEV's Rust suite (.aidev/run-rust.sh) runs with --network none.
+  # Built by the build_wax_rust_aidev_tests_image job from rust/docker/wax-rust-aidev-tests.dockerfile.
+  # AIDEV binds it by digest; bump the -aidevN suffix when that Dockerfile changes.
+  WAX_RUST_AIDEV_TESTS_IMAGE_TAG: "${WAX_RUST_BUILDER_IMAGE_TAG}-aidev1"
+  WAX_RUST_AIDEV_TESTS_IMAGE: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests:${WAX_RUST_AIDEV_TESTS_IMAGE_TAG}"
 
   # first party libraries gitlab index (group-level registry aggregating all hive packages):
   HIVE_PYPI_INDEX: "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
@@ -1009,6 +1015,52 @@ build_wax_rust_builder_image:
     changes:
       paths:
       - rust/docker/wax-rust-builder.dockerfile
+    when: on_success
+    # Manual trigger available
+  - when: manual
+    allow_failure: true
+
+# =============================================================================
+# WAX Rust AIDEV Tests Image Build Job
+# =============================================================================
+# Builds wax-rust-aidev-tests = wax-rust-builder + the crates the lock files pin +
+# the hiveio-beekeeper crate, the image AIDEV runs .aidev/run-rust.sh in (offline).
+# Runs automatically when the Dockerfile or a lock file changes, manual otherwise.
+# The job log ends with the pushed repository@sha256:<digest> to bind in .aidev/project.yaml.
+
+build_wax_rust_aidev_tests_image:
+  extends: .docker_image_builder_job_template
+  stage: prepare
+  script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY"
+    --password-stdin
+  - |
+    echo "Building wax-rust-aidev-tests image"
+    echo "Base image: ${WAX_RUST_BUILDER_IMAGE}"
+    echo "Target tag: ${WAX_RUST_AIDEV_TESTS_IMAGE}"
+  - |
+    docker buildx build \
+      --build-arg WAX_RUST_BUILDER_IMAGE="${WAX_RUST_BUILDER_IMAGE}" \
+      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}/wax-rust-aidev-tests/cache:${WAX_RUST_AIDEV_TESTS_IMAGE_TAG} \
+      --cache-to type=registry,mode=max,ref=${CI_REGISTRY_IMAGE}/wax-rust-aidev-tests/cache:${WAX_RUST_AIDEV_TESTS_IMAGE_TAG} \
+      --metadata-file wax-rust-aidev-tests.metadata.json \
+      -t "${WAX_RUST_AIDEV_TESTS_IMAGE}" \
+      -f rust/docker/wax-rust-aidev-tests.dockerfile \
+      --push rust
+  - |
+    digest=$(sed -n 's/.*"containerimage.digest": *"\(sha256:[0-9a-f]*\)".*/\1/p' wax-rust-aidev-tests.metadata.json)
+    test -n "${digest}"
+    echo "Pushed ${CI_REGISTRY_IMAGE}/wax-rust-aidev-tests@${digest}"
+  tags:
+  - public-runner-docker
+  rules:
+    # Run when the image's inputs change
+  - if: $CI_COMMIT_BRANCH
+    changes:
+      paths:
+      - rust/docker/wax-rust-aidev-tests.dockerfile
+      - rust/Cargo.lock
+      - rust/proto_builder/Cargo.lock
     when: on_success
     # Manual trigger available
   - when: manual
