@@ -22,7 +22,7 @@ export type TMockData = IApiMockData | IJsonRpcMockData;
 export abstract class AProxyMockResolver {
   public abstract hasHandler(req: Request): boolean;
 
-  public abstract handle(req: Request, res: Response): void;
+  public abstract handle(req: Request, res: Response): void | Promise<void>;
 }
 
 export class JsonRpcMock extends AProxyMockResolver {

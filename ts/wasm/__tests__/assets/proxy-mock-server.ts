@@ -10,16 +10,23 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
   app.use(cors());
   app.use(express.json());
 
-  app.use('/', (req, res, next) => {
+  app.use('/', async (req, res, next) => {
     const isJsonRpc = req.method === 'POST' && typeof req.body === 'object' && typeof req.body.method === 'string';
     const methodStr = isJsonRpc ? ` [${req.body.method}]` : '';
 
     console.log('Request URL:', req.originalUrl, methodStr);
 
     if (mockInstance.hasHandler(req)) {
-      mockInstance.handle(req, res);
+      try {
+        await mockInstance.handle(req, res);
+      } catch (error) {
+        next(error);
 
-      res.status(200).end();
+        return;
+      }
+
+      if (!res.headersSent)
+        res.status(200).end();
 
       return;
     }
