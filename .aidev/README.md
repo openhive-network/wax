@@ -36,7 +36,7 @@ project exits 2 before anything runs.
 | static | proto wasm tsc proto-pattern |
 | system | proto wasm tsc bundle |
 
-`verification.quick` lists the eight offline projects as its `targets` (the approved
+`verification.quick` lists the nine offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs the
 same work as without them.
 
@@ -52,7 +52,7 @@ Moving to `enforce` is a separate change, made with the observe evidence and its
 | Changed path | Proposal |
 |---|---|
 | `ts/wasm/__tests__/detailed/<name>.ts` | the offline project whose `testMatch` in `ts/playwright.config.ts` matches `<name>.js` (`utils.ts` → `wax_utils`, `mock_base.ts` → `wax_mock_tests`); nothing when none does, as the online projects alone run it |
-| anything else under `ts/`, `core/`, `hive`, `.aidev/`, `.gitlab-ci.yml`, `.gitmodules` | all eight, `degenerate`: most tests run against the whole bundle through the `wasmTest` fixture, so a library change cannot be narrowed by imports |
+| anything else under `ts/`, `core/`, `hive`, `.aidev/`, `.gitlab-ci.yml`, `.gitmodules` | all nine, `degenerate`: most tests run against the whole bundle through the `wasmTest` fixture, so a library change cannot be narrowed by imports |
 | `python/`, `rust/`, `examples/`, `.md` files outside `ts/` | nothing, `irrelevant`: no slot builds them |
 | any other path | nothing, `unrecognised` |
 
