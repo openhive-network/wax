@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wax signers CSP Test</title>
+</head>
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "@hiveio/beekeeper": "/node_modules/@hiveio/beekeeper/dist/bundle/web.js",
+        "@hiveio/wax": "/wasm/dist/bundle/web.js",
+        "@hiveio/wax-signers-beekeeper": "/packages/signers-beekeeper/dist/index.js"
+      }
+    }
+  </script>
+  <script type="module" src="/wasm/dist/assets/csp-signers.js"></script>
+</body>
+</html>

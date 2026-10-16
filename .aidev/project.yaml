@@ -30,7 +30,7 @@ branches:
 # (.aidev/runtime; rebuild and re-pin with .aidev/runtime/build.sh --push).
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:27eb4fb08b06bdf31cecb7041d37aed872a1afe02b3319194da8b34877843a8d"
+  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:d3f21422c3f12887fc1d356b4ef8118199d5200cf432456a674765b5b0c15c32"
   inputs: ["ts/pnpm-lock.yaml"]
 
 issues:
@@ -71,6 +71,7 @@ verification:
       - wax_mock_tests
       - wax_testsuite_protocol_benchmarks
       - wax_hive_assertion
+      - wax_signers_csp
     artifacts: ["test-results/aidev-quick/"]
   full:
     adapter: command

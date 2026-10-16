@@ -85,6 +85,11 @@ export default defineConfig<IWaxedTest>({
       testMatch: "non_encrypted_operations*"
     },
     {
+      name: "wax_signers_csp",
+      testDir: "./wasm/dist",
+      testMatch: "signers_csp*"
+    },
+    {
       name: "wax_utils",
       testDir: "./wasm/dist/detailed",
       testMatch: "utils*"
