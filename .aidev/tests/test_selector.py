@@ -37,7 +37,7 @@ def test_the_approved_scope_is_run_checks_offline_projects() -> None:
     run_checks = (_AIDEV / "run-checks.sh").read_text()
     block = run_checks.split("OFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
     assert SCOPE == tuple(block.split())
-    assert len(SCOPE) == 8
+    assert len(SCOPE) == 9
 
 
 def test_python_and_rust_only_propose_nothing() -> None:
@@ -63,6 +63,7 @@ def test_markdown_outside_ts_is_irrelevant_even_under_a_whole_scope_prefix() -> 
         ("mock_base.ts", "wax_mock_tests"),
         ("encrypted_operations.ts", "wax_encrypted_operations"),
         ("non_encrypted_operations.ts", "wax_non_encrypted_operations"),
+        ("signers_csp.ts", "wax_signers_csp"),
     ],
 )
 def test_a_detailed_test_module_selects_its_offline_project(module: str, project: str) -> None:

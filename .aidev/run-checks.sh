@@ -44,6 +44,7 @@ OFFLINE_PROJECTS=(
     wax_mock_tests
     wax_testsuite_protocol_benchmarks
     wax_hive_assertion
+    wax_signers_csp
 )
 # Tests in those projects that still reach api.hive.blog: the account-authority
 # builders read accounts from the chain, and the mock server proxies requests it
