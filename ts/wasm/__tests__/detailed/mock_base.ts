@@ -9,7 +9,8 @@ import { initminerAccountApi } from '../assets/data.protocol';
 import steem from '../assets/mock/data/steem';
 import data4nonexistingAccount from "../assets/mock/data/data4nonexistingaccount";
 import type { claim_account, operation } from '../../dist/bundle';
-import type { WaxAssertionError } from '../../dist/bundle';
+import type { WaxAssertionError, WaxRequestError } from '../../dist/bundle';
+import type { IWaxGlobals } from '../assets/globals';
 
 let closeServer: () => Promise<void>;
 let closeRawHttpServer: () => Promise<void>;
@@ -19,13 +20,50 @@ class RawHttpResponseMock extends AProxyMockResolver {
     return true;
   }
 
-  public handle(req: Request, res: Response): void {
+  public async handle(req: Request, res: Response): Promise<void> {
+    const statusMatch = /^\/status\/(\d{3})$/.exec(req.path);
+
     if (req.path === "/unavailable")
       res.status(503).type('text/plain').send('Service Unavailable');
-    else
+    else if (statusMatch !== null)
+      res.status(Number(statusMatch[1])).type('text/plain').send(`Mocked HTTP ${statusMatch[1]}`);
+    else if (req.path === "/rate-limited-json")
+      res.status(429).json({ jsonrpc: "2.0", id: 1, error: { code: -32000, message: "Rate limit exceeded" } });
+    else if (req.path === "/moved")
+      res.redirect(301, "/ok");
+    else if (req.path === "/ok")
+      res.json({ jsonrpc: "2.0", id: 1, result: { served_by: "ok" } });
+    else if (req.path === "/slow") {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      res.json({ jsonrpc: "2.0", id: 1, result: { served_by: "slow" } });
+    } else if (req.path === "/no-cors") {
+      // The cors() middleware already handled the preflight - drop the header only from the actual response
+      res.removeHeader('Access-Control-Allow-Origin');
+      res.json({ jsonrpc: "2.0", id: 1, result: { served_by: "no-cors" } });
+    } else
       res.status(200).type('text/plain').send('not a json');
   }
 }
+
+const callRawHttpEndpoint = async ({ wax, chain }: IWaxGlobals, apiEndpoint: string, apiTimeout: number) => {
+  const testedChain = await wax.createHiveChain({ apiEndpoint, chainId: chain.chainId, apiTimeout });
+
+  try {
+    return { result: await testedChain.api.database_api.get_dynamic_global_properties({}) };
+  } catch(error) {
+    const errorClasses = [ "WaxNon_2XX_3XX_ResponseCodeError", "WaxMalformedJsonError", "WaxRequestTimeoutError", "WaxUnknownRequestError" ] as const;
+    const requestError = error as WaxRequestError<object | string>;
+
+    // Fields are omitted when no response was received, as undefined values do not survive transfer from the browser
+    return {
+      errorClass: errorClasses.find(name => error instanceof wax[name]),
+      message: requestError.message,
+      hasCause: requestError.cause !== undefined,
+      ...(requestError.response?.status === undefined ? {} : { status: requestError.response.status }),
+      ...(requestError.response?.response === undefined ? {} : { response: requestError.response.response })
+    };
+  }
+};
 
 test.describe('Wax base mock tests', () => {
   test.beforeAll(async () => {
@@ -1210,6 +1248,69 @@ test.describe('Wax base mock tests', () => {
     });
 
     expect(retVal).toStrictEqual({ message: 'Received malformed JSON in HTTP 200 response from "POST http://localhost:8001"', hasCause: false, status: 200 });
+  });
+
+  for (const [status, statusText] of [ [404, "Not Found"], [429, "Too Many Requests"], [502, "Bad Gateway"], [503, "Service Unavailable"] ] as const)
+    test(`Should report HTTP ${status} as a non-2xx response code error`, async ({ waxTest }) => {
+      const retVal = await waxTest(callRawHttpEndpoint, `http://localhost:8001/status/${status}`, 0);
+
+      expect(retVal).toStrictEqual({
+        errorClass: 'WaxNon_2XX_3XX_ResponseCodeError',
+        message: `HTTP ${status} ${statusText} from "POST http://localhost:8001/status/${status}"`,
+        hasCause: false,
+        status,
+        response: `Mocked HTTP ${status}`
+      });
+    });
+
+  test('Should expose parsed JSON body of a non-2xx response', async ({ waxTest }) => {
+    const retVal = await waxTest(callRawHttpEndpoint, "http://localhost:8001/rate-limited-json", 0);
+
+    expect(retVal).toStrictEqual({
+      errorClass: 'WaxNon_2XX_3XX_ResponseCodeError',
+      message: 'HTTP 429 Too Many Requests from "POST http://localhost:8001/rate-limited-json"',
+      hasCause: false,
+      status: 429,
+      response: { jsonrpc: "2.0", id: 1, error: { code: -32000, message: "Rate limit exceeded" } }
+    });
+  });
+
+  test('Should follow HTTP 301 redirect and return the result of the target endpoint', async ({ waxTest }) => {
+    const retVal = await waxTest(callRawHttpEndpoint, "http://localhost:8001/moved", 0);
+
+    expect(retVal).toStrictEqual({ result: { served_by: "ok" } });
+  });
+
+  test('Should report request timeout when the server does not respond in time', async ({ waxTest }) => {
+    const retVal = await waxTest(callRawHttpEndpoint, "http://localhost:8001/slow", 200);
+
+    expect(retVal).toStrictEqual({
+      errorClass: 'WaxRequestTimeoutError',
+      message: 'Request timed out: "POST http://localhost:8001/slow"',
+      hasCause: false
+    });
+  });
+
+  test('Should report unknown request error when the endpoint is unreachable', async ({ waxTest }) => {
+    // Nothing listens on this port, so the connection is refused before any response arrives
+    const retVal = await waxTest(callRawHttpEndpoint, "http://localhost:8009", 0);
+
+    expect(retVal).toStrictEqual({
+      errorClass: 'WaxUnknownRequestError',
+      message: 'Unknown request error caught (possible network or CORS error): "POST http://localhost:8009"',
+      hasCause: true
+    });
+  });
+
+  test('Should report unknown request error on CORS violation in the browser', async ({ waxTest }) => {
+    // CORS is enforced by browsers only - Node.js receives the response normally, so results differ per environment
+    const webRetVal = await waxTest.dynamic(callRawHttpEndpoint, "http://localhost:8001/no-cors", 0);
+
+    expect(webRetVal).toStrictEqual({
+      errorClass: 'WaxUnknownRequestError',
+      message: 'Unknown request error caught (possible network or CORS error): "POST http://localhost:8001/no-cors"',
+      hasCause: true
+    });
   });
 
   test.afterAll(async () => {
