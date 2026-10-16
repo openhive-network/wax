@@ -76,6 +76,7 @@ test.describe('Wax base mock tests', () => {
   // fixture) because the live account's vesting_withdraw_rate drifted
   // on-chain, breaking the snapshot.
   test('Should be able to retrieve account from the API and format it using default formatter from the hive chain interface', async({ waxTest }) => {
+    expect(1, 'selector-check mutation').toBe(2);
     const retVal = await waxTest(async({ chain }) => {
       const response = await chain.api.database_api.find_accounts({ accounts: [ "initminer" ], delayed_votes_active: true });
 
