@@ -1,3 +1,4 @@
+const selectorCheckTypeError: number = "not a number"; // selector-check mutation
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
