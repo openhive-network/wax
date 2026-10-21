@@ -17,7 +17,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 @typing_extensions.final
 class decline_voting_rights(google.protobuf.message.Message):
     """Using the operation decline_voting_rights_operation, a user may decide to decline
-    their voting rights – for content, witnesses and proposals.
+    their voting rights - for content, witnesses and proposals.
     Additionally, a user cannot set a proxy (operation account_witness_proxy_operation).
     The operation is done with a HIVE_OWNER_AUTH_RECOVERY_PERIOD day delay.
     After HIVE_OWNER_AUTH_RECOVERY_PERIOD days it is irreversible.

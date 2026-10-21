@@ -43,7 +43,7 @@ class create_claimed_account(google.protobuf.message.Message):
     """@param {string} new_account_name - Account name.
                                        Valid account name may consist of many parts separated by a dot,
                                        total may have up to 16 characters, parts have to start from a letter,
-                                       may be followed by numbers, or “-“.
+                                       may be followed by numbers, or "-".
     """
     @property
     def owner(self) -> authority_pb2.authority:

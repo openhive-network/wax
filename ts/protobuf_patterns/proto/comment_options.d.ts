@@ -59,7 +59,7 @@ export interface comment_options {
      *                                                 If the sum of the weights is less than 100%,
      *                                                 the rest of the reward is received by the author.
      *                                                 It should be defined less than 128 accounts.
-     *                                                 The allowed range of the weight is from 0 to 10000 (0 – 100%).
+     *                                                 The allowed range of the weight is from 0 to 10000 (0 - 100%).
      *                                                 The beneficiaries should be listed in alphabetical order, no duplicates.
      */
     extensions: comment_options_extension[];

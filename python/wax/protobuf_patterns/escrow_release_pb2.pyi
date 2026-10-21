@@ -18,7 +18,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 @typing_extensions.final
 class escrow_release(google.protobuf.message.Message):
     """The operation is used to release the funds of the escrow.
-    The escrow may be released by { from }, { to } or { agent } – depending on the following conditions:
+    The escrow may be released by { from }, { to } or { agent } - depending on the following conditions:
     If there is no dispute and escrow has not expired, either party can release funds to the other.
     If escrow expires and there is no dispute, either party can release funds to either party.
     If there is a dispute regardless of expiration, the agent can release funds to either party

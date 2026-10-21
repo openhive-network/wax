@@ -26,7 +26,7 @@ class request_account_recovery(google.protobuf.message.Message):
        During an account creation, the account that created a new account is set as a recovery
        account by default, but it can be changed by the user (using operation change_recovery_account_operation).
        If the account was created by account temp, then a recovery account is empty and
-       it is set as a top witness – it is not good a recovery account.
+       it is set as a top witness - it is not good a recovery account.
        Note: it takes HIVE_OWNER_AUTH_RECOVERY_PERIOD (30 days) after sending change_recovery_account_operation.
        for the new recovery agent to become active. During that period the previous agent remains active for the account.
     2. The compromised owner authority is still recent.
@@ -69,7 +69,7 @@ class request_account_recovery(google.protobuf.message.Message):
     """@param {string} account_to_recover - The account to be recovered."""
     @property
     def new_owner_authority(self) -> authority_pb2.authority:
-        """@param {authority} new_owner_authority - The new owner authority – the public, not private key.
+        """@param {authority} new_owner_authority - The new owner authority - the public, not private key.
                                                  The new authority should be satisfiable.
         """
     @property

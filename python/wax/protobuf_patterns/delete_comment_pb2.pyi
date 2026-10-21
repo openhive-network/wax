@@ -17,7 +17,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 @typing_extensions.final
 class delete_comment(google.protobuf.message.Message):
     """The post or comment may be deleted by the author. If the post or comment is deleted, the {permlink} may be reused. 
-    The delete doesn’t mean that the comment is removed from the blockchain.
+    The delete doesn't mean that the comment is removed from the blockchain.
 
     Description https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/17_delete_comment.md?ref_type=heads
     """

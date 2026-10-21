@@ -17,7 +17,7 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 @typing_extensions.final
 class comment(google.protobuf.message.Message):
     """Using comment operation a user may create a post or a comment.
-    From the blockchain point of view, it is the same operation – always comment.
+    From the blockchain point of view, it is the same operation - always comment.
     If a comment has no parent, it is a post.
     The parent of the comment may be a post or a comment.
     Users may comment their own comments.
