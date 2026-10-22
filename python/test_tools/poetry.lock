@@ -601,22 +601,22 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-beekeepy"
-version = "1.28.6.post20260317125034"
+version = "1.28.6.post20260219063844"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_beekeepy-1.28.6.post20260317125034-py3-none-any.whl", hash = "sha256:2f55786c285190206b14843039a1e82bfcab7b655e640f07720c61ee5bb7aeb7"},
+    {file = "hiveio_beekeepy-1.28.6.post20260219063844-py3-none-any.whl", hash = "sha256:d2e144d2d593fdb872287af62926c1b1caa895edaaf030b8571031b9d9967b0c"},
 ]
 
 [package.dependencies]
-aiohttp = ">=3.11.15,<4.0.0"
-hiveio-schemas = ">=1.28.2-post.0,<2.0.0"
-loguru = ">=0.7.2,<0.8.0"
-psutil = ">=7.0.0,<8.0.0"
-python-dateutil = ">=2.8.2,<3.0.0"
-requests = ">=2.32.3,<3.0.0"
+aiohttp = ">=3.11.15"
+hiveio-schemas = ">=1.28.2"
+loguru = ">=0.7.2"
+psutil = ">=7.0.0"
+python-dateutil = ">=2.8.2"
+requests = ">=2.32.3"
 
 [package.source]
 type = "legacy"
@@ -644,7 +644,7 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-wax"
-version = "1.28.8rc2.dev20261002075414+dirty"
+version = "0.0.0"
 description = ""
 optional = false
 python-versions = ">=3.12,<4"
@@ -657,7 +657,7 @@ hiveio-api = "1.28.8rc3"
 httpx = {version = "^0.28.0", extras = ["http2"]}
 loguru = "^0.7.2"
 protobuf = "^6.33.0"
-python-dateutil = "^2.8.2"
+python-dateutil = "^3.0.0"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"
 
@@ -1526,18 +1526,19 @@ testing = ["filelock"]
 
 [[package]]
 name = "python-dateutil"
-version = "2.9.0.post0"
+version = "3.0.0"
 description = "Extensions to the standard Python datetime module"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 groups = ["main"]
 files = [
-    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
-    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+    {file = "python_dateutil-3.0.0-py2.py3-none-any.whl", hash = "sha256:3c79630202e4152c6add678446984236efe4f57e84d8e892aab0637bab82e9fd"},
+    {file = "python_dateutil-3.0.0.tar.gz", hash = "sha256:7ebcb3c29a92f3ceafe79a7a48a5c45677e9e004bbeec5742ac0bbb00560b7a2"},
 ]
 
 [package.dependencies]
-six = ">=1.5"
+six = ">=1.6"
+tzdata = "*"
 
 [[package]]
 name = "pyyaml"
@@ -1694,6 +1695,18 @@ groups = ["main", "static-analysis"]
 files = [
     {file = "typing_extensions-4.15.0-py3-none-any.whl", hash = "sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548"},
     {file = "typing_extensions-4.15.0.tar.gz", hash = "sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466"},
+]
+
+[[package]]
+name = "tzdata"
+version = "2026.5"
+description = "Provider of IANA time zone data"
+optional = false
+python-versions = ">=2"
+groups = ["main"]
+files = [
+    {file = "tzdata-2026.5-py2.py3-none-any.whl", hash = "sha256:b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac"},
+    {file = "tzdata-2026.5.tar.gz", hash = "sha256:8cc73c0a0bfca7dbfa59235d60b2eff82231dee33f53d206db1acd9173cfc0a7"},
 ]
 
 [[package]]
@@ -1899,4 +1912,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "cf650f35579cbd64ec28f4293f12a862c629c3911f238db0502c117813e503b9"
+content-hash = "b743d1b98dcdbaf817add58a879189540f3687cd84b594247dd96723430bb31a"

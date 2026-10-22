@@ -38,7 +38,7 @@ python = ">=3.12,<4"
 protobuf = "^6.33.0"
 httpx = {extras = ["http2"], version = "^0.28.0"}
 loguru = "^0.7.2"
-python-dateutil = "^2.8.2"
+python-dateutil = "^3.0.0"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"
 hiveio-api = {version = "1.28.8rc3", source = "gitlab-hive"}  # pinned: must match the version built from the hived submodule
