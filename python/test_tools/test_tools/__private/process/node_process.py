@@ -14,8 +14,6 @@ if TYPE_CHECKING:
     from beekeepy.handle.runnable import AutoCloser
     from loguru import Logger
 
-    from schemas.fields.basic import NodeType
-
 
 class HivedVersionOutput(PreconfiguredBaseModel):
     version: HiveVersionFromExecutable
@@ -26,7 +24,7 @@ class NodeProcess(Process[NodeConfig, NodeArguments]):
         super().__init__(directory, ExecutableInfo("hived"), logger)
 
     @property
-    def build_version(self) -> NodeType:
+    def build_version(self) -> str:
         return self.version().version.node_type
 
     def get_build_commit_hash(self) -> str:

@@ -18,7 +18,7 @@ from loguru import logger
 
 from test_tools.__private import communication, paths_to_executables
 from test_tools.__private.account import Account
-from wax.helpy import Hf26Asset as Asset
+from test_tools.__private.asset import Asset
 from test_tools.__private.exceptions import NodeIsNotRunningError
 from beekeepy.exceptions import CommunicationError
 from test_tools.__private.node import Node
@@ -1417,7 +1417,11 @@ class OldWallet(UserHandleImplementation, ScopedObject):
             "method": method,
             "params": list(params),
         }
-        return communication.request(endpoint, message, self.__use_nai_assets)
+        return communication.request(endpoint, message, self.__use_nai_assets, testnet=self.__is_testnet)
+
+    def __is_testnet(self) -> bool:
+        """Network of the wallet - of the node it is attached to, the testnet when it works offline."""
+        return self.connected_node is None or self.connected_node.is_testnet()
 
     @property
     def __use_nai_assets(self) -> bool:

@@ -9,16 +9,21 @@ from typing import Any, Callable
 
 import requests
 
-from schemas.fields.assets import AssetBase
-from schemas.fields.resolvables import JsonString
+from schemas.fields.json_string import JsonString
 from schemas._preconfigured_base_model import PreconfiguredBaseModel
-from schemas.operations import AnyLegacyOperation
+from hiveio_api import Asset, HiveModel
+from hiveio_api.client import to_api_builtins
 from beekeepy.exceptions import UnableToAcquireDatabaseLockError, UnableToAcquireForkdbLockError, CommunicationError
 from loguru import logger
 from wax.helpy import Time
 
 
 class CommonJsonEncoder(json.JSONEncoder):
+    def __init__(self, *args: Any, testnet: Callable[[], bool] = lambda: True, **kwargs: Any) -> None:
+        """`testnet` tells the network of the wallet (asked only for assets in the legacy form) - the testnet by default."""
+        super().__init__(*args, **kwargs)
+        self.testnet = testnet
+
     def default(self, o: Any):
         if isinstance(o, datetime):
             return Time.serialize(o)
@@ -26,23 +31,27 @@ class CommonJsonEncoder(json.JSONEncoder):
             return o.serialize()
         if isinstance(o, PreconfiguredBaseModel):
             return o.dict()
+        if isinstance(o, HiveModel):  # public models (e.g. operations) - JSON keys of the API
+            return o.dict()
 
         return super().default(o)
 
 
 class LegacyJsonEncoder(CommonJsonEncoder):
+    """Assets in the legacy form, with symbols of the network of the wallet."""
+
     def default(self, o: Any):
-        if isinstance(o, AssetBase):
-            return o.as_legacy()
-        if isinstance(o, AnyLegacyOperation):
-            return (o[0], o[1].dict(exclude_none=True))
+        if isinstance(o, Asset):
+            return o.as_legacy(testnet=self.testnet())
+        if isinstance(o, HiveModel):
+            return to_api_builtins(o, testnet=self.testnet)
         return super().default(o)
 
 
 class Hf26JsonEncoder(CommonJsonEncoder):
     def default(self, o: Any):
-        if isinstance(o, AssetBase):
-            return o.as_serialized_nai()
+        if isinstance(o, Asset):
+            return o.as_nai()
         return super().default(o)
 
 
@@ -71,11 +80,13 @@ def request(
     use_nai_assets: bool = False,
     max_attempts=3,
     seconds_between_attempts=0.2,
+    *,
+    testnet: Callable[[], bool] = lambda: True,
 ):
     assert max_attempts > 0
 
     json_encoder = LegacyJsonEncoder if not use_nai_assets else Hf26JsonEncoder
-    body = json.dumps(message, cls=json_encoder)
+    body = json.dumps(message, cls=json_encoder, testnet=testnet)
     headers = {"Content-Type": "application/json"}
     decoded_content = "<NO RESPONSE>"
 

@@ -4,20 +4,13 @@ from datetime import datetime  # noqa: TCH003
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import debug_node_api
+from hiveio_api.operations import Price
 
-from schemas.apis import debug_node_api as schemas_debug_node_api
-from schemas.fields.compound import Price
-from schemas.fields.hex import TransactionId
+from schemas.fields.public import TransactionId
 
 
 class DebugNodeApi(AbstractSyncApi):
     api = AbstractSyncApi.endpoint_jsonrpc
-
-    @api
-    def debug_push_blocks(
-        self, *, src_filename: str, count: int, skip_validate_invariants: bool = False
-    ) -> schemas_debug_node_api.DebugPushBlocks:
-        raise NotImplementedError
 
     @api
     def debug_generate_blocks(
@@ -32,7 +25,7 @@ class DebugNodeApi(AbstractSyncApi):
         raise NotImplementedError
 
     @api
-    def debug_get_head_block(self) -> schemas_debug_node_api.DebugGetHeadBlock:
+    def debug_get_head_block(self) -> debug_node_api.DebugGetHeadBlockResponse:
         raise NotImplementedError
 
     @api
@@ -68,5 +61,5 @@ class DebugNodeApi(AbstractSyncApi):
         raise NotImplementedError
 
     @api
-    def debug_fail_transaction(self, tx_id: TransactionId) -> schemas_debug_node_api.DebugFailTransaction:
+    def debug_fail_transaction(self, tx_id: TransactionId) -> debug_node_api.DebugNodeFailTransactionResponse:
         raise NotImplementedError

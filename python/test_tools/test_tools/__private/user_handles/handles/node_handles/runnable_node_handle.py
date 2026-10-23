@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from test_tools.__private.process.node_config import NodeConfig
     from test_tools.__private.process.node_process import HivedVersionOutput
     from test_tools.__private.snapshot import Snapshot
-    from wax.helpy._interfaces.time import TimeControl
+    from wax.helpy import TimeControl
 
 
 class RunnableNodeHandle(NodeHandleBase):

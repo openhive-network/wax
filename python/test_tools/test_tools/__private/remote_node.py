@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from beekeepy.interfaces import HttpUrl, P2PUrl, WsUrl
+from hiveio_api import to_builtins
 
-from schemas.convert import to_builtins
 from test_tools.__private.base_node import BaseNode
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class RemoteNode(BaseNode):
         self.__ws_endpoint: WsUrl | None = WsUrl(ws_endpoint, protocol="ws") if ws_endpoint is not None else None
 
     def get_version(self) -> dict[str, str]:
-        return dict(to_builtins(self.api.database.get_version()))
+        return {key: str(value) for key, value in to_builtins(self.api.database.get_version()).items()}
 
     def get_ws_endpoint(self) -> WsUrl | None:
         if self.__ws_endpoint is None:

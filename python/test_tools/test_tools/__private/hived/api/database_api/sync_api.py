@@ -5,10 +5,10 @@ from typing import Literal
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import database_api
+from hiveio_api.operations import Transaction
 
-from schemas.transaction import Transaction
+from test_tools.__private.asset import Asset as Hf26Asset
 from test_tools.__private.hived.api.database_api.common import DatabaseApiCommons
-from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):

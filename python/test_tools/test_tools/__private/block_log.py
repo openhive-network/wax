@@ -5,23 +5,72 @@ import json
 import shutil
 import subprocess
 import typing
+from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar, Final, Literal, overload
 
-from schemas.apis.block_api.fundaments_of_responses import (
-    BlockLogUtilSignedBlockBaseTransaction,
-    BlockLogUtilSignedBlockBaseTransactionLegacy,
+from hiveio_api import HiveModel
+from hiveio_api.operations import Transaction, TransactionLegacy
+
+# runtime types of the models below (their annotations are resolved when the models are built)
+from schemas.fields.public import (  # noqa: TCH001
+    AccountName,
+    BlockId,
+    HiveDateTime,
+    HiveInt,
+    PublicKey,
+    Signature,
+    TransactionId,
 )
-from schemas.errors import ValidationError
 from test_tools.__private import paths_to_executables
 from test_tools.__private.exceptions import BlockLogError, BlockLogUtilError, MissingBlockLogArtifactsError
-from wax.helpy._interfaces.time import Time, TimeFormats
+from wax.helpy import Time, TimeFormats
 
 if typing.TYPE_CHECKING:
     from datetime import datetime
 
-BlockLogUtilResultTransaction = BlockLogUtilSignedBlockBaseTransaction
-BlockLogUtilResultTransactionLegacy = BlockLogUtilSignedBlockBaseTransactionLegacy
+
+@dataclass(kw_only=True)
+class _BlockLogUtilSignedBlockBase(HiveModel):
+    """Block printed by block_log_util (not an API response, so it is not generated from openapi.json)."""
+
+    extensions: list[object]
+    previous: TransactionId
+    timestamp: HiveDateTime
+    transaction_merkle_root: TransactionId
+    witness: AccountName
+    block_id: BlockId
+    signing_key: PublicKey
+    witness_signature: Signature
+
+
+@dataclass(kw_only=True)
+class BlockLogUtilTransactionLegacy(TransactionLegacy):
+    """Transaction in legacy form, printed by block_log_util with its location in the block log."""
+
+    block_num: HiveInt
+    transaction_id: TransactionId
+    transaction_num: HiveInt
+
+
+@dataclass(kw_only=True)
+class BlockLogUtilResultTransaction(_BlockLogUtilSignedBlockBase):
+    transactions: list[Transaction]
+
+
+@dataclass(kw_only=True)
+class BlockLogUtilResultTransactionLegacy(_BlockLogUtilSignedBlockBase):
+    transactions: list[BlockLogUtilTransactionLegacy]
+
+
+def _has_legacy_operations(block: object) -> bool:
+    """Whether transactions of the block printed by block_log_util hold operations of the legacy form (`[name, value]`)."""
+    transactions = block.get("transactions") if isinstance(block, dict) else None
+    for transaction in transactions if isinstance(transactions, list) else []:
+        operations = transaction.get("operations") if isinstance(transaction, dict) else None
+        for operation in operations if isinstance(operations, list) else []:
+            return isinstance(operation, list)
+    return False
 
 
 class BlockLog:
@@ -235,10 +284,10 @@ class BlockLog:
             with contextlib.suppress(BlockLogUtilError):
                 output = self.__run_and_get_output("--get-block", *block_log_arg, *block_number_arg).replace("'", '"')
             if expected_str in output:
-                try:
-                    return BlockLogUtilResultTransaction.parse_builtins(json.loads(output))
-                except ValidationError:
-                    return BlockLogUtilResultTransactionLegacy.parse_builtins(json.loads(output))
+                block = json.loads(output)
+                if _has_legacy_operations(block):
+                    return BlockLogUtilResultTransactionLegacy.from_builtins(block)
+                return BlockLogUtilResultTransaction.from_builtins(block)
         raise BlockLogUtilError(f"Block {block_number} not found or response malformed: `{output}`")
 
     def get_block_ids(self, block_number: int) -> str:

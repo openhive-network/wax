@@ -14,6 +14,7 @@ from beekeepy.exceptions import (
     CommunicationError,
     ErrorInResponseError,
     FailedToStartExecutableError,
+    SchemaValidationError,
 )
 
 from test_tools.__private.exceptions import (
@@ -59,6 +60,7 @@ __all__ = [
     "CommunicationError",
     "ErrorInResponseError",
     "FailedToStartExecutableError",
+    "SchemaValidationError",
     # wax
     "WaxAssertionError",
     "WaxCommunicationError",

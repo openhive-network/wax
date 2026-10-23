@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
-from schemas.fields.assets import AssetHive
-from schemas.fields.assets._base import AssetNaiAmount
-from schemas.fields.hive_int import HiveInt
+from schemas import Asset
 
 # Import wrapped functions from wax public API (handles subclass conversions internally)
 from wax import calculate_legacy_sig_digest as wax_calculate_legacy_sig_digest
@@ -15,10 +13,6 @@ from wax import create_wax_foundation
 from wax import encode_encrypted_memo as wax_encode_encrypted_memo
 from wax import get_hive_protocol_config as wax_get_hive_protocol_config
 from wax import get_tapos_data as wax_get_tapos_data
-from wax._private.result_tools import (
-    expose_result_as_python_string,
-    validate_wax_result,
-)
 
 # Import raw functions from cpp_python_bridge (no subclass handling needed for these)
 from wax.cpp_python_bridge import calculate_legacy_transaction_id as wax_calculate_legacy_transaction_id
@@ -29,19 +23,20 @@ from wax.cpp_python_bridge import generate_password_based_private_key as wax_gen
 from wax.cpp_python_bridge import minimize_required_signatures as wax_minimize_required_signatures
 from wax.cpp_python_bridge import validate_transaction as wax_validate_transaction
 from wax.wax_result import (
+    expose_result_as_python_string,
     python_authorities,
     python_authority,
     python_minimize_required_signatures_data,
+    validate_wax_result,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from schemas.apis.wallet_bridge_api.fundaments_of_responses import Account as AccountSchema
-    from schemas.fields.assets._base import AssetHbd
-    from schemas.fields.basic import PublicKey
-    from schemas.fields.compound import Authority, Price
-    from schemas.transaction import Transaction
+    from hiveio_api.operations import Authority, Transaction
+    from hiveio_api.wallet_bridge_api import Account as AccountSchema
+
+    from schemas.fields.public import AssetHbd, AssetHive, PublicKey
     from test_tools.__private.wallet.constants import AccountNameApiType
     from wax.models.key_data import IBrainKeyData
     from wax.wax_result import python_ref_block_data
@@ -282,10 +277,20 @@ def collect_signing_keys(
     return list(wax_collect_signing_keys(transaction.json(), retrieve_authorities))
 
 
+class PriceOfAssets(Protocol):
+    """Price given by an API (e.g. `current_median_history` of `get_feed_history`)."""
+
+    @property
+    def base(self) -> Asset: ...
+
+    @property
+    def quote(self) -> Asset: ...
+
+
 def estimate_hive_collateral(
     hbd_amount_to_get: AssetHbd,
-    current_median_history: Price,
-    current_min_history: Price,
+    current_median_history: PriceOfAssets,
+    current_min_history: PriceOfAssets,
 ) -> AssetHive:
     """
     Estimate the hive collateral for the given HBD amount to get.
@@ -304,13 +309,13 @@ def estimate_hive_collateral(
     """
     wax_base_api = create_wax_foundation()
     wax_asset = wax_base_api.estimate_hive_collateral(
-        current_median_history.base.as_nai(),
-        current_median_history.quote.as_nai(),
-        current_min_history.base.as_nai(),
-        current_min_history.quote.as_nai(),
-        hbd_amount_to_get.as_nai(),
+        current_median_history.base,
+        current_median_history.quote,
+        current_min_history.base,
+        current_min_history.quote,
+        hbd_amount_to_get,
     )
-    return AssetHive(amount=AssetNaiAmount(wax_asset.amount), nai=wax_asset.nai, precision=HiveInt(wax_asset.precision))
+    return Asset.from_nai({"amount": wax_asset.amount, "nai": wax_asset.nai, "precision": wax_asset.precision})
 
 
 def generate_password_based_private_key(account: AccountNameApiType, role: str, password: str) -> WaxPrivateKeyData:
