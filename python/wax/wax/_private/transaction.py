@@ -5,6 +5,7 @@ from copy import deepcopy
 from typing import TYPE_CHECKING, Any, Self, TypeAlias
 
 from google.protobuf.json_format import MessageToJson, ParseDict
+from schemas.fields.hive_datetime import HiveDateTime
 
 from wax._private.core.constants import DEFAULT_TRANSACTION_EXPIRATION_TIME
 from wax._private.cython_wrappers import (
@@ -14,7 +15,6 @@ from wax._private.cython_wrappers import (
     tx_sig_digest,
     tx_signature_keys,
 )
-from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.models.transaction_required_authorities import TransactionRequiredAuthorities
 from wax._private.operation_base import OperationBase
 from wax._private.proto_utils import message_to_dict_with_defaults

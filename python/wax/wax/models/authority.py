@@ -9,7 +9,7 @@ from wax.proto.authority import authority as proto_authority
 from wax.wax_result import python_authorities, python_authority
 
 if TYPE_CHECKING:
-    from wax._private.models.hive_date_time import HiveDateTime
+    from schemas.fields.hive_datetime import HiveDateTime
 
 WaxAuthority: TypeAlias = proto_authority
 """Type alias for one of the authorities used in wax."""

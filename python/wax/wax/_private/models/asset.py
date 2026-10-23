@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Final
 
+from schemas.fields.public import Asset as PublicAsset
+
 from wax._private.converters.decimal_converter import DecimalConverter
 from wax.cpp_python_bridge import hbd, hive, vests
 from wax.exceptions.asset_errors import (
@@ -10,7 +12,14 @@ from wax.exceptions.asset_errors import (
     UnknownAssetNaiError,
     UnknownAssetTypeError,
 )
-from wax.models.asset import AnyNaiAssetConvertible, AssetAmount, AssetFactory, AssetInfo, AssetName, NaiAsset
+from wax.models.asset import (
+    AnyNaiAssetConvertible,
+    AssetAmount,
+    AssetFactory,
+    AssetInfo,
+    AssetName,
+    NaiAsset,
+)
 from wax.proto.asset import asset as proto_asset
 
 if TYPE_CHECKING:
@@ -93,37 +102,56 @@ class Asset:
 
         Args:
             asset_name: name of the asset.
-            asset: convertible asset.
+            asset: convertible asset - in any form taken by `to_proto_asset`.
 
         Returns:
             NaiAsset: resolved asset.
 
         Raises:
             UnknownAssetTypeError: Raised when asset_name is not found in the ASSETS dictionary.
-            CannotCreateAssetError: Raised when asset cannot be created from the given convertible asset.
-            AssertionError: Raised when nai of the asset is not the same as expected.
+            CannotCreateAssetError: Raised when asset cannot be created from the given convertible asset, or it is an
+                asset of another kind.
         """
         proper_asset = self.ASSETS.get(asset_name)
         if proper_asset is None:
             raise UnknownAssetTypeError(asset_name.value)
 
+        resolved = self.to_proto_asset(asset)
+        if resolved.nai != proper_asset.nai:
+            raise CannotCreateAssetError(asset)
+        return resolved
+
+    @staticmethod
+    def to_proto_asset(asset: AnyNaiAssetConvertible) -> NaiAsset:
+        """
+        Converts an asset given in any form to the protobuf asset.
+
+        Args:
+            asset: protobuf asset, `Asset` of models of hiveio_api, an object of the NAI form (also as JSON) or the
+                legacy form (e.g. `"1.000 HIVE"`) - also assets of test_tools or validating assets of schemas.
+
+        Returns:
+            NaiAsset: the protobuf asset.
+
+        Raises:
+            CannotCreateAssetError: Raised when the value is not an asset.
+        """
         if isinstance(asset, NaiAsset):  # type: ignore[misc, unused-ignore] # proto generated
-            self._assert_asset_nai_valid(proper_asset, asset)
             return asset
 
         try:
-            if isinstance(asset, dict):
-                asset = proto_asset(**asset)  # type: ignore[arg-type, unused-ignore]
-                self._assert_asset_nai_valid(proper_asset, asset)
-                return asset
-
-            asset = proto_asset(**json.loads(asset))
-            self._assert_asset_nai_valid(proper_asset, asset)
-
+            value: object = json.loads(asset) if isinstance(asset, str) and asset.lstrip().startswith("{") else asset
+            public_asset = PublicAsset.from_asset_like(value)
+            converted = None
+            if public_asset is not None:
+                converted = proto_asset(
+                    amount=str(public_asset.amount), precision=public_asset.precision, nai=public_asset.nai
+                )
         except Exception as error:
             raise CannotCreateAssetError(asset) from error
-        else:
-            return asset
+        if converted is None:
+            raise CannotCreateAssetError(asset)
+        return converted
 
     def to_python_json_asset(self, asset: NaiAsset) -> python_json_asset:
         symbol = ""
@@ -160,6 +188,3 @@ class Asset:
             raise TypeError(f"Amount must be integer, not {type(amount)}")
 
         return self.create_wax_asset(asset_name, amount, use_precision=False)
-
-    def _assert_asset_nai_valid(self, valid_asset: python_json_asset, asset_to_check: NaiAsset) -> None:
-        assert valid_asset.nai == asset_to_check.nai, "Nai is not the same as expected."

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
-    from wax._private.models.hive_date_time import HiveDateTime
+    from schemas.fields.hive_datetime import HiveDateTime
 
 AccountName: TypeAlias = str
 """AccountName is a type alias for the name of an account on the Hive blockchain."""
