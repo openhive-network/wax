@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Final, Generic, cast
+from typing import TYPE_CHECKING, Any, Final, Generic, cast
+
+from schemas.fields.hive_datetime import HiveDateTime
 
 from wax._private.api.api_caller import WaxApiCaller
 from wax._private.api.models import ApiTransaction
 from wax._private.base_api import WaxBaseApi
 from wax._private.converters.url_converter import convert_to_http_url
-from wax._private.models.hive_date_time import HiveDateTime
 from wax._private.online_transaction import OnlineTransaction
 from wax.api.collection import WaxApiCollection
 from wax.exceptions.chain_errors import AccountNotFoundError
@@ -19,8 +20,10 @@ from wax.models.basic import ChainReferenceData
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
+    from hiveio_api.operations import Authority
+
     from beekeepy.interfaces import HttpUrl
-    from wax._private.api.models import FindAccountsApiResponse, PossibleAuthorityApi
+    from wax._private.api.models import FindAccountsApiResponse
     from wax.interfaces import ITransaction
     from wax.models.basic import AccountName, ChainId
 
@@ -34,6 +37,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         endpoint_url: HttpUrl,
         api_collection: type[ApiCollectionT] | None = None,
         *,
+        _caller: WaxApiCaller[Any] | None = None,
         _private: bool = False,
     ) -> None:
         """
@@ -43,6 +47,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             chain_id: chain id of the node passed by `node_address`.
             endpoint_url: address of the node to connect to.
             api_collection: type of the api collection to use. Defaults to WaxApiCollection.
+            _caller: caller of the chain extended by `extends` - shared with it (`endpoint_url` is not used then).
             _private: flag indicating that the constructor should not be called directly.
 
         Raises:
@@ -51,21 +56,25 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
         assert _private, "HiveChainApi should not be instantiated directly. Use create_hive_chain() instead."
         super().__init__(chain_id, _private=True)
         self._chain_id = chain_id
-        self._endpoint_url = endpoint_url
 
         if api_collection is None:
             api_collection = WaxApiCollection  # type: ignore[assignment]  # ApiCollectionT can be WaxApiCollection
-
         assert api_collection is not None, "api_collection must be provided or default to WaxApiCollection."
         self._api_collection = api_collection
-        self._api_caller = WaxApiCaller(api_collection(), endpoint_url)
+        self._owns_api_caller = _caller is None
+        if _caller is None:
+            self._api_caller: WaxApiCaller[Any] = WaxApiCaller(api_collection, endpoint_url)
+            self._api: ApiCollectionT = self._api_caller.api
+        else:
+            self._api_caller = _caller
+            self._api = _caller.create_api(api_collection)
 
         self._last_tapos_cache_update = 0
         self._tapos_cache = ChainReferenceData(time=HiveDateTime.now())
 
     @property
     def api(self) -> ApiCollectionT:  # type: ignore[override]
-        return self._api_caller.api
+        return self._api
 
     def extends(self, new_api: type[ExtendedApiCollectionT]) -> HiveChainApi[ExtendedApiCollectionT | ApiCollectionT]:  # type: ignore[override]
         current_api: type[ApiCollectionT | ExtendedApiCollectionT] = self._api_collection
@@ -78,27 +87,26 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
                 # which causes that it is required when some collection has not base class
 
         return HiveChainApi[ExtendedApiCollectionT | ApiCollectionT](
-            self.chain_id, self.endpoint_url, NewApi, _private=True
+            self.chain_id, self.endpoint_url, NewApi, _caller=self._api_caller, _private=True
         )
 
     @property
     def endpoint_url(self) -> HttpUrl:
-        return self._endpoint_url
+        return self._api_caller.http_endpoint
 
     @endpoint_url.setter
     def endpoint_url(self, value: HttpUrl | str) -> None:
-        parsed_endpoint_url = convert_to_http_url(value)
-
-        self._endpoint_url = parsed_endpoint_url
-        self._api_caller.set_endpoint_url(parsed_endpoint_url, _private=True)
+        self._api_caller.set_endpoint_url(convert_to_http_url(value), _private=True)
 
     def teardown(self) -> None:
-        """Call when work with communicator is over."""
-        self._api_caller.teardown()
+        """Call when work with communicator is over (a chain made by `extends` leaves it to the extended one)."""
+        if self._owns_api_caller:
+            self._api_caller.teardown()
 
     async def async_teardown(self) -> None:
-        """Call when work with async communicator is over."""
-        await self._api_caller.async_teardown()
+        """Call when work with async communicator is over (a chain made by `extends` leaves it to the extended one)."""
+        if self._owns_api_caller:
+            await self._api_caller.async_teardown()
 
     async def aclose(self) -> None:
         """Close async API communication resources."""
@@ -120,7 +128,7 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             await transaction.perform_on_chain_verification()
 
         await self._internal_api.network_broadcast_api.broadcast_transaction(
-            trx=ApiTransaction(**transaction.to_dict()), max_block_age=-1
+            trx=ApiTransaction.parse_raw(transaction.to_api()), max_block_age=-1
         )
 
     async def collect_account_authorities(
@@ -153,23 +161,17 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
             dgpo = await self._internal_api.database_api.get_dynamic_global_properties()
             self._tapos_cache = ChainReferenceData(
                 head_block_id=dgpo.head_block_id,
-                time=HiveDateTime(dgpo.time),
+                time=dgpo.time,
             )
             self._last_tapos_cache_update = now
 
         return self._tapos_cache
 
-    def _transform_api_authority(self, api_authority: PossibleAuthorityApi) -> WaxAuthority | None:
-        if not api_authority:
-            return None
-
-        entity_index: Final[int] = 0
-        weight_index: Final[int] = 1
-
+    def _transform_api_authority(self, api_authority: Authority) -> WaxAuthority:
         return WaxAuthority(
             weight_threshold=api_authority.weight_threshold,
-            account_auths={account[entity_index]: account[weight_index] for account in api_authority.account_auths},  # type: ignore[misc, unused-ignore]
-            key_auths={key[entity_index]: cast("int", key[weight_index]) for key in api_authority.key_auths},  # type: ignore[misc, unused-ignore]
+            account_auths=dict(api_authority.account_auths),
+            key_auths=dict(api_authority.key_auths),
         )
 
     def _extract_authority_from_find_accounts_response(
@@ -203,8 +205,8 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
                     posting=self._transform_api_authority(account_data.posting),
                 ),
                 account_data.memo_key,
-                HiveDateTime(account_data.last_owner_update),
-                HiveDateTime(account_data.previous_owner_update),
+                account_data.last_owner_update,
+                account_data.previous_owner_update,
             )
             for account_data in accounts_data
         ]
