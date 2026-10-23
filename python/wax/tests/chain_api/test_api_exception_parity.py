@@ -129,7 +129,8 @@ class TestApiExceptionParity:
         Bypass push_operation validation by sending a raw transaction dict to the API.
 
         This exercises the full network path: hived validates and returns a structured
-        error, WaxOverseer parses it via resolve_exception(), same exception type is raised.
+        error, the WaxErrorInResponse rule (WaxRules) resolves it via resolve_api_response_error(),
+        same exception type is raised.
         """
         # Build a raw transaction with valid tapos from the chain but an invalid account name.
         # We need valid tapos/expiration so hived reaches the account name validation step.
@@ -161,7 +162,7 @@ class TestApiExceptionParity:
         try:
             internal_api = remote_chain.api
             await internal_api.network_broadcast_api.broadcast_transaction(
-                trx=ApiTransaction(**tx_dict), max_block_age=-1
+                trx=ApiTransaction.from_builtins(tx_dict), max_block_age=-1
             )
         except WaxInvalidAccountNameError as ex:
             api_exception = ex

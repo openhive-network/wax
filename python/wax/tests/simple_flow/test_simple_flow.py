@@ -5,7 +5,6 @@ import shutil
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
 from helpy import wax
@@ -21,9 +20,6 @@ from beekeepy import Settings
 from beekeepy.handle.runnable import Beekeeper
 from beekeepy.interfaces import KeyPair
 
-if TYPE_CHECKING:
-    from schemas.fields.basic import PrivateKey
-
 
 @dataclass
 class WalletInfoWithKeysToImport(WalletInfo):  # type: ignore[misc]
@@ -38,7 +34,7 @@ class WalletInfoWithKeysToImport(WalletInfo):  # type: ignore[misc]
         assert path.is_dir()
         path = path / f"{name}.alias.keys"
 
-        list_of_private_keys: list[PrivateKey] = []
+        list_of_private_keys: list[str] = []
         with path.open("r") as file:
             list_of_private_keys = json.load(file)
 
