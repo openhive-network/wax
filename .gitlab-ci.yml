@@ -37,7 +37,7 @@ include:
 
   # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
 - project: 'hive/hive'
-  ref: fb6bd7f83941a016d7400be20be87a4fa4a7527c
+  ref: 7a70d94e8b0b89391f4da6fcc205fe2cd1c9a4d6
   file:
   - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
@@ -173,22 +173,6 @@ verify_include_refs:
   variables:
     VERIFY_REFS: "hive:hive/hive ts/npm-common-config:hive/common-ci-configuration"
 
-generate_hived_flattened_openapi_definition:
-  extends: .node_based_job_base
-  stage: build
-  script:
-  - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
-  - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
-  - node 
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/flatten_swagger.js"
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi.json" > 
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
-  artifacts:
-    paths:
-    - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
-  tags:
-  - public-runner-docker
-
 # Build hiveio-api package (build only, test and deploy in later stages)
 hiveio_api_package:
   stage: build
@@ -198,21 +182,33 @@ hiveio_api_package:
     PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
     GIT_SUBMODULE_STRATEGY: recursive
     PACKAGE_REGISTRY_PROJECT_ID: "198"  # Push to hive/hive registry, not wax
-  needs:
-  - job: generate_hived_flattened_openapi_definition
-    artifacts: true
+  needs: []
   extends: .hiveio_api_package_template
   script:
   - |
+    # without operations_description.json (made by the build of hived) the package cannot be generated here - it is
+    # taken from the registry, where the pipeline of hive publishes it
+    if [[ "${SKIP_REGISTRY_CHECK}" == "true" ]]; then
+      echo "ERROR: SKIP_REGISTRY_CHECK is not supported - hiveio-api cannot be built without operations_description.json"
+      exit 1
+    fi
+    GENERATED_PACKAGE_DIR="${API_GENERATION_DIR}/python_api_package"
+    poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run >/dev/null  # installs the plugin giving the version
+    HIVEIO_API_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+    PUBLISHED=$(curl -fsS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+      "${CI_API_V4_URL}/projects/${PACKAGE_REGISTRY_PROJECT_ID}/packages?package_type=pypi&package_name=hiveio-api&package_version=${HIVEIO_API_VERSION}")
+    if [[ "${PUBLISHED}" == "[]" ]]; then
+      echo "ERROR: hiveio-api ${HIVEIO_API_VERSION} is not published (registry of project ${PACKAGE_REGISTRY_PROJECT_ID})" \
+        "- run the pipeline of hive for the commit of the hive submodule first"
+      exit 1
+    fi
     SCRIPT_ARGS=(
       "--hive-project-root=${HIVE_PROJECT_ROOT}"
       "--api-generation-dir=${API_GENERATION_DIR}"
-      "--dependency-source-dir=${DEPENDENCY_SOURCE_DIR:-${HIVE_PROJECT_ROOT}/tests/python/hive-local-tools}"
       "--package-registry-project-id=${PACKAGE_REGISTRY_PROJECT_ID:-${CI_PROJECT_ID}}"
       "--env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION"
     )
     [[ "${SKIP_WHEEL_DEPLOY}" == "true" ]] && SCRIPT_ARGS+=("--skip-deploy")
-    [[ "${SKIP_REGISTRY_CHECK}" == "true" ]] && SCRIPT_ARGS+=("--skip-registry-check")
     "${HIVE_PROJECT_ROOT}/scripts/ci-helpers/hiveio_api_package.sh" "${SCRIPT_ARGS[@]}"
   after_script:
   - |
