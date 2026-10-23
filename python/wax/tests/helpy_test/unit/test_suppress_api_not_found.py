@@ -8,7 +8,7 @@ import pytest
 if TYPE_CHECKING:
     from beekeepy.exceptions import ApiNotFoundError
 
-from beekeepy.communication import rules
+from beekeepy.communication import Request, RequestContext, Response, rules
 from beekeepy.exceptions import ApiNotFoundError, GroupedErrorsError
 from beekeepy.interfaces import HttpUrl, SuppressApiNotFound
 
@@ -23,33 +23,34 @@ def api_not_found_error(api: str) -> ApiNotFoundError:
         "id": 1,
     }
 
-    result = rules.ApiNotFound(
-        url=HttpUrl("0.0.0.0:0"),
-        request={"jsonrpc": "2.0", "id": 1, "method": f"{api}.some_method"},
-    ).check(response=response, response_raw=json.dumps(response))
+    context = RequestContext(
+        request=Request(
+            url=HttpUrl("0.0.0.0:0"),
+            method="POST",
+            headers={},
+            body=json.dumps({"jsonrpc": "2.0", "id": 1, "method": f"{api}.some_method"}),
+        ),
+        response=Response(status_code=200, headers={}, body=json.dumps(response)),
+    )
+    result = rules.ApiNotFound().check(context)
     assert len(result) == 1, "Exception has not been generated"
     return cast(ApiNotFoundError, result[0])
 
 
 @pytest.mark.parametrize(
-    "error",
-    [
-        api_not_found_error(api=api)
-        for api in [
-            "rc_api",
-            "database_api",
-            "account_history_api",
-            "future_plugin_that_not_exists_yet_api",
-        ]
-    ],
+    "api", ["rc_api", "database_api", "account_history_api", "future_plugin_that_not_exists_yet_api"]
 )
-def test_suppress_api_not_found(error: ApiNotFoundError) -> None:
-    # ARRANGE & ACT
-    with SuppressApiNotFound(error.api) as suppressed:
+def test_suppress_api_not_found(api: str) -> None:
+    # ARRANGE
+    error = api_not_found_error(api)
+
+    # ACT
+    with SuppressApiNotFound(api) as suppressed:
         raise error from GroupedErrorsError([error])
 
     # ASSERT
-    assert suppressed.errors[0].api == error.api
+    assert error.api == api, "the rule takes the API from the message of the node"
+    assert suppressed.errors == [error]
 
 
 @pytest.mark.parametrize(

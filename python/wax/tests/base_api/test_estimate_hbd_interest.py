@@ -7,7 +7,7 @@ import pytest
 if TYPE_CHECKING:
     from wax.interfaces import IWaxBaseInterface
 
-from wax._private.models.hive_date_time import HiveDateTime
+from schemas.fields.hive_datetime import HiveDateTime
 
 
 @pytest.mark.describe("Should be able to estimate hbd interest")

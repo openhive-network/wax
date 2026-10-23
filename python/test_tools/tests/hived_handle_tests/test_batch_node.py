@@ -9,26 +9,18 @@ from beekeepy.exceptions import (
     ResponseNotReadyError,
 )
 from beekeepy.interfaces import SuppressApiNotFound
-from msgspec import (
-    ValidationError,
-)  # TODO: new msgspec refactor should encapsulate schemas !!!
 
 if TYPE_CHECKING:
     from test_tools.__private.hived.sync_handle import Hived
 
 
-@pytest.mark.skip  # TODO: any change in config.hpp guarantees that test will fail - it should not be here but in hived and it should use local node, not api.hive.blog
 def test_batch_node(sync_node: Hived) -> None:
-    try:
-        with sync_node.batch() as node:
-            dynamic_properties = node.api.database.get_dynamic_global_properties()
-            config = node.api.database.get_config()
+    with sync_node.batch() as node:
+        dynamic_properties = node.api.database.get_dynamic_global_properties()
+        config = node.api.database.get_config()
 
-        assert len(dynamic_properties.dict()) != 0, "Dynamic global properties should not be empty"
-        assert len(config.dict()) != 0, "Config should not be empty"
-
-    except ValidationError as ex:
-        repr(ex).index("Object missing required field `HIVE_CUSTOM_OP_BLOCK_LIMIT")
+    assert dynamic_properties.head_block_number > 0
+    assert config.HIVE_CHAIN_ID, "results of all requests of the batch are available"
 
 
 def test_batch_node_response_not_ready(sync_node: Hived) -> None:

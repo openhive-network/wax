@@ -10,7 +10,8 @@ if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
     from wax.interfaces import IWaxBaseInterface
 
-from wax._private.models.hive_date_time import HiveDateTime
+from schemas.fields.hive_datetime import HiveDateTime
+
 from wax.proto.operations import operation, recurrent_transfer, vote
 from wax.proto.transaction import transaction
 from wax_local_tools.templates import (
@@ -40,7 +41,7 @@ async def test_transaction_processing_0(wallet: AsyncUnlockedWallet, wax: IWaxBa
 
     await tx.sign(wallet, "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh")
 
-    expiration = HiveDateTime.fromisoformat(tx.transaction.expiration)
+    expiration = tx.transaction.expiration
 
     assert len(tx.signature_keys) == 1
     assert tx.signature_keys[0] == "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh"
