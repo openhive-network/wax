@@ -4,10 +4,11 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Iterable, cast
 
 from wax._private.base_api import WaxBaseApi
+from wax._private.models.asset import Asset
 from wax._private.operation_base import ConvertedToProtoOperation, OperationBase
 from wax._private.proto.recurrent_transfer_extension_pb2 import recurrent_transfer_extension, recurrent_transfer_pair_id
 from wax.exceptions.asset_errors import UnexpectedAssetTypeError
-from wax.models.asset import AssetName, NaiAsset
+from wax.models.asset import AnyNaiAssetConvertible, AssetName
 from wax.proto.operations import recurrent_transfer
 
 if TYPE_CHECKING:
@@ -26,7 +27,8 @@ class RecurrentTransferData:
     Attributes:
         from_account: Account to transfer asset from.
         to_account: Account to transfer asset to. Cannot set a transfer to yourself.
-        amount: The amount of asset to transfer. Allowed assets: **HIVE** and **HBD**.
+        amount: The amount of asset to transfer, in any form of assets (e.g. `Asset` of models of hiveio_api).
+                 Allowed assets: **HIVE** and **HBD**.
                  In case of removal - amount is not needed.
         pair_id: Since HF 28, if user has more than one recurrent transfer to the same receiver
                  or creates the recurrent transfer using `pair_id`, they must specify it in order
@@ -40,7 +42,7 @@ class RecurrentTransferData:
 
     from_account: AccountName
     to_account: AccountName
-    amount: NaiAsset | None = None
+    amount: AnyNaiAssetConvertible | None = None
     pair_id: int | None = None
     executions: int = DEFAULT_EXECUTIONS
     recurrence: int = DEFAULT_RECURRENCE
@@ -75,7 +77,7 @@ class RecurrentTransferOperationBase(OperationBase):
         return recurrent_transfer(
             from_account=self.data.from_account,
             to_account=self.data.to_account,
-            amount=self.data.amount,
+            amount=Asset.to_proto_asset(self.data.amount) if self.data.amount is not None else None,
             extensions=[self._get_default_extensions(self.data.pair_id)] if self.data.pair_id is not None else [],
             executions=self.data.executions,
             recurrence=self.data.recurrence,
@@ -123,14 +125,13 @@ class DefineRecurrentTransferOperation(RecurrentTransferOperationBase):
     """
 
     def __init__(self, data: RecurrentTransferData) -> None:
-        amount = data.amount
-
-        if amount is None:
+        if data.amount is None:
             raise ValueError("Amount of the recurrent transfer must be provided.")
 
-        if int(amount.amount) <= 0:
-            raise ValueError("Amount of the recurrent transfer must be greater than 0.")
         super().__init__(data)
+        assert self.recurrent_transfer is not None, "The operation is created for the given amount."
+        if int(self.recurrent_transfer.amount.amount) <= 0:
+            raise ValueError("Amount of the recurrent transfer must be greater than 0.")
 
 
 class RecurrentTransferRemovalOperation(RecurrentTransferOperationBase):

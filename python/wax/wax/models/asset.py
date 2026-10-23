@@ -5,6 +5,8 @@ from decimal import Decimal
 from enum import Enum
 from typing import Protocol, TypeAlias
 
+from schemas.fields.public import Asset as PublicAsset
+
 from wax.proto.asset import asset as proto_asset
 
 AssetAmount: TypeAlias = int | float | Decimal
@@ -12,12 +14,12 @@ AssetAmount: TypeAlias = int | float | Decimal
 NaiAsset: TypeAlias = proto_asset
 """Type alias for an asset in nai format (hf26)."""
 
-HiveNaiAssetConvertible: TypeAlias = NaiAsset | dict[str, str | int] | str
-"""Type alias for types convertible to Hive nai format."""
-HbdNaiAssetConvertible: TypeAlias = NaiAsset | dict[str, str | int] | str
-"""Type alias for types convertible to Hbd nai format."""
-VestsNaiAssetConvertible: TypeAlias = NaiAsset | dict[str, str | int] | str
-"""Type alias for types convertible to Vests nai format."""
+HiveNaiAssetConvertible: TypeAlias = NaiAsset | PublicAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Hive nai format (also `Asset` of models of hiveio_api)."""
+HbdNaiAssetConvertible: TypeAlias = NaiAsset | PublicAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Hbd nai format (also `Asset` of models of hiveio_api)."""
+VestsNaiAssetConvertible: TypeAlias = NaiAsset | PublicAsset | dict[str, str | int] | str
+"""Type alias for types convertible to Vests nai format (also `Asset` of models of hiveio_api)."""
 AnyNaiAssetConvertible: TypeAlias = HiveNaiAssetConvertible | HbdNaiAssetConvertible | VestsNaiAssetConvertible
 """Type alias for types convertible to any of the HIVE, HBD, or VESTS nai formats."""
 
