@@ -7,20 +7,27 @@ from beekeepy.handle.remote import AbstractSyncHandle, RemoteHandleSettings, Rem
 
 from test_tools.__private.hived.api.api_collection import HivedSyncApiCollection
 from test_tools.__private.hived.common_helpers import HiveHandleCommonHelpers
-from wax.helpy._interfaces.time import Time
+from wax.api import hived_rules
+from wax.helpy import Time
 from wax.helpy.exceptions import BlockWaitTimeoutError
 
 if TYPE_CHECKING:
-    from datetime import datetime, timedelta
+    from datetime import timedelta
 
-    from schemas.fields.basic import AccountName
+    from beekeepy.communication import ResponseCallback
+
+    from schemas.fields.hive_datetime import HiveDateTime
+    from schemas.fields.public import AccountName
 
 
 class HivedTemplate(
     AbstractSyncHandle[RemoteSettingsT, HivedSyncApiCollection], HiveHandleCommonHelpers, Generic[RemoteSettingsT]
 ):
     def _construct_api(self) -> HivedSyncApiCollection:
-        return HivedSyncApiCollection(owner=self)
+        return self._with_rules(HivedSyncApiCollection(owner=self))
+
+    def _rules(self) -> list[ResponseCallback]:
+        return hived_rules()
 
     def _target_service(self) -> str:
         return self._hived_target_service_name()
@@ -34,7 +41,7 @@ class HivedTemplate(
     def get_last_irreversible_block_number(self) -> int:
         return self._get_last_irreversible_block_number(self.get_dynamic_global_properties())
 
-    def get_head_block_time(self) -> datetime:
+    def get_head_block_time(self) -> HiveDateTime:
         return self._get_head_block_time(self.get_dynamic_global_properties())
 
     def get_current_witness(self) -> AccountName:
@@ -95,7 +102,7 @@ class HivedTemplate(
     def batch(self, *, delay_error_on_data_access: bool = False) -> SyncBatchHandle[HivedSyncApiCollection]:
         return SyncBatchHandle(
             url=self.http_endpoint,
-            overseer=self._overseer,
+            owner=self,
             api=lambda o: HivedSyncApiCollection(o),
             delay_error_on_data_access=delay_error_on_data_access,
         )

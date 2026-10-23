@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from schemas.fields.basic import PrivateKey as PrivateKeyType
-from schemas.fields.basic import PublicKey as PublicKeyType
+from schemas.fields import user_friendly
 from test_tools.__private.key_generator import KeyGenerator, KeyGeneratorItem
+
+if TYPE_CHECKING:
+    from schemas.fields.public import PublicKey as PublicKeyType
 
 
 @dataclass
@@ -38,18 +41,18 @@ class Account:
         return self.__secret
 
     @property
-    def private_key(self) -> PrivateKeyType:
+    def private_key(self) -> str:
         if self.__private_key is None:
             self.__generate_keys()
         assert self.__private_key is not None  # mypy check
-        return PrivateKeyType(self.__private_key)
+        return user_friendly.PrivateKey(self.__private_key)
 
     @property
     def public_key(self) -> PublicKeyType:
         if self.__public_key is None:
             self.__generate_keys()
         assert self.__public_key is not None  # mypy check
-        return PublicKeyType(self.__public_key)
+        return user_friendly.PublicKey(self.__public_key)
 
     def safe(self) -> SafeAccount:
         return SafeAccount(
@@ -82,5 +85,5 @@ def PublicKey(account_name: str, *, secret: str = "secret") -> PublicKeyType:  #
     return Account(account_name, secret=secret).public_key
 
 
-def PrivateKey(account_name: str, *, secret: str = "secret") -> PrivateKeyType:  # noqa: N802
+def PrivateKey(account_name: str, *, secret: str = "secret") -> str:  # noqa: N802
     return Account(account_name, secret=secret).private_key

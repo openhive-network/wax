@@ -5,16 +5,18 @@ import subprocess
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from schemas.fields.basic import AccountName, PrivateKey, PublicKey
+from schemas.fields import user_friendly
 from test_tools.__private import paths_to_executables
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from schemas.fields.public import AccountName, PublicKey
+
 
 @dataclass
 class KeyGeneratorItem:
-    private_key: PrivateKey
+    private_key: str
     public_key: PublicKey
     account_name: AccountName
 
@@ -34,9 +36,9 @@ class KeyGenerator:
             assert number_of_accounts == 1
             return [
                 KeyGeneratorItem(
-                    private_key=PrivateKey("5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"),
-                    public_key=PublicKey("STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"),
-                    account_name=AccountName(account_name),
+                    private_key=user_friendly.PrivateKey("5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"),
+                    public_key=user_friendly.PublicKey("STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4"),
+                    account_name=user_friendly.AccountName(account_name),
                 )
             ]
 
@@ -51,9 +53,9 @@ class KeyGenerator:
         assert isinstance(parsed_output, list)
         return [
             KeyGeneratorItem(
-                private_key=PrivateKey(item["private_key"]),
-                public_key=PublicKey(item["public_key"]),
-                account_name=AccountName(item["account_name"]),
+                private_key=user_friendly.PrivateKey(item["private_key"]),
+                public_key=user_friendly.PublicKey(item["public_key"]),
+                account_name=user_friendly.AccountName(item["account_name"]),
             )
             for item in parsed_output
         ]

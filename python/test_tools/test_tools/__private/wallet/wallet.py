@@ -6,15 +6,13 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Final, get_args
 
 from beekeepy import Beekeeper
-from beekeepy.exceptions import WalletWithSuchNameAlreadyExistsError
+from beekeepy.exceptions import ErrorInResponseError, WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
 
-from schemas.fields.basic import PublicKey
-from schemas.fields.hex import Hex
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.hive_int import HiveInt
+from schemas.fields import user_friendly
 from test_tools.__private import exceptions
 from test_tools.__private.account import Account
+from test_tools.__private.asset import Asset
 from test_tools.__private.node import Node
 from test_tools.__private.remote_node import RemoteNode
 from test_tools.__private.scope import ScopedObject, context
@@ -43,15 +41,14 @@ from test_tools.__private.wax_wrapper import (
     validate_transaction,
     wax_authorities,
 )
-from wax._private.api.overseer import WaxAssertionInResponseError, WaxOverseer
-from wax.helpy import Hf26Asset as Asset
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from beekeepy import Session, UnlockedWallet
+    from hiveio_api.operations import Hf26OperationValue as Hf26Operations
 
-    from schemas.operations import Hf26Operations
+    from schemas.fields.public import Hex, PublicKey
     from test_tools.__private.user_handles.handles.wallet_handle import WalletHandle
 
     AnyNode = Node | RemoteNode
@@ -119,7 +116,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         if self.__chain_id != "default":
             assert self.__chain_id.isdigit(), "Invalid chain_id value: it must be a digit string"
             chain_id = self.__chain_id[:64]
-            return Hex(chain_id.ljust(64, "0"))
+            return user_friendly.Hex(chain_id.ljust(64, "0"))
         return node_config.HIVE_CHAIN_ID
 
     def __prepare_directory(self) -> None:
@@ -174,7 +171,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         if self.connected_node is not None and not self.connected_node.is_running():
             raise exceptions.NodeIsNotRunningError("Before attaching wallet you have to run node")
 
-        self.__beekeeper = Beekeeper.factory(settings=Settings(working_directory=self.directory, overseer=WaxOverseer))
+        self.__beekeeper = Beekeeper.factory(settings=Settings(working_directory=self.directory))
         self.__beekeeper_session = self.__beekeeper.create_session()
 
         try:
@@ -184,7 +181,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         except WalletWithSuchNameAlreadyExistsError:
             locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
             self._beekeeper_wallet = locked_wallet.unlock(DEFAULT_PASSWORD)
-        except WaxAssertionInResponseError as exception:
+        except ErrorInResponseError as exception:
             if f"Wallet with name: '{self.name}' already exists" in str(exception):
                 locked_wallet = self.__beekeeper_session.open_wallet(name=self.name)
                 self._beekeeper_wallet = locked_wallet.unlock(DEFAULT_PASSWORD)
@@ -297,7 +294,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
     ) -> SimpleTransaction:
         gdpo = node.api.database.get_dynamic_global_properties()
 
-        while datetime.fromisoformat(gdpo.time) == self.NODE_NOT_READY_DATETIME.replace(tzinfo=None):
+        while gdpo.time == self.NODE_NOT_READY_DATETIME:
             node.wait_number_of_blocks(1)
             gdpo = node.api.database.get_dynamic_global_properties()
 
@@ -311,9 +308,9 @@ class Wallet(UserHandleImplementation, ScopedObject):
         assert ref_block_num >= 0, f"ref_block_num value `{ref_block_num}` is invalid`"
 
         return SimpleTransaction(
-            ref_block_num=HiveInt(ref_block_num),
-            ref_block_prefix=HiveInt(ref_block_prefix),
-            expiration=HiveDateTime(datetime.fromisoformat(gdpo.time) + self._transaction_expiration_offset),
+            ref_block_num=ref_block_num,
+            ref_block_prefix=ref_block_prefix,
+            expiration=gdpo.time + self._transaction_expiration_offset,
             extensions=[],
             signatures=[],
             operations=[],
@@ -397,7 +394,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
         for key in keys_to_sign_with:
             signature = self._beekeeper_wallet.sign_digest(sig_digest=sig_digest, key=key)
             transaction.signatures.append(signature)
-        transaction.signatures = list(set(transaction.signatures))
+        transaction.signatures[:] = dict.fromkeys(transaction.signatures)
 
         validate_transaction(transaction)
         return transaction
@@ -438,7 +435,7 @@ class Wallet(UserHandleImplementation, ScopedObject):
             ], retrived_authorities
         imported_keys_in_beekeeper = set(self.beekeeper_wallet.public_keys)
         sign_keys = list(set(keys_for_signing) & set(imported_keys_in_beekeeper))
-        validated_sign_keys = [PublicKey(key) for key in sign_keys]
+        validated_sign_keys: list[PublicKey] = [user_friendly.PublicKey(key) for key in sign_keys]
         return validated_sign_keys, retrived_authorities
 
     def in_single_transaction(

@@ -5,10 +5,10 @@ from typing import Literal
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import database_api
+from hiveio_api.operations import Transaction
 
-from schemas.transaction import Transaction
+from test_tools.__private.asset import Asset
 from test_tools.__private.hived.api.database_api.common import DatabaseApiCommons
-from wax.helpy._interfaces.asset import Hf26Asset
 
 
 class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
@@ -129,9 +129,7 @@ class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
         raise NotImplementedError
 
     @api
-    def get_order_book(
-        self, *, limit: int, base: Hf26Asset.HiveT, quote: Hf26Asset.HbdT
-    ) -> database_api.GetOrderBookResponse:
+    def get_order_book(self, *, limit: int, base: Asset.HiveT, quote: Asset.HbdT) -> database_api.GetOrderBookResponse:
         raise NotImplementedError
 
     @api
@@ -212,7 +210,7 @@ class DatabaseApi(AbstractSyncApi, DatabaseApiCommons):
 
     @api
     def list_limit_orders(
-        self, *, start: tuple[str, int] | tuple[dict[Literal["base", "quote"], Hf26Asset.HiveT | Hf26Asset.HbdT], int]
+        self, *, start: tuple[str, int] | tuple[dict[Literal["base", "quote"], Asset.HiveT | Asset.HbdT], int]
     ) -> database_api.ListLimitOrdersResponse:
         raise NotImplementedError
 

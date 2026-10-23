@@ -7,14 +7,10 @@ import time
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
+from hiveio_api.operations import AccountCreateOperation, Authority
 from loguru import logger
 
-from schemas.fields.assets import AssetHive
-from schemas.fields.assets._base import AssetNaiAmount
-from schemas.fields.compound import Authority
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.hive_int import HiveInt
-from schemas.operations.account_create_operation import AccountCreateOperation
+from schemas import Asset
 from test_tools.__private.account import Account
 from test_tools.__private.remote_node import RemoteNode
 from test_tools.__private.wallet.constants import (
@@ -35,9 +31,9 @@ if TYPE_CHECKING:
 
     from beekeepy import Beekeeper, PackedSyncBeekeeper, UnlockedWallet
     from beekeepy.interfaces import HttpUrl
+    from hiveio_api.operations import Hf26OperationValue as Hf26Operations
 
-    from schemas.fields.basic import PublicKey
-    from schemas.operations import Hf26Operations
+    from schemas.fields.public import PublicKey
     from test_tools.__private.node import Node
 
     AnyNode = Node | RemoteNode
@@ -60,9 +56,9 @@ def generate_transaction_template(node: RemoteNode) -> SimpleTransaction:
     assert ref_block_prefix > 0, f"ref_block_prefix value `{ref_block_prefix}` is invalid`"
 
     return SimpleTransaction(
-        ref_block_num=HiveInt(ref_block_num),
-        ref_block_prefix=HiveInt(ref_block_prefix),
-        expiration=HiveDateTime(datetime.fromisoformat(gdpo.time) + timedelta(seconds=1800)),
+        ref_block_num=ref_block_num,
+        ref_block_prefix=ref_block_prefix,
+        expiration=gdpo.time + timedelta(seconds=1800),
         extensions=[],
         signatures=[],
         operations=[],
@@ -84,7 +80,7 @@ def sign_transaction(
 
     transaction.signatures.append(signature)
 
-    transaction.signatures = list(set(transaction.signatures))
+    transaction.signatures[:] = dict.fromkeys(transaction.signatures)
     validate_transaction(transaction)
 
     return transaction
@@ -163,7 +159,7 @@ def send_transaction(  # noqa: C901
             creator="initminer",
             new_account_name=account.name,
             json_metadata="{}",
-            fee=AssetHive(AssetNaiAmount(1)),
+            fee=Asset.hive.satoshi(1),  # replaced with the current fee before sending
             owner=get_authority(account.public_key),
             active=get_authority(account.public_key),
             posting=get_authority(account.public_key),

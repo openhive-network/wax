@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import network_broadcast_api
-
-from schemas.transaction import Transaction
+from hiveio_api.operations import Transaction
 
 
 class NetworkBroadcastApi(AbstractSyncApi):

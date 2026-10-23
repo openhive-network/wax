@@ -11,11 +11,11 @@ from test_tools.__private.user_handles.get_implementation import get_implementat
 from test_tools.__private.user_handles.handle import Handle
 
 if TYPE_CHECKING:
-    import datetime
     from collections.abc import Iterator
 
     from beekeepy.interfaces import HttpUrl
 
+    from schemas.fields.hive_datetime import HiveDateTime
     from test_tools.__private.hived.api.api_collection import HivedSyncApiCollection
 
 
@@ -46,8 +46,8 @@ class NodeHandleBase(Handle):
         """Returns number of the last irreversible block known to node."""
         return self.__implementation.get_last_irreversible_block_number()
 
-    def get_head_block_time(self) -> datetime.datetime:
-        """Returns head block time."""
+    def get_head_block_time(self) -> HiveDateTime:
+        """Returns head block time - aware, in UTC (compared with naive datetimes as with dates in UTC)."""
         return self.__implementation.get_head_block_time()
 
     def get_current_witness(self) -> str:

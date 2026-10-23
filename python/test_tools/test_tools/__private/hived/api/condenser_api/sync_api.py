@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 from datetime import datetime  # noqa: TCH003
-from typing import Literal
 
 from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
 from hiveio_api import condenser_api
+from hiveio_api.operations import TransactionLegacy
 
-from schemas.transaction import TransactionLegacy
 from test_tools.__private.hived.api.condenser_api.common import CondenserApiCommons
 
 
 class CondenserApi(AbstractSyncApi, CondenserApiCommons):
     api = AbstractSyncApi.endpoint_jsonrpc
-
-    def _serialize_type(self) -> Literal["legacy"]:
-        return "legacy"
 
     def argument_serialization(self) -> ApiArgumentSerialization:
         return ApiArgumentSerialization.ARRAY
@@ -212,7 +208,7 @@ class CondenserApi(AbstractSyncApi, CondenserApiCommons):
         raise NotImplementedError
 
     @api
-    def get_active_votes(self, author: str, permlink: str, /) -> list[condenser_api.ActiveVotesDefault]:
+    def get_active_votes(self, author: str, permlink: str, /) -> list[condenser_api.ActiveVotes]:
         raise NotImplementedError
 
     @api

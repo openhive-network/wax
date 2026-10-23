@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 import datetime
 import os
 import re
@@ -14,36 +13,9 @@ from typing import TYPE_CHECKING
 from beekeepy.interfaces import P2PUrl
 
 import test_tools as tt
-from schemas.jsonrpc import get_response_model
 from test_tools.__private.complex_networks import networks_architecture as networks
 from test_tools.__private.complex_networks.helper_functions import connect_sub_networks, display_info
 from wax.helpy import OffsetTimeControl, StartTimeControl, TimeControl
-
-
-def _warmup_msgspec_decoders() -> None:
-    """
-    Pre-initialize msgspec decoders in the main thread to avoid race conditions.
-
-    msgspec's decoder initialization involves Python's typing module internals
-    (ForwardRef creation) which are not thread-safe. When multiple threads
-    simultaneously create decoders for the first time, a segfault can occur.
-
-    This function triggers decoder initialization for common response types
-    before any threads are spawned, ensuring thread-safe operation.
-    """
-    with contextlib.suppress(Exception):
-        # Import and access schemas types to trigger annotation resolution
-        # This ensures msgspec decoders are initialized before parallel operations
-        import schemas.apis.app_status_api  # Used by beekeepy.__discover_ports()
-        import schemas.apis.database_api.fundaments_of_reponses
-        import schemas.apis.database_api.response_schemas
-        import schemas.apis.network_node_api
-        import schemas.apis.wallet_bridge_api
-        import schemas.transaction  # noqa: F401
-
-        # Warm up the decoder cache by parsing sample responses
-        get_response_model(str, '{"jsonrpc":"2.0","id":0,"result":"warmup"}', "hf26")
-
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -61,7 +33,7 @@ def get_relative_time_offset_from_timestamp(timestamp: datetime.datetime) -> Off
     assert isinstance(now, datetime.datetime)
     delta = now - timestamp
     delta += tt.Time.seconds(5)  # Node starting and entering live mode takes some time to complete
-    return OffsetTimeControl(offset=f"-{delta.total_seconds():.3f}s")
+    return OffsetTimeControl(offset=f"{-delta.total_seconds():+.3f}s")  # a timestamp in the future gives "+N"
 
 
 def init_network(  # noqa: C901
@@ -205,9 +177,6 @@ def run_networks(
                 alternate_chain_specs=alternate_chain_spec,
             )
         cnt_node += 1
-
-    # Warm up msgspec decoders before spawning threads to avoid race conditions
-    _warmup_msgspec_decoders()
 
     _run_nodes_in_parallel(nodes, blocklog_directory, arguments, allow_external_time_offsets, time_offsets, timestamp)
 
