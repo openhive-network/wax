@@ -37,7 +37,7 @@ include:
 
   # Do not include hive/hive's common_includes.yml to avoid conflict to local version of common-ci-configuration
 - project: 'hive/hive'
-  ref: fb6bd7f83941a016d7400be20be87a4fa4a7527c
+  ref: 0cfb7001aacaade192f26f36dcd8ee97b196779e
   file:
   - '/scripts/ci-helpers/hiveio_api_package.gitlab-ci.yml'
 
@@ -162,22 +162,6 @@ verify_include_refs:
   variables:
     VERIFY_REFS: "hive:hive/hive ts/npm-common-config:hive/common-ci-configuration"
 
-generate_hived_flattened_openapi_definition:
-  extends: .node_based_job_base
-  stage: build
-  script:
-  - npm install @apidevtools/json-schema-ref-parser@14.2.1 json-schema-merge-allof@0.8.1
-  - touch "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/flattened.json"
-  - node 
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/api_generation/flatten_swagger.js"
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi.json" > 
-    "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
-  artifacts:
-    paths:
-    - "${CI_PROJECT_DIR}/hive/libraries/plugins/apis/documentation/openapi_flattened.json"
-  tags:
-  - public-runner-docker
-
 # Build hiveio-api package (build only, test and deploy in later stages)
 hiveio_api_package:
   stage: build
@@ -187,16 +171,13 @@ hiveio_api_package:
     PYPROJECT_DIR: "${API_GENERATION_DIR}/api_generation"
     GIT_SUBMODULE_STRATEGY: recursive
     PACKAGE_REGISTRY_PROJECT_ID: "198"  # Push to hive/hive registry, not wax
-  needs:
-  - job: generate_hived_flattened_openapi_definition
-    artifacts: true
+  needs: []
   extends: .hiveio_api_package_template
   script:
   - |
     SCRIPT_ARGS=(
       "--hive-project-root=${HIVE_PROJECT_ROOT}"
       "--api-generation-dir=${API_GENERATION_DIR}"
-      "--dependency-source-dir=${DEPENDENCY_SOURCE_DIR:-${HIVE_PROJECT_ROOT}/tests/python/hive-local-tools}"
       "--package-registry-project-id=${PACKAGE_REGISTRY_PROJECT_ID:-${CI_PROJECT_ID}}"
       "--env-var-name=HIVEIO_API_WHEEL_BUILD_VERSION"
     )
