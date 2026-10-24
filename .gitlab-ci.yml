@@ -26,7 +26,7 @@ workflow:
 include:
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
 - project: 'hive/common-ci-configuration'
-  ref: 7dffa23eb3612b0e2f049e98260028c0134c0156
+  ref: 517596f0666a00d27e2b3f792870c4297b915d9d
   file:
   - '/templates/npm_projects.gitlab-ci.yml'
   - '/templates/wasm_build.gitlab-ci.yml'
