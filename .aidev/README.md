@@ -135,15 +135,15 @@ does.
 ## The test runtime image (`runtime/`)
 
 The suites run in a container with `--network none` and your uid. The image is the emsdk
-image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE` at the
-`hive/common-ci-configuration` ref `.gitlab-ci.yml` includes): emscripten 5.0.2, cmake,
+image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE_TAG`, which `.gitlab-ci.yml`
+sets over the `hive/common-ci-configuration` template's pin): emscripten 5.0.2, cmake,
 ninja, protoc, Boost for wasm, Node 24.21.0, pnpm 10.0.0 and Playwright's chromium. It
 adds a pnpm store filled with `pnpm fetch`; `pnpm-deps.sh` installs `ts/node_modules`
 offline from it.
 
 When `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` or `ts/.npmrc` (both links into the
-`ts/npm-common-config` submodule), `packageManager` or `runtime/Dockerfile` change, or the
-common-ci-configuration ref moves to a new emsdk image, rebuild and re-pin **in the same
+`ts/npm-common-config` submodule), `packageManager` or `runtime/Dockerfile` change, or
+`EMSCRIPTEN_IMAGE_TAG` moves to a new emsdk image, rebuild and re-pin **in the same
 commit**:
 
 ```bash
