@@ -1,11 +1,10 @@
 # The image AIDEV runs this project's suites in (`environment.image` in
 # .aidev/project.yaml). It is the emsdk image CI builds the TypeScript package
-# with (EMSCRIPTEN_IMAGE in hive/common-ci-configuration's npm_projects template,
-# at the ref .gitlab-ci.yml includes): emscripten, cmake, ninja, protoc, Boost
+# with (EMSCRIPTEN_IMAGE_TAG in .gitlab-ci.yml): emscripten, cmake, ninja, protoc, Boost
 # for wasm, Node 24.21.0, pnpm 10.0.0 and Playwright's chromium. Suites run with
 # `--network none`, so this adds a pnpm store filled from ts/pnpm-lock.yaml.
 # Build and pin it with .aidev/runtime/build.sh; see .aidev/README.md.
-FROM registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-4@sha256:966dd9e9da494d184fcc7f622bb24d93c41b8d58c814156aa79cd1d70f31d9ab
+FROM registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-6@sha256:9aec859476a9508693dba0d55c8637a2fcc572ec51dfcf87adaba21d6f64d67f
 
 # CI runs `nvm use $NODEJS_VERSION` first, which puts nvm's Node 24.21.0 bin dir
 # (and its pnpm) in front of emsdk's own Node 22.16; do the same without nvm.

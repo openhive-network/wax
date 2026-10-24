@@ -24,13 +24,17 @@ gitlab:
 # never moves develop or master.
 branches:
   integration: "aidev/integration"
+  # develop is protected and fast-forward only: hand off by merge request, as a
+  # linear one-commit-per-change copy (aidev docs/operations/project-handoff.md).
+  handoff: "develop"
+  handoff_history: "linear"
 
 # How this project's suites execute (#13892): one kind, stated once.
 # The emsdk image CI builds the TypeScript package in, plus an offline pnpm store
 # (.aidev/runtime; rebuild and re-pin with .aidev/runtime/build.sh --push).
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:d3f21422c3f12887fc1d356b4ef8118199d5200cf432456a674765b5b0c15c32"
+  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:76d083d99f359700979773fda5be3fb0628dc0f06a65362eaa5a22c8463286df"
   inputs: ["ts/pnpm-lock.yaml"]
 
 issues:
