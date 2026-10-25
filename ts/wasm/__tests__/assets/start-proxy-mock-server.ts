@@ -5,6 +5,9 @@ import jsonRpcMock from './mock/jsonRpcMock';
 const args = process.argv.slice(2);
 const port = parseInt(args[0], 10);
 const targetApi = 'api.hive.blog';
+// Must stay well below run_tests.sh's TIMEOUT_PROXY_MOCK_SERVER_SECONDS, so a slow
+// upstream falls back to the static DGPO instead of keeping the server from starting
+const dgpoFetchTimeoutMs = 10_000;
 
 // Fetch and cache dynamic global properties at startup to avoid
 // repeated API calls during tests while keeping data in sync with real API
@@ -20,7 +23,8 @@ async function fetchAndCacheDgpo(): Promise<IJsonRpcMockData> {
         method: 'database_api.get_dynamic_global_properties',
         params: {},
         id: 1
-      })
+      }),
+      signal: AbortSignal.timeout(dgpoFetchTimeoutMs)
     });
 
     const data = await response.json();
