@@ -9,6 +9,7 @@ import directSigners_5 from "./data/directSigners_5";
 import directSigners_6 from "./data/directSigners_6";
 import alice from "./data/alice";
 import hivebuzz from "./data/hivebuzz";
+import hivefund from "./data/hivefund";
 import guest4test8 from "./data/guest4test8";
 import zero_max_block_age from "./data/zero_max_block_age";
 import alphaManabar1 from "./data/vote.manabar-1";
@@ -142,6 +143,9 @@ export default {
 
     if (accounts.length === 1 && accounts[0] === 'hivebuzz')
       return hivebuzz;
+
+    if (accounts.length === 1 && accounts[0] === 'hive.fund')
+      return hivefund;
 
     if (accounts.length === 1 && accounts[0] === 'guest4test8')
       return guest4test8;
