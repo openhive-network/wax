@@ -18,27 +18,11 @@ suite="${1:?usage: $0 <suite>}"
 
 BAKED=/opt/wax-aidev
 
-# `detailed` tests that need a live chain (api.hive.blog), full test paths
-# matched with --exact. Found by running the suite with --network none.
+# `detailed` tests that need a live chain, full test paths matched with
+# --exact. The others answer their chain calls from recorded fixtures
+# (rust/wax/tests/detailed/recorded_node.rs).
 LIVE_CHAIN_TESTS=(
-    complex_operations::account_authority_update_enforced_owner  # #182: reads the account authority from api.hive.blog
-    complex_operations::account_authority_update_for_gtg  # #182: reads the account authority from api.hive.blog
-    complex_operations::account_authority_update_no_enforced_owner  # #182: reads the account authority from api.hive.blog
-    complex_operations::account_authority_update_remove_owner_key  # #182: reads the account authority from api.hive.blog
-    complex_operations::account_authority_update_replace_owner_key_weight  # #182: reads the account authority from api.hive.blog
-    complex_operations::account_authority_update_replace_owner_key_with_account  # #182: reads the account authority from api.hive.blog
-    custom_chain_online_tx::authority_trace_for_delegated_sign  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_delegated_sign_with_single_nest_level  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_direct_multisig_from_existing_transaction  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_direct_sign  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_direct_sign_from_existing_transaction  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_insufficient_weight_transaction  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_for_open_authority_transaction  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::authority_trace_root_entries_for_multisig_with_broken_signature  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::catches_private_key_leak_during_direct_broadcast  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::catches_private_key_leak_during_explicit_online_validation  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::create_account_and_transfer_to_it_in_one_transaction  # #182: calls the chain API on api.hive.blog
-    custom_chain_online_tx::create_and_sign_transaction_using_online_interface  # #182: calls the chain API on api.hive.blog
+    custom_chain_online_tx::create_account_and_transfer_to_it_in_one_transaction  # checks a fresh account name against the live mirrornet; reports a skip when it is unreachable
 )
 
 # Tracked paths the build rewrites: proto_builder regenerates the proto sources,

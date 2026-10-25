@@ -1,0 +1,174 @@
+[
+  {
+    "method": "database_api.find_accounts",
+    "params": {
+      "accounts": [
+        "gtg"
+      ],
+      "delayed_votes_active": true
+    },
+    "result": {
+      "accounts": [
+        {
+          "active": {
+            "account_auths": [],
+            "key_auths": [
+              [
+                "STM8NWQYG4BvjGNu8zqqV9fbR7aSCZHcxkVib41PYnpGmPRe6BHVG",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "balance": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "can_vote": true,
+          "comment_count": 0,
+          "created": "2016-06-30T17:22:21",
+          "curation_rewards": 655890337,
+          "delayed_votes": [],
+          "delegated_vesting_shares": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "downvote_manabar": {
+            "current_mana": 902016550188848,
+            "last_update_time": 1792896864
+          },
+          "governance_vote_expiration_ts": "2027-10-18T12:37:51",
+          "hbd_balance": {
+            "amount": "0",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "hbd_last_interest_payment": "2021-06-13T21:34:42",
+          "hbd_seconds": "26576708016",
+          "hbd_seconds_last_update": "2021-06-30T11:10:30",
+          "id": 14007,
+          "is_smt": false,
+          "json_metadata": "{\"profile\":{\"witness_description\": \"Gandalf the Grey, building Hive, improving Hive infrastructure.\",\"profile_image\":\"https://grey.house/img/grey_4.jpg\",\"name\":\"Gandalf the Grey\",\"about\":\"IT Wizard, Hive Witness\",\"location\":\"Hive\",\"version\":2}}",
+          "last_account_recovery": "2016-07-21T21:48:06",
+          "last_account_update": "2025-08-10T13:17:27",
+          "last_owner_update": "2017-03-21T18:37:42",
+          "last_post": "2026-10-22T16:58:36",
+          "last_post_edit": "2026-10-22T16:58:36",
+          "last_root_post": "2026-09-29T20:29:48",
+          "last_vote_time": "2026-10-25T00:52:00",
+          "lifetime_vote_count": 0,
+          "memo_key": "STM4uD3dfLvbz7Tkd7of4K9VYGnkgrY5BHSQt52vE52CBL5qBfKHN",
+          "mined": true,
+          "name": "gtg",
+          "next_vesting_withdrawal": "1969-12-31T23:59:59",
+          "open_recurrent_transfers": 0,
+          "owner": {
+            "account_auths": [],
+            "key_auths": [
+              [
+                "STM5RLQ1Jh8Kf56go3xpzoodg4vRsgCeWhANXoEXrYH7bLEwSVyjh",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "pending_claimed_accounts": 88429,
+          "pending_transfers": 0,
+          "post_bandwidth": 10000,
+          "post_count": 7419,
+          "post_voting_power": {
+            "amount": "3608066200755397",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "posting": {
+            "account_auths": [
+              [
+                "voterbee",
+                1
+              ]
+            ],
+            "key_auths": [
+              [
+                "STM5tp5hWbGLL1R3tMVsgYdYxLPyAQFdKoYFbT2hcWUmrU42p1MQC",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "posting_json_metadata": "{\"profile\":{\"profile_image\":\"https://grey.house/img/gandalf.png\",\"name\":\"Gandalf the Grey\",\"about\":\"IT Wizard, Hive Witness\",\"location\":\"Hive\",\"witness_description\":\"Gandalf the Grey, Building Hive.\",\"version\":2}}",
+          "posting_rewards": 24666861,
+          "previous_owner_update": "2016-07-21T21:48:03",
+          "proxied_vsf_votes": [
+            6474066779452045,
+            240332777710343,
+            0,
+            0
+          ],
+          "proxy": "",
+          "received_vesting_shares": {
+            "amount": "108528488851",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "recovery_account": "roelandp",
+          "reset_account": "null",
+          "reward_hbd_balance": {
+            "amount": "0",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "reward_hive_balance": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "reward_vesting_balance": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "reward_vesting_hive": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "savings_balance": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "savings_hbd_balance": {
+            "amount": "0",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "savings_hbd_last_interest_payment": "2025-07-09T09:55:15",
+          "savings_hbd_seconds": "0",
+          "savings_hbd_seconds_last_update": "2025-07-09T09:55:15",
+          "savings_withdraw_requests": 0,
+          "to_withdraw": 0,
+          "vesting_shares": {
+            "amount": "3607957672266546",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "vesting_withdraw_rate": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "voting_manabar": {
+            "current_mana": 3596930433328322,
+            "last_update_time": 1792896864
+          },
+          "withdraw_routes": 0,
+          "withdrawn": 0,
+          "witnesses_voted_for": 26
+        }
+      ]
+    }
+  }
+]
