@@ -132,7 +132,13 @@ else
   echo "Build wax wheel package."
   # Use pip wheel --no-build-isolation to build with the active virtualenv's Python.
   # Poetry's build isolation always uses Python 3.14 (ci-base-image default), ignoring the virtualenv.
-  python3 -m pip install --quiet poetry-core "cython==3.1.3" "setuptools>=67.8.0" "poetry-dynamic-versioning>=0.22.0"
+  # Without build isolation pip does not install [build-system].requires, so install exactly those pins:
+  # unpinned build tools make the wheel depend on the latest PyPI releases (e.g. poetry-core 2.5.0 vendors
+  # packaging 26.3, which prefers linux_* tags, so wheels got linux_x86_64 instead of manylinux_2_28_x86_64).
+  BUILD_REQUIRES_LIST=$(python3 -c 'import sys, tomllib; print("\n".join(tomllib.load(open(sys.argv[1], "rb"))["build-system"]["requires"]))' "${PROJECT_DIR}/pyproject.toml")
+  mapfile -t BUILD_REQUIRES <<< "${BUILD_REQUIRES_LIST}"
+  echo "Installing build requirements: ${BUILD_REQUIRES[*]}"
+  python3 -m pip install --quiet "${BUILD_REQUIRES[@]}"
   cd ${PROJECT_DIR}
   python3 -m pip wheel --no-deps --no-build-isolation -w dist .
 
