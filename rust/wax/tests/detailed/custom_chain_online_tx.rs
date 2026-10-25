@@ -1,34 +1,76 @@
 // Rust port of `ts/wasm/__tests__/detailed/custom_chain_online_tx.ts`.
 //
-// Like the TS suite, these tests run against live chains:
-// - mainnet (the default endpoint) for the read-only trace tests replaying
-//   pinned historical transactions, and
-// - the public mirrornet (`api.fake.openhive.network`, chain id `42`) for
-//   everything that signs or broadcasts, using the well-known mirrornet
-//   skeleton key.
+// The TS suite runs against live chains: mainnet (the default endpoint) for
+// the trace tests replaying pinned historical transactions, and the public
+// mirrornet (`api.fake.openhive.network`, chain id `42`) for everything that
+// signs, using the well-known mirrornet skeleton key.
+//
+// TS NOTE: every call those tests make is a read-only lookup of stable
+// state (account authorities, head-block reference data), so here they are
+// answered by a recorded node (`recorded_node.rs`) replaying responses
+// recorded from the same chains; nothing is broadcast. Only
+// `create_account_and_transfer_to_it_in_one_transaction` stays live: it
+// checks a freshly generated account name and the current creation fee
+// against the real mirrornet, with WAN-sized timeout and retries, and
+// reports a `mirrornet unreachable` skip instead of failing when the
+// mirrornet cannot be reached.
 //
 // TS NOTE: scripted-wire coverage of the same surface lives in
 // `online_transaction.rs`. The TS multisig collected-data and root-entries
 // tests share one source transaction and are merged into a single test here.
 
 use std::collections::HashSet;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::fmt;
+use std::net::TcpListener;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use wax::api::{FindAccountsRequest, GetWitnessScheduleRequest};
 use wax::authority_trace::{
     AuthorityEntryProcessingStatus, AuthorityPathEntry, ProcessedEntry,
 };
+use wax::healthchecker::RequestError;
 use wax::proto::{self, operation::Value as OperationValue};
 use wax::{
-    HiveChain, HiveChainOptions, create_hive_chain, create_wax_foundation,
+    HiveChain, HiveChainOptions, WaxChainError, create_hive_chain,
+    create_wax_foundation,
 };
 
 use wax_signers_beekeeper::BeekeeperSignatureProvider;
 
 use crate::common::new_in_memory_beekeeper;
+use crate::recorded_node::recorded_chain;
 
 const MIRRORNET_API_ENDPOINT: &str = "https://api.fake.openhive.network/";
 const MIRRORNET_CHAIN_ID: &str = "42";
+
+/// Used as the request timeout of live mirrornet calls, in milliseconds —
+/// sized for a slow WAN link rather than the 2 s default tuned for nearby
+/// nodes.
+const WAN_API_TIMEOUT_MS: u32 = 30_000;
+/// Used as the number of attempts a live mirrornet call gets before the
+/// mirrornet counts as unreachable.
+const LIVE_CALL_ATTEMPTS: u32 = 3;
+/// Used as the pause before the second attempt of a live mirrornet call;
+/// each further attempt waits one more multiple of it.
+const LIVE_CALL_BACKOFF: Duration = Duration::from_secs(1);
+
+/// Runs a live mirrornet call through [`call_live_mirrornet`] and evaluates
+/// to its result, or returns from the calling test, reporting a
+/// `mirrornet unreachable` skip, when the mirrornet cannot be reached.
+///
+/// NOTE: libtest has no runtime skip; the skip is reported on stderr and
+/// the test passes.
+macro_rules! live_or_skip {
+    ($chain:expr, $call:expr) => {
+        match call_live_mirrornet($chain, $call).await {
+            Ok(result) => result,
+            Err(unreachable) => {
+                eprintln!("SKIPPED: {unreachable}");
+                return;
+            }
+        }
+    };
+}
 
 /// The well-known mirrornet skeleton key every mirrored account signs with.
 const MIRRORNET_SKELETON_KEY: &str =
@@ -101,22 +143,32 @@ const STEEMAUTO_POSTING_KEY: &str =
 // signatures at all.
 const OPEN_AUTHORITY_TX_JSON: &str = r#"{"ref_block_num":35292,"ref_block_prefix":2546881088,"extensions":[],"expiration":"2024-07-27T20:43:36","operations":[{"type":"comment_operation","value":{"body":"With no response, we have no recourse but to release the source code to exploit this will be publicly released on Sunday July 28, 2024.","title":"","author":"temp","permlink":"37","json_metadata":"","parent_author":"hive-engine","parent_permlink":"market-smart-contract-23"}}],"signatures":[]}"#;
 
-fn mainnet_chain() -> HiveChain {
-    create_hive_chain(HiveChainOptions::default()).unwrap()
+/// A mainnet chain answered from the recorded fixture of `test`.
+fn recorded_mainnet_chain(test: &str) -> HiveChain {
+    recorded_chain(&fixture_name(test), HiveChainOptions::default())
 }
 
-fn mirrornet_chain() -> HiveChain {
-    create_hive_chain(HiveChainOptions {
-        api_endpoint: MIRRORNET_API_ENDPOINT.to_string(),
-        chain_id: MIRRORNET_CHAIN_ID.to_string(),
-        ..Default::default()
-    })
-    .unwrap()
+/// A mirrornet chain answered from the recorded fixture of `test`.
+fn recorded_mirrornet_chain(test: &str) -> HiveChain {
+    recorded_chain(
+        &fixture_name(test),
+        HiveChainOptions {
+            api_endpoint: MIRRORNET_API_ENDPOINT.to_string(),
+            chain_id: MIRRORNET_CHAIN_ID.to_string(),
+            ..Default::default()
+        },
+    )
+}
+
+fn fixture_name(test: &str) -> String {
+    format!("custom_chain_online_tx/{test}")
 }
 
 #[tokio::test]
 async fn authority_trace_for_direct_multisig_from_existing_transaction() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain(
+        "authority_trace_for_direct_multisig_from_existing_transaction",
+    );
 
     // The tx comes from mainnet, so signature keys must be recovered under
     // the default (mainnet) chain id.
@@ -179,7 +231,7 @@ async fn authority_trace_for_direct_multisig_from_existing_transaction() {
 /// key.
 #[tokio::test]
 async fn authority_trace_for_direct_sign() {
-    let chain = mirrornet_chain();
+    let chain = recorded_mirrornet_chain("authority_trace_for_direct_sign");
 
     let bk = new_in_memory_beekeeper();
     let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
@@ -235,7 +287,9 @@ async fn authority_trace_for_direct_sign() {
 
 #[tokio::test]
 async fn authority_trace_for_direct_sign_from_existing_transaction() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain(
+        "authority_trace_for_direct_sign_from_existing_transaction",
+    );
 
     let source = create_wax_foundation(None)
         .create_transaction_from_json(TRANSFER_TX_JSON)
@@ -274,7 +328,7 @@ async fn authority_trace_for_direct_sign_from_existing_transaction() {
 
 #[tokio::test]
 async fn authority_trace_for_delegated_sign() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain("authority_trace_for_delegated_sign");
 
     let source = create_wax_foundation(None)
         .create_transaction_from_json(DELEGATED_VOTE_TX_JSON)
@@ -323,7 +377,9 @@ async fn authority_trace_for_delegated_sign() {
 
 #[tokio::test]
 async fn authority_trace_for_delegated_sign_with_single_nest_level() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain(
+        "authority_trace_for_delegated_sign_with_single_nest_level",
+    );
 
     let source = create_wax_foundation(None)
         .create_transaction_from_json(SINGLE_NEST_VOTE_TX_JSON)
@@ -367,7 +423,9 @@ async fn authority_trace_for_delegated_sign_with_single_nest_level() {
 
 #[tokio::test]
 async fn authority_trace_for_open_authority_transaction() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain(
+        "authority_trace_for_open_authority_transaction",
+    );
 
     let source = create_wax_foundation(None)
         .create_transaction_from_json(OPEN_AUTHORITY_TX_JSON)
@@ -417,7 +475,9 @@ async fn authority_trace_for_open_authority_transaction() {
 ///   Owner fallback also fails (different key).
 #[tokio::test]
 async fn authority_trace_for_insufficient_weight_transaction() {
-    let chain = mirrornet_chain();
+    let chain = recorded_mirrornet_chain(
+        "authority_trace_for_insufficient_weight_transaction",
+    );
 
     let bk = new_in_memory_beekeeper();
     let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
@@ -517,7 +577,9 @@ async fn authority_trace_for_insufficient_weight_transaction() {
 
 #[tokio::test]
 async fn authority_trace_root_entries_for_multisig_with_broken_signature() {
-    let chain = mainnet_chain();
+    let chain = recorded_mainnet_chain(
+        "authority_trace_root_entries_for_multisig_with_broken_signature",
+    );
 
     let source = create_wax_foundation(None)
         .create_transaction_from_json(MULTISIG_TX_BROKEN_SIG_JSON)
@@ -585,19 +647,28 @@ async fn authority_trace_root_entries_for_multisig_with_broken_signature() {
 
 #[tokio::test]
 async fn catches_private_key_leak_during_explicit_online_validation() {
-    let error = tx_security_leak_error(false).await;
+    let error = tx_security_leak_error(
+        "catches_private_key_leak_during_explicit_online_validation",
+        false,
+    )
+    .await;
     assert_leak_error(&error);
 }
 
 #[tokio::test]
 async fn catches_private_key_leak_during_direct_broadcast() {
-    let error = tx_security_leak_error(true).await;
+    let error = tx_security_leak_error(
+        "catches_private_key_leak_during_direct_broadcast",
+        true,
+    )
+    .await;
     assert_leak_error(&error);
 }
 
 #[tokio::test]
 async fn create_account_and_transfer_to_it_in_one_transaction() {
-    let chain = mirrornet_chain();
+    let chain =
+        live_mirrornet_chain(MIRRORNET_API_ENDPOINT, WAN_API_TIMEOUT_MS);
 
     let bk = new_in_memory_beekeeper();
     let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
@@ -606,18 +677,22 @@ async fn create_account_and_transfer_to_it_in_one_transaction() {
         .import_key(MIRRORNET_SKELETON_KEY)
         .expect("import_key");
 
-    let fee = chain
-        .api()
-        .database_api
-        .get_witness_schedule(GetWitnessScheduleRequest {})
-        .await
-        .expect("get_witness_schedule")
-        .median_props
-        .account_creation_fee;
+    let fee = live_or_skip!(&chain, async || {
+        chain
+            .api()
+            .database_api
+            .get_witness_schedule(GetWitnessScheduleRequest {})
+            .await
+    })
+    .expect("get_witness_schedule")
+    .median_props
+    .account_creation_fee;
 
     let account_name = random_account_name();
 
-    let mut tx = chain.create_transaction(None).await.unwrap();
+    let mut tx =
+        live_or_skip!(&chain, async || chain.create_transaction(None).await)
+            .unwrap();
     tx.push_operation(chain.create_operation(
         OperationValue::AccountCreateOperation(proto::AccountCreate {
             fee,
@@ -642,12 +717,41 @@ async fn create_account_and_transfer_to_it_in_one_transaction() {
 
     // TS NOTE: like TS, no real broadcast — proper mirrornet preconfig is
     // still missing; on-chain verification passing is sufficient.
-    tx.perform_on_chain_verification().await.unwrap();
+    live_or_skip!(&chain, async || tx.perform_on_chain_verification().await)
+        .unwrap();
+}
+
+#[tokio::test]
+async fn live_mirrornet_call_reports_unreachable_mirrornet() {
+    // Accepts connections into its backlog but never answers: every request
+    // times out, as against a saturated link.
+    let blackhole = TcpListener::bind("127.0.0.1:0").unwrap();
+    let endpoint = format!("http://{}/", blackhole.local_addr().unwrap());
+    let chain = live_mirrornet_chain(&endpoint, 100);
+
+    let unreachable = call_live_mirrornet(&chain, async || {
+        chain.create_transaction(None).await.map(drop)
+    })
+    .await
+    .unwrap_err();
+
+    assert_eq!(unreachable.endpoint, endpoint);
+    assert_eq!(unreachable.attempts, LIVE_CALL_ATTEMPTS);
+    assert!(matches!(
+        unreachable.last_error,
+        WaxChainError::Request(RequestError::Timeout { .. })
+    ));
+    assert!(
+        unreachable.to_string().starts_with("mirrornet unreachable: "),
+        "unexpected report: {unreachable}"
+    );
 }
 
 #[tokio::test]
 async fn create_and_sign_transaction_using_online_interface() {
-    let chain = mirrornet_chain();
+    let chain = recorded_mirrornet_chain(
+        "create_and_sign_transaction_using_online_interface",
+    );
 
     let bk = new_in_memory_beekeeper();
     let created = bk.session.create_wallet("w0", "pw").expect("create_wallet");
@@ -678,6 +782,82 @@ async fn create_and_sign_transaction_using_online_interface() {
 }
 
 // ---------------------------------------------------------------------------
+// Live mirrornet calls
+// ---------------------------------------------------------------------------
+
+/// Represents a live mirrornet call that failed at the transport level on
+/// every attempt.
+#[derive(Debug)]
+struct MirrornetUnreachable {
+    endpoint: String,
+    attempts: u32,
+    last_error: WaxChainError,
+}
+
+impl fmt::Display for MirrornetUnreachable {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "mirrornet unreachable: {} failed {} attempts, the last with: {}",
+            self.endpoint, self.attempts, self.last_error
+        )
+    }
+}
+
+fn live_mirrornet_chain(endpoint: &str, api_timeout: u32) -> HiveChain {
+    create_hive_chain(HiveChainOptions {
+        api_endpoint: endpoint.to_string(),
+        chain_id: MIRRORNET_CHAIN_ID.to_string(),
+        api_timeout,
+        ..Default::default()
+    })
+    .unwrap()
+}
+
+/// Runs `call` against the live mirrornet, retrying transport failures
+/// (timeouts, connection errors, 5xx responses) up to [`LIVE_CALL_ATTEMPTS`]
+/// times. Returns the call's own result — including any chain-side error —
+/// or [`MirrornetUnreachable`] once every attempt failed in transport.
+async fn call_live_mirrornet<T>(
+    chain: &HiveChain,
+    mut call: impl AsyncFnMut() -> Result<T, WaxChainError>,
+) -> Result<Result<T, WaxChainError>, MirrornetUnreachable> {
+    let mut attempts = 0;
+
+    loop {
+        attempts += 1;
+
+        let error = match call().await {
+            Err(error) if is_transport_failure(&error) => error,
+            result => return Ok(result),
+        };
+
+        if attempts == LIVE_CALL_ATTEMPTS {
+            return Err(MirrornetUnreachable {
+                endpoint: chain.endpoint_url(),
+                attempts,
+                last_error: error,
+            });
+        }
+
+        tokio::time::sleep(LIVE_CALL_BACKOFF * attempts).await;
+    }
+}
+
+fn is_transport_failure(error: &WaxChainError) -> bool {
+    match error {
+        WaxChainError::Request(
+            RequestError::Timeout { .. } | RequestError::Unknown { .. },
+        ) => true,
+        WaxChainError::Request(RequestError::NonSuccessResponseCode {
+            response,
+            ..
+        }) => response.status.is_some_and(|status| status >= 500),
+        _ => false,
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Mirrornet preconfiguration
 // ---------------------------------------------------------------------------
 
@@ -688,6 +868,9 @@ async fn create_and_sign_transaction_using_online_interface() {
 /// TS NOTE: the TS helper early-returns when all three accounts already
 /// exist; this port always runs the authority-structure step below, which
 /// re-asserts the expected authorities instead of trusting a previous run.
+/// Against the recorded node the accounts exist with the expected
+/// authorities, so nothing is broadcast; the broadcasts only run while
+/// recording against a mirrornet that lacks them.
 async fn ensure_test_accounts_exist(
     chain: &HiveChain,
     signer: &BeekeeperSignatureProvider,
@@ -841,8 +1024,8 @@ async fn broadcast_signed(
 /// Runs the TS `txSecurityLeakBody` scenario: a transfer whose memo leaks
 /// the skeleton private key, caught either by the explicit on-chain
 /// verification or by the pre-broadcast check.
-async fn tx_security_leak_error(direct_broadcast: bool) -> String {
-    let chain = mirrornet_chain();
+async fn tx_security_leak_error(test: &str, direct_broadcast: bool) -> String {
+    let chain = recorded_mirrornet_chain(test);
 
     let mut tx = chain.create_transaction(None).await.unwrap();
     tx.push_operation(chain.create_operation(transfer(

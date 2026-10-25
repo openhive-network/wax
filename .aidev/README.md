@@ -88,12 +88,15 @@ detailed`. It writes `test-results/aidev-<suite>/rust-junit.xml` with a `build` 
 case per test (a failure's captured output as its body) and the tests in
 `LIVE_CHAIN_TESTS` as skipped cases; logs go to `test-results/aidev-<suite>/rust/`.
 
-- `LIVE_CHAIN_TESTS` lists, one per line with its reason, the `detailed` tests that call
-  `api.hive.blog` and fail under `--network none`: `custom_chain_online_tx` and the
-  `complex_operations` `account_authority_update_*` tests (#182). They are skipped with
-  `--exact --skip`, and an entry that no longer names a test fails the run. Find new ones
-  by running the suite and reading the failures. On 2026-10-16: 353 passed, 18 skipped
-  plus one `#[ignore]`d test.
+- `LIVE_CHAIN_TESTS` lists, one per line with its reason, the `detailed` tests that need a
+  live chain: `custom_chain_online_tx::create_account_and_transfer_to_it_in_one_transaction`,
+  which checks a fresh account against the public mirrornet and, when the mirrornet
+  cannot be reached, prints a `mirrornet unreachable` skip and passes. The other
+  network tests (#182) answer their read-only calls from recorded fixtures (#201,
+  `rust/wax/tests/detailed/recorded_node.rs`). Listed tests are skipped with `--exact
+  --skip`, and an entry that no longer names a test fails the run. Find new ones by
+  running the suite and reading the failures. On 2026-10-25: 371 passed, 1 skipped plus
+  one `#[ignore]`d test.
 - The build regenerates `rust/wax/proto` (proto_builder is cleaned first, so every run
   regenerates it as a fresh CI clone does) and `fetch_beekeeper.sh` re-pins
   `rust/signers/beekeeper/Cargo.toml`. The script snapshots those paths and the lock

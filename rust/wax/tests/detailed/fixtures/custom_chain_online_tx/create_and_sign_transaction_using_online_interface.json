@@ -1,0 +1,93 @@
+[
+  {
+    "method": "database_api.get_dynamic_global_properties",
+    "params": {},
+    "result": {
+      "available_account_subsidies": 20611509,
+      "content_reward_percent": 6500,
+      "current_aslot": 111353898,
+      "current_hbd_supply": {
+        "amount": "32954612508",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "current_remove_threshold": 200,
+      "current_supply": {
+        "amount": "575014107562",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "current_witness": "abit",
+      "delegation_return_period": 432000,
+      "dhf_interval_ledger": {
+        "amount": "6023",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "downvote_pool_percent": 2500,
+      "early_voting_seconds": 86400,
+      "hbd_interest_rate": 1000,
+      "hbd_print_rate": 0,
+      "hbd_start_percent": 2000,
+      "hbd_stop_percent": 2000,
+      "head_block_id": "069b2c3db309768a8efbf52a609e367f10e0b2d7",
+      "head_block_number": 110832701,
+      "id": 0,
+      "init_hbd_supply": {
+        "amount": "0",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "last_budget_time": "2026-10-25T02:38:36",
+      "last_irreversible_block_num": 110832701,
+      "max_consecutive_recurrent_transfer_failures": 10,
+      "max_open_recurrent_transfers": 255,
+      "max_recurrent_transfer_end_date": 730,
+      "maximum_block_size": 65536,
+      "mid_voting_seconds": 172800,
+      "min_recurrent_transfers_recurrence": 24,
+      "next_daily_maintenance_time": "2026-10-25T17:29:18",
+      "next_maintenance_time": "2026-10-25T03:38:36",
+      "num_pow_witnesses": 172,
+      "participation_count": 125,
+      "pending_rewarded_vesting_hive": {
+        "amount": "1811418728",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "pending_rewarded_vesting_shares": {
+        "amount": "3049332654280869",
+        "nai": "@@000000037",
+        "precision": 6
+      },
+      "proposal_fund_percent": 1000,
+      "recent_slots_filled": "340282366920783720958459431297778450367",
+      "reverse_auction_seconds": 0,
+      "time": "2026-10-25T02:54:54",
+      "total_pow": 514415,
+      "total_reward_fund_hive": {
+        "amount": "0",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "total_reward_shares2": "0",
+      "total_vesting_fund_hive": {
+        "amount": "218318511518",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "total_vesting_shares": {
+        "amount": "350733815628106870",
+        "nai": "@@000000037",
+        "precision": 6
+      },
+      "vesting_reward_percent": 1500,
+      "virtual_supply": {
+        "amount": "1234106357722",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "vote_power_reserve_rate": 10
+    }
+  }
+]
