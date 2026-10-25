@@ -26,7 +26,7 @@ workflow:
 include:
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
 - project: 'hive/common-ci-configuration'
-  ref: 7dffa23eb3612b0e2f049e98260028c0134c0156
+  ref: 8479e49224f6cd9ed64163fd0453350e98cd311e
   file:
   - '/templates/npm_projects.gitlab-ci.yml'
   - '/templates/wasm_build.gitlab-ci.yml'
@@ -53,6 +53,11 @@ variables:
   SCCACHE_REDIS: "redis://192.168.50.109:6379"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
+
+  # emsdk image for the TypeScript build and the browser tests that run in it. Its
+  # Playwright browsers must match the npm-common-config catalog's playwright-toolset
+  # (1.64.1); the npm_projects template still pins 5.0.2-4, which ships 1.59.1.
+  EMSCRIPTEN_IMAGE_TAG: "5.0.2-6@sha256:9aec859476a9508693dba0d55c8637a2fcc572ec51dfcf87adaba21d6f64d67f"
 
   # =============================================================================
   # CI Base Images for Python wheel builds
