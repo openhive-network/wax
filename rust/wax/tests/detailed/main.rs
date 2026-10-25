@@ -38,5 +38,6 @@ mod mock_base;
 mod non_encrypted_operations;
 mod online_transaction;
 mod protocol;
+mod recorded_node;
 mod regression_hive_operations;
 mod signers_beekeeper;

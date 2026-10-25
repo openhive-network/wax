@@ -21,9 +21,10 @@ use wax::complex_operations::{
 use wax::models::HiveDateTime;
 use wax::models::{NaiAsset, NaiAssetConvertible};
 use wax::proto::{self, operation::Value as OperationValue};
-use wax::{HiveChain, Transaction, create_hive_chain};
+use wax::{HiveChain, HiveChainOptions, Transaction};
 
 use crate::common::{WaxTestCtx, wax_test};
+use crate::recorded_node::recorded_chain;
 
 const TAPOS: &str = "04c507a8c7fe5be96be64ce7c86855e1806cbde3";
 const EXPIRATION: &str = "2023-11-09T21:51:27";
@@ -1513,19 +1514,25 @@ fn blog_post_operation_count() {
 // ---------------------------------------------------------------------------
 //
 // Like the TS originals (run through the async `waxTest.dynamic` harness),
-// these tests fetch the accounts' real authority state from the live mainnet
-// chain; only building the operation is exercised — nothing is broadcast.
+// these tests read the accounts' real mainnet authority state — here from
+// responses recorded from mainnet (`recorded_node.rs`); only building the
+// operation is exercised — nothing is broadcast.
 
 /// The well-known initminer owner key the TS assertions pin.
 const INITMINER_PUBLIC_KEY: &str =
     "STM8GC13uCZbP44HzMLV6zPZGwVQ8Nt4Kji8PapsPiNq1BK153XTX";
 
-/// A mainnet chain plus the authority-update operation pre-initialized from
-/// the given account's live on-chain state.
+/// A mainnet chain answered from the recorded fixture of `test`, plus the
+/// authority-update operation pre-initialized from the given account's
+/// recorded on-chain state.
 async fn authority_update_op(
+    test: &str,
     account: &str,
 ) -> (HiveChain, AccountAuthorityUpdateOperation) {
-    let chain = create_hive_chain(None).unwrap();
+    let chain = recorded_chain(
+        &format!("complex_operations/{test}"),
+        HiveChainOptions::default(),
+    );
     let op = AccountAuthorityUpdateOperation::create_for(&chain, account)
         .await
         .expect("create_for");
@@ -1562,7 +1569,8 @@ fn pushed_account_update2(
 // operation for gtg".
 #[tokio::test]
 async fn account_authority_update_for_gtg() {
-    let (chain, mut op) = authority_update_op("gtg").await;
+    let (chain, mut op) =
+        authority_update_op("account_authority_update_for_gtg", "gtg").await;
 
     // Virtually add gtg to active authority - can't have circular authority -
     // we just need it for tests.
@@ -1579,7 +1587,11 @@ async fn account_authority_update_for_gtg() {
 // operation for guest4test - no enforced Owner authority".
 #[tokio::test]
 async fn account_authority_update_no_enforced_owner() {
-    let (chain, mut op) = authority_update_op("guest4test").await;
+    let (chain, mut op) = authority_update_op(
+        "account_authority_update_no_enforced_owner",
+        "guest4test",
+    )
+    .await;
 
     op.active.add("guest4test1", None).unwrap();
 
@@ -1595,7 +1607,11 @@ async fn account_authority_update_no_enforced_owner() {
 // operation for guest4test - enforced Owner authority".
 #[tokio::test]
 async fn account_authority_update_enforced_owner() {
-    let (chain, mut op) = authority_update_op("guest4test").await;
+    let (chain, mut op) = authority_update_op(
+        "account_authority_update_enforced_owner",
+        "guest4test",
+    )
+    .await;
 
     op.active.add("guest4test1", None).unwrap();
     op.enforce_owner_role_authorisation();
@@ -1611,7 +1627,11 @@ async fn account_authority_update_enforced_owner() {
 // TS line 1219: "Should be able to remove owner key for initminer".
 #[tokio::test]
 async fn account_authority_update_remove_owner_key() {
-    let (chain, mut op) = authority_update_op("initminer").await;
+    let (chain, mut op) = authority_update_op(
+        "account_authority_update_remove_owner_key",
+        "initminer",
+    )
+    .await;
 
     // TS reads `Object.keys(...)[0]`; initminer has a single owner key.
     let owner_key = op
@@ -1635,7 +1655,11 @@ async fn account_authority_update_remove_owner_key() {
 // account".
 #[tokio::test]
 async fn account_authority_update_replace_owner_key_with_account() {
-    let (chain, mut op) = authority_update_op("initminer").await;
+    let (chain, mut op) = authority_update_op(
+        "account_authority_update_replace_owner_key_with_account",
+        "initminer",
+    )
+    .await;
 
     let owner_key = op
         .owner
@@ -1658,7 +1682,11 @@ async fn account_authority_update_replace_owner_key_with_account() {
 // TS line 1267: "Should be able to replace initminer owner key weight".
 #[tokio::test]
 async fn account_authority_update_replace_owner_key_weight() {
-    let (chain, mut op) = authority_update_op("initminer").await;
+    let (chain, mut op) = authority_update_op(
+        "account_authority_update_replace_owner_key_weight",
+        "initminer",
+    )
+    .await;
 
     let owner_key = op
         .owner

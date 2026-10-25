@@ -1,0 +1,369 @@
+[
+  {
+    "method": "database_api.get_dynamic_global_properties",
+    "params": {},
+    "result": {
+      "available_account_subsidies": 20611509,
+      "content_reward_percent": 6500,
+      "current_aslot": 111353898,
+      "current_hbd_supply": {
+        "amount": "32954612508",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "current_remove_threshold": 200,
+      "current_supply": {
+        "amount": "575014107562",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "current_witness": "abit",
+      "delegation_return_period": 432000,
+      "dhf_interval_ledger": {
+        "amount": "6023",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "downvote_pool_percent": 2500,
+      "early_voting_seconds": 86400,
+      "hbd_interest_rate": 1000,
+      "hbd_print_rate": 0,
+      "hbd_start_percent": 2000,
+      "hbd_stop_percent": 2000,
+      "head_block_id": "069b2c3db309768a8efbf52a609e367f10e0b2d7",
+      "head_block_number": 110832701,
+      "id": 0,
+      "init_hbd_supply": {
+        "amount": "0",
+        "nai": "@@000000013",
+        "precision": 3
+      },
+      "last_budget_time": "2026-10-25T02:38:36",
+      "last_irreversible_block_num": 110832701,
+      "max_consecutive_recurrent_transfer_failures": 10,
+      "max_open_recurrent_transfers": 255,
+      "max_recurrent_transfer_end_date": 730,
+      "maximum_block_size": 65536,
+      "mid_voting_seconds": 172800,
+      "min_recurrent_transfers_recurrence": 24,
+      "next_daily_maintenance_time": "2026-10-25T17:29:18",
+      "next_maintenance_time": "2026-10-25T03:38:36",
+      "num_pow_witnesses": 172,
+      "participation_count": 125,
+      "pending_rewarded_vesting_hive": {
+        "amount": "1811418728",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "pending_rewarded_vesting_shares": {
+        "amount": "3049332654280869",
+        "nai": "@@000000037",
+        "precision": 6
+      },
+      "proposal_fund_percent": 1000,
+      "recent_slots_filled": "340282366920783720958459431297778450367",
+      "reverse_auction_seconds": 0,
+      "time": "2026-10-25T02:54:54",
+      "total_pow": 514415,
+      "total_reward_fund_hive": {
+        "amount": "0",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "total_reward_shares2": "0",
+      "total_vesting_fund_hive": {
+        "amount": "218318511518",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "total_vesting_shares": {
+        "amount": "350733815628106870",
+        "nai": "@@000000037",
+        "precision": 6
+      },
+      "vesting_reward_percent": 1500,
+      "virtual_supply": {
+        "amount": "1234106357722",
+        "nai": "@@000000021",
+        "precision": 3
+      },
+      "vote_power_reserve_rate": 10
+    }
+  },
+  {
+    "method": "database_api.find_accounts",
+    "params": {
+      "accounts": [
+        "otom"
+      ],
+      "delayed_votes_active": true
+    },
+    "result": {
+      "accounts": [
+        {
+          "active": {
+            "account_auths": [],
+            "key_auths": [
+              [
+                "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4",
+                1
+              ],
+              [
+                "STM7QDWqAvqR7BtQJQsZxd7PMETnfYzXDYLLX1EStLx1KfbFAbJhw",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "balance": {
+            "amount": "592",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "can_vote": true,
+          "comment_count": 0,
+          "created": "2017-06-24T00:54:45",
+          "curation_rewards": 398250,
+          "delayed_votes": [],
+          "delegated_vesting_shares": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "downvote_manabar": {
+            "current_mana": 3135335867,
+            "last_update_time": 1684095102
+          },
+          "governance_vote_expiration_ts": "1969-12-31T23:59:59",
+          "hbd_balance": {
+            "amount": "1",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "hbd_last_interest_payment": "2021-05-26T13:50:24",
+          "hbd_seconds": "95205690",
+          "hbd_seconds_last_update": "2021-06-04T12:50:54",
+          "id": 218551,
+          "is_smt": false,
+          "json_metadata": "{\"profile\":{\"name\":\"Otom\",\"about\":\"Crypto foodie wanderer...😄\",\"website\":\"https://bit.ly/DrugWarsOtom\",\"location\":\"here, there and everywhere...\",\"cover_image\":\"https://cdn.steemitimages.com/DQmRsZgTBpjiBEq1LvU8M42hrqC71p4ABeQU98QFgP91h1W/2019-01-11%2000.38.49.jpg\",\"profile_image\":\"https://cdn.steemitimages.com/DQmXecyecf8LEE7jqEk7FF4u82NmFUAMmrdBwqjXEzqMoJh/2019-01-09%2020.16.24.png\",\"dtube_pub\":\"s4F55MBDkZVUTZJeeWZqQRAE1Qpg2QiZ1cdGKvMwrmF7\"}}",
+          "last_account_recovery": "1970-01-01T00:00:00",
+          "last_account_update": "2021-11-16T08:12:03",
+          "last_owner_update": "2019-04-13T11:31:30",
+          "last_post": "2022-07-09T12:05:24",
+          "last_post_edit": "2022-07-09T12:05:24",
+          "last_root_post": "2020-02-08T02:02:36",
+          "last_vote_time": "2023-05-14T20:11:42",
+          "lifetime_vote_count": 0,
+          "memo_key": "STM5k1ns6bCJSfC1dPpm2tFoyEAJ3cU7KGP57adP1oA3RqXiXgD5j",
+          "mined": false,
+          "name": "otom",
+          "next_vesting_withdrawal": "1969-12-31T23:59:59",
+          "open_recurrent_transfers": 0,
+          "owner": {
+            "account_auths": [],
+            "key_auths": [
+              [
+                "STM5SgW5QGTHnbE3TbN3kgFgDLzKtxnjNuLm8XGVRiyhcwik2KByv",
+                1
+              ],
+              [
+                "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "pending_claimed_accounts": 0,
+          "pending_transfers": 0,
+          "post_bandwidth": 0,
+          "post_count": 4611,
+          "post_voting_power": {
+            "amount": "12541343468",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "posting": {
+            "account_auths": [
+              [
+                "actifit.app",
+                1
+              ],
+              [
+                "buildteam",
+                1
+              ],
+              [
+                "busy.app",
+                1
+              ],
+              [
+                "dclick.app",
+                1
+              ],
+              [
+                "dcontest",
+                1
+              ],
+              [
+                "dlike.app",
+                1
+              ],
+              [
+                "dlive.app",
+                1
+              ],
+              [
+                "dpoll.xyz",
+                1
+              ],
+              [
+                "drugwars.app",
+                1
+              ],
+              [
+                "dtube.app",
+                1
+              ],
+              [
+                "hive.blog",
+                1
+              ],
+              [
+                "leofinance",
+                1
+              ],
+              [
+                "partiko-steemcon",
+                1
+              ],
+              [
+                "peakd.app",
+                1
+              ],
+              [
+                "scotauto",
+                1
+              ],
+              [
+                "share2steem.app",
+                1
+              ],
+              [
+                "steem-bounty-app",
+                1
+              ],
+              [
+                "steem-plus-app",
+                1
+              ],
+              [
+                "steemauto",
+                1
+              ],
+              [
+                "steemhunt.com",
+                1
+              ],
+              [
+                "steempeak.app",
+                1
+              ],
+              [
+                "steemydoge",
+                1
+              ],
+              [
+                "streemian",
+                1
+              ],
+              [
+                "themagicfrog.app",
+                1
+              ]
+            ],
+            "key_auths": [
+              [
+                "STM53CANDMUqjY6sKp59c33v2qFZMXgznZ8DRdYSubVFLpssBFJje",
+                1
+              ],
+              [
+                "STM6LLegbAgLAy28EHrffBVuANFWcFgmqRMW13wBmTExqFE9SCkg4",
+                1
+              ]
+            ],
+            "weight_threshold": 1
+          },
+          "posting_json_metadata": "{\"profile\":{\"name\":\"Otom\",\"about\":\"Crypto foodie wanderer...😄\",\"website\":\"https://bit.ly/DrugWarsOtom\",\"location\":\"here, there and everywhere...\",\"cover_image\":\"https://cdn.steemitimages.com/DQmRsZgTBpjiBEq1LvU8M42hrqC71p4ABeQU98QFgP91h1W/2019-01-11%2000.38.49.jpg\",\"profile_image\":\"https://cdn.steemitimages.com/DQmXecyecf8LEE7jqEk7FF4u82NmFUAMmrdBwqjXEzqMoJh/2019-01-09%2020.16.24.png\"}}",
+          "posting_rewards": 568115,
+          "previous_owner_update": "1970-01-01T00:00:00",
+          "proxied_vsf_votes": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "proxy": "",
+          "received_vesting_shares": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "recovery_account": "steem",
+          "reset_account": "null",
+          "reward_hbd_balance": {
+            "amount": "0",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "reward_hive_balance": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "reward_vesting_balance": {
+            "amount": "210187238",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "reward_vesting_hive": {
+            "amount": "118",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "savings_balance": {
+            "amount": "0",
+            "nai": "@@000000021",
+            "precision": 3
+          },
+          "savings_hbd_balance": {
+            "amount": "10",
+            "nai": "@@000000013",
+            "precision": 3
+          },
+          "savings_hbd_last_interest_payment": "2023-02-05T13:19:45",
+          "savings_hbd_seconds": "652786230",
+          "savings_hbd_seconds_last_update": "2023-02-13T00:51:48",
+          "savings_withdraw_requests": 0,
+          "to_withdraw": 0,
+          "vesting_shares": {
+            "amount": "12541343468",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "vesting_withdraw_rate": {
+            "amount": "0",
+            "nai": "@@000000037",
+            "precision": 6
+          },
+          "voting_manabar": {
+            "current_mana": 12290516598,
+            "last_update_time": 1684095102
+          },
+          "withdraw_routes": 0,
+          "withdrawn": 0,
+          "witnesses_voted_for": 0
+        }
+      ]
+    }
+  }
+]

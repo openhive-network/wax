@@ -5,7 +5,7 @@
 //! (`online_transaction.rs`, `hive_chain.rs`).
 
 use std::io::{Read, Write};
-use std::net::TcpListener;
+use std::net::{TcpListener, TcpStream};
 use std::sync::mpsc;
 use std::thread;
 
@@ -74,44 +74,16 @@ pub fn spawn_json_rpc_server(
     thread::spawn(move || {
         for result in results {
             let (mut stream, _) = listener.accept().unwrap();
-            let mut raw = Vec::new();
-            let mut buf = [0u8; 4096];
+            let request = read_json_request(&mut stream);
 
-            let head_end = loop {
-                let n = stream.read(&mut buf).unwrap();
-                raw.extend_from_slice(&buf[..n]);
-
-                if let Some(pos) = raw.windows(4).position(|w| w == b"\r\n\r\n")
-                {
-                    break pos + 4;
-                }
-            };
-
-            let head = String::from_utf8_lossy(&raw[..head_end]).to_lowercase();
-            let content_length = head
-                .lines()
-                .find_map(|line| line.strip_prefix("content-length:"))
-                .map_or(0, |value| value.trim().parse::<usize>().unwrap());
-
-            while raw.len() < head_end + content_length {
-                let n = stream.read(&mut buf).unwrap();
-                raw.extend_from_slice(&buf[..n]);
-            }
-
-            let request: Value =
-                serde_json::from_slice(&raw[head_end..]).unwrap();
-            let body = json!({
-                "jsonrpc": "2.0",
-                "id": request["id"],
-                "result": result,
-            })
-            .to_string();
-            let response = format!(
-                "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\n\
-                 content-length: {}\r\nconnection: close\r\n\r\n{body}",
-                body.len(),
+            write_json_response(
+                &mut stream,
+                &json!({
+                    "jsonrpc": "2.0",
+                    "id": request["id"],
+                    "result": result,
+                }),
             );
-            stream.write_all(response.as_bytes()).unwrap();
 
             captured_tx
                 .send(CapturedCall {
@@ -126,6 +98,47 @@ pub fn spawn_json_rpc_server(
     });
 
     (url, captured_rx)
+}
+
+/// Reads one HTTP request from `stream` and parses its body as JSON.
+pub fn read_json_request(stream: &mut TcpStream) -> Value {
+    let mut raw = Vec::new();
+    let mut buf = [0u8; 4096];
+
+    let head_end = loop {
+        let n = stream.read(&mut buf).unwrap();
+        raw.extend_from_slice(&buf[..n]);
+
+        if let Some(pos) = raw.windows(4).position(|w| w == b"\r\n\r\n") {
+            break pos + 4;
+        }
+    };
+
+    let head = String::from_utf8_lossy(&raw[..head_end]).to_lowercase();
+    let content_length = head
+        .lines()
+        .find_map(|line| line.strip_prefix("content-length:"))
+        .map_or(0, |value| value.trim().parse::<usize>().unwrap());
+
+    while raw.len() < head_end + content_length {
+        let n = stream.read(&mut buf).unwrap();
+        raw.extend_from_slice(&buf[..n]);
+    }
+
+    serde_json::from_slice(&raw[head_end..]).unwrap()
+}
+
+/// Writes `body` to `stream` as a `200 OK` JSON response that closes the
+/// connection, so the client opens a fresh one per call.
+pub fn write_json_response(stream: &mut TcpStream, body: &Value) {
+    let body = body.to_string();
+    let response = format!(
+        "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\n\
+         content-length: {}\r\nconnection: close\r\n\r\n{body}",
+        body.len(),
+    );
+
+    stream.write_all(response.as_bytes()).unwrap();
 }
 
 // ---------------------------------------------------------------------------
