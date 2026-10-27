@@ -624,10 +624,59 @@ void foundation::cpp_transform_api_error_response_into_exception(const std::stri
   throw wax_unknown_assertion( unrecognized_assertion_code, ae );
 }
 
+namespace {
+
+class crypto_memo_loader final : public hive::protocol::crypto_memo
+{
+public:
+  /** Loads a memo in the standard field order (from, to, nonce, check, encrypted) or, failing that, in the legacy
+   *  order (nonce, check, encrypted, from, to) written by hive 3af2709be..df89f3dd624e (wax 1.27.5..1.28.6).
+   *  A parse is accepted only when both key slots hold valid curve points, so neither order can be misread as the other.
+   */
+  std::optional<memo_content> load_from_string_any_order(const std::string& data)
+  {
+    std::optional<memo_content> standard = load_from_string(data);
+    if(standard.has_value() && has_valid_keys(*standard))
+      return standard;
+
+    std::optional<memo_content_buggy_format> legacy = from_string_impl<memo_content_buggy_format>(data.substr(1));
+    if(legacy.has_value())
+    {
+      memo_content converted{ legacy->from, legacy->to, legacy->nonce, legacy->check, std::move(legacy->encrypted) };
+      if(has_valid_keys(converted))
+        return converted;
+    }
+
+    return std::optional<memo_content>();
+  }
+
+private:
+  static bool is_valid_public_key(const public_key_type& key)
+  {
+    try
+    {
+      /// Parses the key with secp256k1 - unpacking alone accepts any 33 bytes
+      key.serialize_ecc_point();
+      return true;
+    }
+    catch(const fc::exception&)
+    {
+      return false;
+    }
+  }
+
+  static bool has_valid_keys(const memo_content& content)
+  {
+    return is_valid_public_key(content.from) && is_valid_public_key(content.to);
+  }
+};
+
+} /// namespace
+
 crypto_memo foundation::cpp_crypto_memo_from_string(const std::string& value) const
 {
   return cpp::safe_exception_wrapper([&]() -> crypto_memo {
-      std::optional<hive::protocol::crypto_memo::memo_content> loaded = hive::protocol::crypto_memo{}.load_from_string(value);
+      std::optional<hive::protocol::crypto_memo::memo_content> loaded = crypto_memo_loader{}.load_from_string_any_order(value);
 
       FC_ASSERT( loaded.has_value(), "Could not load the crypto memo content from given string", (value) );
 
