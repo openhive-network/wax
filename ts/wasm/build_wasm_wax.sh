@@ -59,11 +59,13 @@ build() {
 
 if [ ${DIRECT_EXECUTION} -eq 0 ]; then
   echo "Performing a docker run"
+  # The emsdk image CI builds with: EMSCRIPTEN_IMAGE_TAG of common-ci-configuration's npm_projects template
+  EMSCRIPTEN_IMAGE_TAG="$(sed -n 's/^  EMSCRIPTEN_IMAGE_TAG: "\(.*\)"$/\1/p' "${PROJECT_DIR}/ts/npm-common-config/templates/npm_projects.gitlab-ci.yml")"
   docker run \
     -it --rm \
     -v "${PROJECT_DIR}/":"${EXECUTION_PATH}" \
     -u $(id -u):$(id -g) \
-    registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-4@sha256:966dd9e9da494d184fcc7f622bb24d93c41b8d58c814156aa79cd1d70f31d9ab \
+    "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:${EMSCRIPTEN_IMAGE_TAG:?not found in ts/npm-common-config}" \
     /bin/bash "${EXECUTION_PATH}/ts/wasm/build_wasm_wax.sh" 1 "${EXECUTION_PATH}"
 else
   echo "Performing a build"

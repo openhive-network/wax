@@ -138,16 +138,17 @@ does.
 ## The test runtime image (`runtime/`)
 
 The suites run in a container with `--network none` and your uid. The image is the emsdk
-image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE_TAG`, which `.gitlab-ci.yml`
-sets over the `hive/common-ci-configuration` template's pin): emscripten 5.0.2, cmake,
-ninja, protoc, Boost for wasm, Node 24.21.0, pnpm 10.0.0 and Playwright's chromium. It
-adds a pnpm store filled with `pnpm fetch`; `pnpm-deps.sh` installs `ts/node_modules`
-offline from it.
+image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE_TAG` of the
+`hive/common-ci-configuration` template in the `ts/npm-common-config` submodule;
+`build.sh` reads it there and builds `FROM` its registry digest): emscripten, cmake,
+ninja, protoc, Boost for wasm, ccc's Node, pnpm and Playwright's chromium. It adds a pnpm
+store filled with `pnpm fetch`; `pnpm-deps.sh` installs `ts/node_modules` offline from it.
+The pnpm the suites use is the `packageManager` one, installed through corepack.
 
 When `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` or `ts/.npmrc` (both links into the
-`ts/npm-common-config` submodule), `packageManager` or `runtime/Dockerfile` change, or
-`EMSCRIPTEN_IMAGE_TAG` moves to a new emsdk image, rebuild and re-pin **in the same
-commit**:
+`ts/npm-common-config` submodule), `packageManager` or `runtime/Dockerfile` change, or a
+submodule bump moves `EMSCRIPTEN_IMAGE_TAG` to a new emsdk image (as on a ccc Node bump),
+rebuild and re-pin **in the same commit**:
 
 ```bash
 .aidev/runtime/build.sh --push   # registry digest if aidev-<input hash> exists, else build + push

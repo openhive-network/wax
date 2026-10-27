@@ -1,4 +1,5 @@
-FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-12
+# Node comes from the wax ci-base-image (python/wax/docker/Dockerfile.ci)
+FROM registry.gitlab.syncad.com/hive/wax/ci-base-image:pypa_2_28-18
 
 # User hosts user ids...
 ARG USER_NAME=user
@@ -11,12 +12,7 @@ RUN groupadd -g $GROUP_ID usergroup && \
     useradd -m -s /bin/bash -u $USER_ID -g $GROUP_ID ${USER_NAME} && \
     usermod -a -G $(id -g hived_admin) ${USER_NAME} && \
     dnf install -y gdb python3-debug curl && \
-    dnf clean all && \
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && \
-    export NVM_DIR="/root/.nvm" && \
-    . "$NVM_DIR/nvm.sh" && \
-    nvm install 24.21.0 && \
-    nvm use 24.21.0
+    dnf clean all
 
 
 # Switch to created user

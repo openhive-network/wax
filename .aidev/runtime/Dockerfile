@@ -1,17 +1,20 @@
 # The image AIDEV runs this project's suites in (`environment.image` in
 # .aidev/project.yaml). It is the emsdk image CI builds the TypeScript package
-# with (EMSCRIPTEN_IMAGE_TAG in .gitlab-ci.yml): emscripten, cmake, ninja, protoc, Boost
-# for wasm, Node 24.21.0, pnpm 10.0.0 and Playwright's chromium. Suites run with
-# `--network none`, so this adds a pnpm store filled from ts/pnpm-lock.yaml.
-# Build and pin it with .aidev/runtime/build.sh; see .aidev/README.md.
-FROM registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-6@sha256:9aec859476a9508693dba0d55c8637a2fcc572ec51dfcf87adaba21d6f64d67f
+# with (EMSCRIPTEN_IMAGE_TAG of common-ci-configuration's npm_projects template):
+# emscripten, cmake, ninja, protoc, Boost for wasm, ccc's Node and pnpm, and
+# Playwright's chromium. Suites run with `--network none`, so this adds a pnpm
+# store filled from ts/pnpm-lock.yaml.
+# Build and pin it with .aidev/runtime/build.sh, which passes EMSCRIPTEN_IMAGE
+# digest-pinned; see .aidev/README.md.
+ARG EMSCRIPTEN_IMAGE
+FROM ${EMSCRIPTEN_IMAGE}
 
-# CI runs `nvm use $NODEJS_VERSION` first, which puts nvm's Node 24.21.0 bin dir
-# (and its pnpm) in front of emsdk's own Node 22.16; do the same without nvm.
+# CI runs `nvm use $NODEJS_VERSION` first, which puts nvm's Node bin dir (and its
+# pnpm) in front of emsdk's own older Node; do the same without nvm.
 # That pnpm is a corepack shim: pnpm from package.json `packageManager` is installed
 # into COREPACK_HOME at build time, so it resolves offline. Suites run as the
 # caller's uid, so HOME is /tmp, and the store and corepack home are world-writable.
-ENV PATH=/home/emscripten/.nvm/versions/node/v24.21.0/bin:/home/emscripten/.local/share/pnpm:/emsdk:/emsdk/upstream/emscripten:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+ENV PATH=/home/emscripten/.nvm/versions/node/${NODEJS_VERSION}/bin:/home/emscripten/.local/share/pnpm:/emsdk:/emsdk/upstream/emscripten:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     HOME=/tmp \
     COREPACK_HOME=/opt/corepack \
     COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
