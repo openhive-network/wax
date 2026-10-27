@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 
-import { test } from '../assets/jest-helper';
+import { test, type IWaxFixtureMethods } from '../assets/jest-helper';
 
 import {
   utilFunctionTest,
@@ -174,5 +174,33 @@ test.describe('Wax encrypted operations tests', () => {
     }, utilFunctionTest, recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp);
 
     expect(retVal.operations).toEqual([recurrentTransferOp, convertOp, transferToSavingsOp, voteOp, commentOp, transferOp]);
+  });
+
+  test.describe('Encrypted memo field order', () => {
+    const memoKeyWif = '5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT';
+    const standardOrderMemo = '#6cyczk8wKT991jWuKj2tuJLN9QGFmhSrHJ52AuKE9CP9ALS2vVhBVB5YqnT37pTLt76CuPYuzoJY9f31sX2QKQDTBXihTTqM2ZgWLsnWbdWZSsvTXr78tSCezfzAwehn1umdeHgCefsE1rTp45N3A9P';
+    // The same memo in the legacy field order (nonce, check, encrypted, from, to) written by wax 1.27.5 - 1.28.6
+    const legacyOrderMemo = '#5P5bvgpUUGTskb98shuYBTpSMqfoTBev6Ay2xo9UgMF3Rj5uhFSqwVLb4LZkmCcodBdQUgEspA1t2dByaMVAjyJFZN767GRGxGDtx2r3sQtui9kFEWPGcxXYvWZLxAxDJmgtqc4wUsgNKYe5kZPPQSHg';
+
+    const decryptMemo = (waxTest: IWaxFixtureMethods['waxTest'], memo: string) =>
+      waxTest(async ({ base, beekeeper, createSigner }, wif, encrypted) => {
+        const session = beekeeper.createSession("salt");
+        const { wallet } = await session.createWallet("w0");
+        const publicKey = await wallet.importKey(wif);
+
+        return await createSigner(base, wallet, publicKey).decryptData(encrypted);
+      }, memoKeyWif, memo);
+
+    test('Should decrypt memo in the standard field order', async ({ waxTest }) => {
+      expect(await decryptMemo(waxTest, standardOrderMemo)).toBe("This should be encrypted");
+    });
+
+    test('Should decrypt memo in the legacy field order', async ({ waxTest }) => {
+      expect(await decryptMemo(waxTest, legacyOrderMemo)).toBe("This should be encrypted");
+    });
+
+    test('Should fail to decrypt memo in neither field order', async ({ waxTest }) => {
+      await expect(decryptMemo(waxTest, '#111111118N2MrWbLqudcbQR4EUziLoGAqR7XN')).rejects.toThrow(/Could not load the crypto memo content from given string/);
+    });
   });
 });
