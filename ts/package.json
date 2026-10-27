@@ -110,7 +110,7 @@
     "url": "https://gitlab.syncad.com/hive/wax.git"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "publishConfig": {
     "registry": "https://RegistryPlaceholder",
