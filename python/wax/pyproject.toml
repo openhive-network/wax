@@ -78,7 +78,16 @@ pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>
 # PEP 440 compliant versioning
 # https://peps.python.org/pep-0440/
 #
-# Version examples (assuming last tag is 1.2.3rc1):
+# Base tag: the newest tag matching `pattern` by creation date across all refs, whether or not
+# it is an ancestor of HEAD; distance is the number of commits in HEAD that are not in that tag.
+# A tag on HEAD itself takes precedence, so rebuilding an older tag still gives that tag's version.
+# This is the rule npm versions use (common-ci-configuration npm_generate_version.sh). Release tags
+# are made on master by hive/update_submodules and master is not merged back, so the newest release
+# tag is usually not an ancestor of develop. dunamai itself only sees tags merged into HEAD (with or
+# without `latest-tag`), so format-jinja looks the tag up with git; `pattern` only drives dunamai's
+# fallback when no tag matches. CI must fetch all tags (GIT_FETCH_EXTRA_FLAGS in .gitlab-ci.yml).
+#
+# Version examples (assuming the newest tag is 1.2.3rc1):
 #   Tag (distance=0, clean):       1.2.3rc1
 #   Tag (distance=0, dirty):       1.2.3rc1+dirty
 #   develop (distance>0):          1.2.3rc1.post20260129082556
@@ -107,8 +116,29 @@ pattern = '''v?(?P<base>\d+\.\d+\.\d+)\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>
 #   - `poetry update` / `pip install pkg>=1.0` -> selects stable only (ignores .dev pre-releases)
 #   - `pip install --pre` / `allow-prereleases = true` -> includes feature branches
 #   - Feature branch versions are ALWAYS lower than the tag (pre-release filtering + numerically lower)
+format-jinja-imports = [
+    { module = "re" },
+    { module = "subprocess" },
+]
 format-jinja = """
     {%- set STABLE_BRANCHES = ['develop', 'master', 'main'] -%}
+    {%- set TAG_PATTERN = 'v?(?P<base>\\d+\\.\\d+\\.\\d+)\\-?(?:(?P<stage>[a-zA-Z0-9]+)(?P<revision>\\d+))?$' -%}
+
+    {%- set newest = namespace(tag=none, match=none) -%}
+    {%- set head_tags = subprocess.run(['git', 'for-each-ref', '--sort=-creatordate', '--format=%(refname:lstrip=2)', '--points-at=HEAD', 'refs/tags'], capture_output=True, text=True, check=True).stdout.split() -%}
+    {%- set all_tags = subprocess.run(['git', 'for-each-ref', '--sort=-creatordate', '--format=%(refname:lstrip=2)', 'refs/tags'], capture_output=True, text=True, check=True).stdout.split() -%}
+    {%- for tag in head_tags + all_tags -%}
+        {%- if newest.match is none and re.search(TAG_PATTERN, tag) -%}
+            {%- set newest.tag = tag -%}
+            {%- set newest.match = re.search(TAG_PATTERN, tag) -%}
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if newest.match is not none -%}
+        {%- set base = newest.match.group('base') -%}
+        {%- set stage = newest.match.group('stage') -%}
+        {%- set revision = newest.match.group('revision')|int if newest.match.group('revision') else none -%}
+        {%- set distance = subprocess.run(['git', 'rev-list', '--count', 'refs/tags/' ~ newest.tag ~ '..HEAD'], capture_output=True, text=True, check=True).stdout|int -%}
+    {%- endif -%}
 
     {%- set effective_branch = branch or env.get('CI_COMMIT_REF_NAME') -%}
     {%- set is_ci = env.get('CI') == 'true' -%}
