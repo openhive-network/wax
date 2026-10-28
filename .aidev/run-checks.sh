@@ -22,19 +22,20 @@
 #   build-tests  package.json `build:test`: the beekeeper signer and the test sources
 #   tests        Playwright, the projects in OFFLINE_PROJECTS below (or the named ones)
 #
-# Suites run with --network none. The Playwright projects that call api.hive.blog
-# (wax_testsuite, healthchecker_tests, wax_custom_chain_online_tx, ...) can't run
-# there, so `tests` runs only the projects that need no network, less the tests
-# in them that do (NETWORK_TESTS); see .aidev/README.md.
+# Suites run with --network none. The Playwright projects get the responses of
+# api.hive.blog recorded (ts/wasm/__tests__/assets/mock/recordings), except
+# healthchecker_tests, which calls the live node; `tests` runs the projects listed
+# below; see .aidev/README.md.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 root="$PWD"
 
 suite="${1:?usage: $0 <suite> <step>... [<project>...]}"; shift
 
-# The Playwright projects CI runs (test_wax_wasm's matrix) whose tests need no
-# network: they call the wasm module itself or the local mock server
-# (wax_mock_tests, localhost:8000).
+# The Playwright projects CI runs (test_wax_wasm's matrix) that have a testMatch
+# (.aidev/selector.py maps test modules to projects by it): they call the wasm
+# module itself, the local mock server (wax_mock_tests, localhost:8000) or the API
+# replay server. wax_testsuite runs every *.spec file, so it has no testMatch.
 OFFLINE_PROJECTS=(
     wax_utils
     wax_non_encrypted_operations
@@ -45,16 +46,8 @@ OFFLINE_PROJECTS=(
     wax_testsuite_protocol_benchmarks
     wax_hive_assertion
     wax_signers_csp
-)
-# Tests in those projects that still reach api.hive.blog: the account-authority
-# builders read accounts from the chain, and the mock server proxies requests it
-# has no recording for. Title fragments, joined into --grep-invert.
-NETWORK_TESTS=(
-    "create simple account authority update operation"
-    "remove owner key for initminer"
-    "replace initminer owner key"
-    "authority trace with mock data with delegated authority where 2 accounts"
-    "authority trace with mock data for 5 signatures where one of the public keys"
+    wax_custom_chain_online_tx
+    wax_testsuite_custom_chain_options
 )
 
 steps=()
@@ -131,8 +124,6 @@ proto_pattern() {
 playwright_tests() {
     local rc=0 args=()
     for p in "${projects[@]}"; do args+=("--project=$p"); done
-    local invert; invert="$(IFS='|'; echo "${NETWORK_TESTS[*]}")"
-    args+=(--grep-invert "$invert")
     rm -f ts/results.xml ts/results.json
     (cd ts && pnpm run pretest && unset CI && pnpm exec playwright test --workers 4 "${args[@]}") || rc=$?
     if [ -s ts/results.xml ]; then

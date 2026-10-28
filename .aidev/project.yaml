@@ -55,7 +55,7 @@ issues:
 # The TypeScript package is the only part bound: every step needs the emscripten
 # wasm build of core/ + hive's protocol (about a minute), so each slot starts
 # with proto/wasm/tsc. `tests` runs the Playwright projects that need no network
-# (slots run with --network none). There is no linter and no coverage tool in
+# (slots run with --network none; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
 # `coverage` runs the tests. The Python and Rust packages are not bound.
 # See .aidev/README.md.
@@ -76,6 +76,8 @@ verification:
       - wax_testsuite_protocol_benchmarks
       - wax_hive_assertion
       - wax_signers_csp
+      - wax_custom_chain_online_tx
+      - wax_testsuite_custom_chain_options
     artifacts: ["test-results/aidev-quick/"]
   full:
     adapter: command

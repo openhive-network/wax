@@ -28,7 +28,7 @@ project exits 2 before anything runs.
 | `bundle` | rollup, terser, `size-limit` (3420 kB), through `pnpm exec` as CI's build leaves `npm_package_*` unset | `wax_wasm_proto_tsc_generation` (`postbuild`) |
 | `proto-pattern` | generated protobuf output equals `ts/protobuf_patterns/proto` | `test_wax_wasm_proto_pattern`, without its npm-pack listing |
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
-| `tests` | Playwright, the projects in `OFFLINE_PROJECTS` less `NETWORK_TESTS` | `test_wax_wasm` |
+| `tests` | Playwright, the projects in `OFFLINE_PROJECTS` | `test_wax_wasm` |
 
 | Slot | Steps |
 |---|---|
@@ -37,7 +37,7 @@ project exits 2 before anything runs.
 | static | proto wasm tsc proto-pattern |
 | system | proto wasm tsc bundle |
 
-`verification.quick` lists the nine offline projects as its `targets` (the approved
+`verification.quick` lists the eleven offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs the
 same work as without them.
 
@@ -70,12 +70,12 @@ aidev's `testbed_runner`; no slot runs them. To see what a diff proposes, run
 
 ### What `tests` leaves out
 
-Suites run with `--network none`. These parts of CI's `test_wax_wasm` matrix call
-`api.hive.blog` and are not run: the projects `wax_testsuite`, `healthchecker_tests`,
-`wax_custom_chain_online_tx` and `wax_testsuite_custom_chain_options`, and the seven tests in
-`NETWORK_TESTS` (account-authority builders that read accounts from the chain, and two
-mock tests whose requests the mock server proxies upstream). On 2026-10-03 the bound set
-was 158 tests.
+Suites run with `--network none`. The Playwright tests get the responses of the public
+nodes (`api.hive.blog`, the mirrornet, ...) from the API replay server, which serves the
+recordings in `ts/wasm/__tests__/assets/mock/recordings` (see "Tests and the public API
+nodes" in `ts/README.md`). Not run: `wax_testsuite`, which replays too but has no
+`testMatch` for the selector to map, and `healthchecker_tests`, which checks a live node
+(CI's advisory `test_wax_wasm_live_api`).
 
 Also not run: the npm examples (`test_wax_wasm_examples`, they `pnpm install` from the
 network), the signature-extension example, and the npm-pack file listing.
