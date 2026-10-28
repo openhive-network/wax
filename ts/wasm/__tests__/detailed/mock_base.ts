@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
 import { createServer } from '../assets/proxy-mock-server';
+import { API_REPLAY_PORT, getApiTrafficMode } from '../assets/api-traffic';
 import { AProxyMockResolver, JsonRpcMock } from '../assets/api-mock';
 import type { Request, Response } from 'express';
 import jsonRpcMock from '../assets/mock/jsonRpcMock';
@@ -67,7 +68,9 @@ const callRawHttpEndpoint = async ({ wax, chain }: IWaxGlobals, apiEndpoint: str
 
 test.describe('Wax base mock tests', () => {
   test.beforeAll(async () => {
-    closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000);
+    // Calls with no mock data in jsonRpcMock get the responses recorded from api.hive.blog
+    const upstream = getApiTrafficMode() === 'live' ? undefined : `localhost:${API_REPLAY_PORT}`;
+    closeServer = await createServer(new JsonRpcMock(jsonRpcMock), 'api.hive.blog', 8000, upstream);
     closeRawHttpServer = await createServer(new RawHttpResponseMock(), 'api.hive.blog', 8001);
   });
 

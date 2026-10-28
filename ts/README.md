@@ -386,6 +386,31 @@ pnpm run build:test
 pnpm run test
 ```
 
+#### Tests and the public API nodes
+
+The tests do not call the public API nodes (`api.hive.blog`, `api.syncad.com`, `api.openhive.network`, the mirrornet `api.fake.openhive.network`).
+Their requests, made in Node.js and in the browser, are redirected to the API replay server (`wasm/__tests__/assets/start-api-replay-server.ts`, started by Playwright on port 8010),
+which answers them with the responses recorded in `wasm/__tests__/assets/mock/recordings/<host>.json`.
+A request with no recording fails with HTTP 501 naming the request, and the server prints how many requests it replayed and how many it could not when the run ends.
+
+`WAX_TEST_API_MODE` selects what happens to these requests:
+
+- `replay` (default) - answered from the recordings, nothing reaches the network
+- `record` - forwarded to the live nodes, and their responses are added to the recordings
+- `live` - sent to the live nodes, retried on a timeout or a 5xx response
+
+The `healthchecker_tests` project checks behaviour of a live node, so it always calls it (CI runs it in the advisory `test_wax_wasm_live_api` job).
+It uses `https://api.hive.blog` unless `WAX_TEST_LIVE_API_ENDPOINT` names another node.
+
+When a test starts calling the API differently, record the responses it needs and commit the changed recordings:
+
+```bash
+WAX_TEST_API_MODE=record pnpm run test -- --project=wax_testsuite
+```
+
+To re-record everything, remove the files in `wasm/__tests__/assets/mock/recordings` and run all the projects except `healthchecker_tests` in `record` mode.
+Then run the tests again in the default mode, to check that they pass on the new data: the recorded chain state (head block, accounts) is what they see from then on.
+
 And examples:
 
 ```bash

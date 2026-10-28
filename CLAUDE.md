@@ -26,7 +26,7 @@ When AIDEV runs you on an issue, no one is there to answer questions. GitLab CI 
 
 - **Check your change:** run `aidev test run --slot quick` once, after your last edit. It builds the TypeScript package the way CI's `wax_wasm_proto_tsc_generation` does (ts-proto, the emscripten wasm build of `core/` and the hive protocol, `tsc`), then builds the tests and runs the Playwright projects that need no network. `--slot full` adds the bundle (rollup, terser, `size-limit`) and the protobuf pattern check.
 - **Iterate:** `.aidev/run-checks.sh dev proto wasm tsc` (any prefix of `proto wasm tsc bundle proto-pattern build-tests tests`) runs those steps; each step needs the ones before it. The wasm build is incremental while `ts/wasm/build_wasm` survives.
-- **Not covered by the slots:** the Playwright projects that call `api.hive.blog` (`wax_testsuite`, `healthchecker_tests`, `wax_custom_chain_online_tx`, ...), the npm examples, and the Python and Rust packages. Say in the issue when a change needs one of them checked by hand.
+- **Not covered by the slots:** the Playwright projects `wax_testsuite` (replays recorded API responses like the bound projects, but has no `testMatch`) and `healthchecker_tests` (calls the live `api.hive.blog`), the npm examples, and the Python and Rust packages. Say in the issue when a change needs one of them checked by hand. A change to what the tests fetch from the API needs its responses re-recorded (`ts/README.md`).
 - **Dependencies:** a change to `ts/pnpm-lock.yaml`, the workspace file or `.npmrc` in `ts/npm-common-config`, or `packageManager` needs a new test image. Run `.aidev/runtime/build.sh --push` and put the printed reference in `.aidev/project.yaml` `environment.image` in the same commit (see `.aidev/README.md`).
 
 
@@ -164,7 +164,7 @@ Key jobs:
 
 - Python requires Python 3.12+ (check `python = ">=3.12,<4"` in pyproject.toml); wheels are built and tested for both 3.12 and 3.14
 - TypeScript requires Node.js 24+ (`engines.node` in ts/package.json); it is built and tested on the Node.js version hive/common-ci-configuration pins (`NODE_IMAGE_VERSION`, shipped in its emsdk image). Do not pin a Node version in this repo: Dockerfiles take `ARG NODE_VERSION` (CI passes `$NODE_IMAGE_VERSION`) or the emsdk image named by ccc's `EMSCRIPTEN_IMAGE_TAG`
-- Tests use mock server for API calls (see `ts/wasm/__tests__/assets/proxy-mock-server.ts`)
+- Tests use mock server for API calls (see `ts/wasm/__tests__/assets/proxy-mock-server.ts`); requests to the public nodes are answered from recorded responses (`WAX_TEST_API_MODE`, see `ts/README.md`)
 - Devcontainer available at `.devcontainer/devcontainer.json`
 - once updating common-ci-configuration submodule both: ts/npm-common-config and gitlab-ci.yml include must be adjusted
 - all CI jobs are considered to be passing. Marking them as allow_failure is not allowed
