@@ -1,11 +1,12 @@
 import { expect } from '@playwright/test';
 
 import { test } from '../assets/jest-helper';
+import { LIVE_API_ENDPOINT } from '../assets/api-traffic';
 import type { TScoredEndpoint } from '../../dist/bundle';
 
 test.describe('Wax object interface chain tests', () => {
   test('Should be able to create endpoint healthchecker', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -19,11 +20,11 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-    expect(retVal).toStrictEqual("https://api.hive.blog");
+    expect(retVal).toStrictEqual(testEndpoint);
    });
 
   test('Should be able to validate response and result with proper info', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -40,7 +41,7 @@ test.describe('Wax object interface chain tests', () => {
    });
 
   test('Should be able to create endpoint healthchecker and retrieve data 2 times', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -62,12 +63,12 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-    expect(retVal).toStrictEqual("https://api.hive.blog");
+    expect(retVal).toStrictEqual(testEndpoint);
   });
 
   test('Should be able to create endpoint healthchecker and retrieve data 2 times while having invalid failing endpoint', async ({ waxTest }) => {
     /// use IP for broken endpoint instead of nonexisting-dns-name to avoid OS differences and fake test failures caused by name resolution
-    const testEndpoints = ["https://api.hive.blog", "https://1.1.1.1", "https://api.openhive.network"];
+    const testEndpoints = [LIVE_API_ENDPOINT, "https://1.1.1.1", "https://api.openhive.network"];
 
     test.setTimeout(60_000);
 
@@ -81,7 +82,7 @@ test.describe('Wax object interface chain tests', () => {
           ++i;
 
           /// It is bad when HC returned data having different length than provided endpoints count or one of valid URLs is at the end (broken one shall be there)
-          if (data.length !== 3 || (data[2].endpointUrl === "https://api.hive.blog"))
+          if (data.length !== 3 || (data[2].endpointUrl === testEndpoints[0]))
             return reject(`Invalid endpoints in data: data length: ${data.length}, data: ${JSON.stringify(data)}`);
 
           if (i === 2) {
@@ -89,9 +90,9 @@ test.describe('Wax object interface chain tests', () => {
 
             /**
              * Perform here a comparison of both successful endpoints to avoid random failures during comparing WebBrowser and NodeJS results,
-             * when api.hive.blogs wins over api.openhive.network and vice versa.
+             * when the first endpoint wins over api.openhive.network and vice versa.
              */
-            const success = (data[0].endpointUrl === "https://api.hive.blog" || data[0].endpointUrl === "https://api.openhive.network");
+            const success = (data[0].endpointUrl === testEndpoints[0] || data[0].endpointUrl === testEndpoints[2]);
             resolve(success);
           }
         });
@@ -106,7 +107,7 @@ test.describe('Wax object interface chain tests', () => {
   });
 
    test('Should be able to create REST call healthchecker (common enpdoint)', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -136,11 +137,11 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-     expect(retVal).toStrictEqual("https://api.hive.blog");
+     expect(retVal).toStrictEqual(testEndpoint);
    });
 
    test('Should be able to create REST endpoint healthchecker (explicit endpoint)', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     const retVal = await waxTest(({ wax, chain }, testEndpoint) => {
       return new Promise<string>((resolve, reject) => {
@@ -170,11 +171,11 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-    expect(retVal).toStrictEqual("https://api.hive.blog");
+    expect(retVal).toStrictEqual(testEndpoint);
    });
 
    test('Should be able to handle multithreaded calls - should not exceed the timeout', async ({ waxTest }) => {
-    const testEndpoint = "https://api.hive.blog";
+    const testEndpoint = LIVE_API_ENDPOINT;
 
     // This test can take up 30 seconds per testing environment (web + node = ~60s)
     test.setTimeout(60_000);
@@ -200,6 +201,6 @@ test.describe('Wax object interface chain tests', () => {
       });
     }, testEndpoint);
 
-    expect(retVal).toStrictEqual("https://api.hive.blog");
+    expect(retVal).toStrictEqual(testEndpoint);
    });
 });

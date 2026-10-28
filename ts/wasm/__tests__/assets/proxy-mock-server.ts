@@ -3,8 +3,13 @@ import express from 'express';
 import cors from 'cors';
 import type { Server } from 'http';
 import { AProxyMockResolver } from './api-mock';
+import { TARGET_HOST_HEADER } from './api-traffic';
 
-export const createServer = async (mockInstance: AProxyMockResolver, target: string = "api.hive.blog", port: number = 3000) => {
+/**
+ * Starts a server answering the requests `mockInstance` has a handler for and proxying the others to `target` (or the host in the `x-hive-target` header).
+ * When `upstream` (`host:port`) is given, the other requests are proxied to it over plain HTTP instead, with their intended host in the `x-hive-target` header.
+ */
+export const createServer = async (mockInstance: AProxyMockResolver, target: string = "api.hive.blog", port: number = 3000, upstream?: string) => {
   const app = express();
 
   app.use(cors());
@@ -31,15 +36,21 @@ export const createServer = async (mockInstance: AProxyMockResolver, target: str
       return;
     }
 
-    console.log(`No mock data found ${methodStr} - proxying to "${req.headers['x-hive-target'] as string || target}"...`);
+    console.log(`No mock data found ${methodStr} - proxying to "${req.headers[TARGET_HOST_HEADER] as string || target}"${upstream === undefined ? '' : ` through ${upstream}`}...`);
     next();
   });
 
   // Create a transparent proxy
-  app.use('/', proxy(req => req.headers['x-hive-target'] as string || target, {
-    https: true,
+  app.use('/', proxy(req => upstream ?? (req.headers[TARGET_HOST_HEADER] as string || target), {
+    https: upstream === undefined,
     memoizeHost: false,
-    preserveHostHdr: false
+    preserveHostHdr: false,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+      if (upstream !== undefined)
+        proxyReqOpts.headers = { ...proxyReqOpts.headers, [TARGET_HOST_HEADER]: srcReq.headers[TARGET_HOST_HEADER] as string || target };
+
+      return proxyReqOpts;
+    }
   }));
 
   let server: Server;

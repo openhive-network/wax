@@ -675,7 +675,7 @@ test_wax_wasm:
   - public-runner-docker
   parallel:
     matrix:
-    - TEST_GROUPS: [--project=wax_testsuite, --project=healthchecker_tests, --project=wax_utils
+    - TEST_GROUPS: [--project=wax_testsuite, --project=wax_utils
           --project=wax_non_encrypted_operations --project=wax_mock_tests --project=wax_encrypted_operations
           --project=wax_custom_chain_online_tx --project=wax_testsuite_custom_chain_options,
         --project=wax_regression_tests --project=wax_operation_factories --project=wax_testsuite_protocol_benchmarks
@@ -683,6 +683,27 @@ test_wax_wasm:
   script:
   - cd ts
   - npm run test -- $TEST_GROUPS
+
+# The tests above replay recorded API responses (ts/wasm/__tests__/assets/mock/recordings).
+# These check behaviour of a live node, so a slow or throttling public node must not block a merge.
+# Set WAX_TEST_LIVE_API_ENDPOINT to run them against another node than https://api.hive.blog.
+test_wax_wasm_live_api:
+  extends:
+  - .npm_test_template
+  variables:
+    SOURCE_DIR: "${TS_SOURCE_DIR}"
+    DIST_DIR: "${TS_DIST_DIR}"
+  needs:
+  - job: wax_wasm_proto_tsc_generation
+    artifacts: true
+  - job: wax_wasm_build_tests
+    artifacts: true
+  allow_failure: true
+  tags:
+  - public-runner-docker
+  script:
+  - cd ts
+  - npm run test -- --project=healthchecker_tests
 
 test_wax_wasm_proto_pattern:
   extends:

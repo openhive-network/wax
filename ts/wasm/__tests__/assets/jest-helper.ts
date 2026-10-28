@@ -4,6 +4,8 @@ import { TestInfo, ConsoleMessage, Page, test as base, expect } from '@playwrigh
 
 import "./globals";
 import type { IWaxGlobals, IWasmGlobals } from './globals';
+import { getApiTrafficMode } from './api-traffic';
+import { routeNodeApiRequests, routePageApiRequests } from './api-routing';
 import type { IWaxOptionsChain } from '../../dist/bundle';
 
 import fs from 'fs';
@@ -56,8 +58,12 @@ export interface IWaxedTest extends IWaxFixtureMethods, IWaxedTestPlaywright {
 
 }
 
-interface IWaxedWorker {
+export interface IWaxedWorker {
   forEachWorker: void;
+  /** Lets the tests call the live API nodes instead of the recorded responses (see `api-traffic.ts`) */
+  liveApi: boolean;
+  /** Whether the API requests go to the live nodes, set up for each worker */
+  usesLiveApi: boolean;
 }
 
 //type Callable<R = any, Args extends any[] =any[]> = (...args: Args) => R;
@@ -139,11 +145,13 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
   /// According to PW docs, ever hook must be wrapped into tuple holding additional information related to its scope and automatic installation:
   /// https://playwright.dev/docs/test-fixtures#adding-global-beforeeachaftereach-hooks
 
-  forEachTest: [async ({ page }, use, testInfo) => {
+  forEachTest: [async ({ page, usesLiveApi }, use, testInfo) => {
     /// use >> marker for each texts printed in the browser context
     page.on('console', (msg: ConsoleMessage) => {
       console.log('>>', msg.type(), msg.text());
     });
+
+    await routePageApiRequests(page, usesLiveApi);
 
     const nodeStoragePath = testInfo.outputDir;
 
@@ -163,6 +171,18 @@ export const test = base.extend<IWaxedTest, IWaxedWorker>({
       fs.rmSync(nodeStoragePath, { recursive: true });
     }
   }, { auto: true }],
+
+  liveApi: [false, { option: true, scope: 'worker' }],
+
+  usesLiveApi: [async ({ liveApi }, use) => {
+    const live = liveApi || getApiTrafficMode() === 'live';
+
+    const restoreFetch = routeNodeApiRequests(live);
+
+    await use(live);
+
+    restoreFetch();
+  }, { scope: 'worker' }],
 
   forEachWorker: [async ({ browser }, use) => {
     await use();

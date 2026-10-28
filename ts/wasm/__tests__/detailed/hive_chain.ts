@@ -164,11 +164,14 @@ test.describe('Wax object interface chain tests', () => {
     test('Should be able to calculate full manabar regeneration time from API using hive chain interface', async ({ waxTest }) => {
       const retVal = await waxTest.dynamic(async({ chain }) => {
         const time = await chain.calculateManabarFullRegenerationTimeForAccount("initminer");
+        const { time: headBlockTime } = await chain.api.database_api.get_dynamic_global_properties({});
 
-        return time.getTime(); // Should be close to Date.now() when fully regenerated
+        // Should be the head block time when fully regenerated
+        return { regenerationTime: time.getTime(), headBlockTime: new Date(`${headBlockTime}Z`).getTime() };
       });
 
-      expect(Date.now() - retVal).toBeLessThanOrEqual( HIVE_BLOCK_INTERVAL * 2 ); // Manabar of the initminer should not be used
+      // Manabar of the initminer should not be used
+      expect(Math.abs(retVal.headBlockTime - retVal.regenerationTime)).toBeLessThanOrEqual( HIVE_BLOCK_INTERVAL * 2 );
     });
 
     test('Should be able to calculate current downvote manabar value from API using hive chain interface', async ({ waxTest }) => {
