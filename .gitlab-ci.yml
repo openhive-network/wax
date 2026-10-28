@@ -46,6 +46,11 @@ variables:
   STATIC_ANALYSIS_WITH_LATEST_DEPENDENCIES: "false"
   GIT_DEPTH: 0
   GIT_STRATEGY: clone
+  # Fetch every tag, not only those reachable from the pipeline ref: the Python version
+  # (python/*/pyproject.toml format-jinja) is based on the newest tag in the repository, which sits
+  # on master and is not an ancestor of develop. poetry publish picks dist files by that version,
+  # so build and deploy jobs must see the same tags. Runner default flags are "--prune --quiet".
+  GIT_FETCH_EXTRA_FLAGS: "--prune --quiet --tags"
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
