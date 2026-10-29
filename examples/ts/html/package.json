@@ -14,7 +14,7 @@
     "buffer": "^6.0.3",
     "http-server": "^14.1.1",
     "playwright": "catalog:playwright-toolset",
-    "tsx": "^4.7.0",
+    "tsx": "catalog:typescript-toolset",
     "typescript": "catalog:typescript-toolset"
   },
   "dependencies": {
