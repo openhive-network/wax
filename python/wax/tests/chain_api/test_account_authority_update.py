@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from wax import create_hive_chain
 from wax.complex_operations.account_update import AccountAuthorityUpdateOperation
 from wax.complex_operations.role_classes.hive_authority.hive_role_authority_definition import (
     DEFAULT_ACCOUNT_OR_KEY_WEIGHT,
@@ -166,16 +165,16 @@ async def test_account_authority_update_set_threshold(remote_chain: IHiveChainIn
     account_update = await AccountAuthorityUpdateOperation.create_for(remote_chain, "hive.fund")
     role = getattr(account_update.roles, role_type)
 
-    assert (
-        role.authority.weight_threshold == DEFAULT_ACCOUNT_OR_KEY_WEIGHT
-    ), f"Expected default threshold: {DEFAULT_ACCOUNT_OR_KEY_WEIGHT}, got: {role.authority.weight_threshold}"
+    assert role.authority.weight_threshold == DEFAULT_ACCOUNT_OR_KEY_WEIGHT, (
+        f"Expected default threshold: {DEFAULT_ACCOUNT_OR_KEY_WEIGHT}, got: {role.authority.weight_threshold}"
+    )
 
     new_threshold: Final[int] = random.randint(1, 1000)
     role.set_threshold(threshold=new_threshold)
 
-    assert (
-        role.authority.weight_threshold == new_threshold
-    ), f"Threshold not updated correctly. Expected: {new_threshold}, got: {role.authority.weight_threshold}"
+    assert role.authority.weight_threshold == new_threshold, (
+        f"Threshold not updated correctly. Expected: {new_threshold}, got: {role.authority.weight_threshold}"
+    )
 
 
 @pytest.mark.parametrize("role_type", POSSIBLE_ROLE_TYPES)
@@ -398,8 +397,9 @@ async def test_account_authority_update_enforce_owner_role(
 
 
 @pytest.mark.describe("Expecting WaxAssertionError to be caught")
-async def test_catching_exception_catching_during_account_update_finalization() -> None:
-    remote_chain = create_hive_chain()
+async def test_catching_exception_catching_during_account_update_finalization(
+    remote_chain: IHiveChainInterface,
+) -> None:
     transaction = remote_chain.create_transaction_with_tapos(tapos_block_id="0")
 
     wax_account_authority_update_op = await AccountAuthorityUpdateOperation.create_for(remote_chain, "guest4test1")
