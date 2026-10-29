@@ -14,3 +14,5 @@ Vite currently does not fully support .WASM files as described [here](https://vi
 * https://vite.dev/guide/assets#explicit-url-imports
 * https://www.npmjs.com/package/vite-plugin-wasm
 
+
+For its lockfile, the `catalog:` versions and using it outside this repository, see [the examples README](../README.md).

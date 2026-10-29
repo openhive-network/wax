@@ -6,6 +6,23 @@
     "enabled": true
   },
 
+  // ts/ and every examples/ts app link their pnpm-workspace.yaml (the `catalog:` versions)
+  // into ts/npm-common-config, so pnpm needs that submodule to update their lockfiles.
+  "cloneSubmodules": true,
+  "cloneSubmodulesFilter": ["ts/npm-common-config"],
+
+  // config:recommended's ignorePaths minus "**/examples/**": the examples/ts apps commit
+  // their lockfiles and are kept current like ts/.
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__fixtures__/**"
+  ],
+
   "packageRules": [
     {
       // hiveio-api is built from the hived submodule — its version must match.
@@ -21,6 +38,18 @@
       "matchManagers": ["git-submodules"],
       "matchPackageNames": ["hive"],
       "enabled": true
+    },
+    {
+      // The catalogs and their overrides live in common-ci-configuration; a bump there
+      // reaches wax through the submodule.
+      "description": "Do not update pnpm catalog entries or workspace overrides — owned by npm-common-config",
+      "matchDepTypes": ["pnpm.catalog.*", "pnpm-workspace.overrides"],
+      "enabled": false
+    },
+    {
+      "description": "Keep examples/python out of Renovate, which config:recommended ignored with the rest of examples/",
+      "matchFileNames": ["examples/python/**"],
+      "enabled": false
     },
     {
       "description": "Ignore npm-common-config submodule — managed manually",

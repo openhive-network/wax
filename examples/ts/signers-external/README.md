@@ -175,3 +175,5 @@ await wallet.close();
 
 - [Package documentation](../../../ts/packages/signers-external/README.md)
 - [@hiveio/wax](https://www.npmjs.com/package/@hiveio/wax)
+
+For its lockfile, the `catalog:` versions and using it outside this repository, see [the examples README](../README.md).

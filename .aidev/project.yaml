@@ -34,7 +34,7 @@ branches:
 # (.aidev/runtime; rebuild and re-pin with .aidev/runtime/build.sh --push).
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:76d083d99f359700979773fda5be3fb0628dc0f06a65362eaa5a22c8463286df"
+  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:67a035ca910b1f76a86d54f7dc6489f8e6f27e570395769914dc8049632f602b"
   inputs: ["ts/pnpm-lock.yaml", ".aidev/runtime/Dockerfile", "ts/npm-common-config"]
 
 issues:
