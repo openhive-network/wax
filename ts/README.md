@@ -414,6 +414,7 @@ Then run the tests again in the default mode, to check that they pass on the new
 The Python tests (`python/wax/tests/run_tests.sh`) call `wasm/__tests__/assets/start-proxy-mock-server.ts`, which answers from `wasm/__tests__/assets/mock/jsonRpcMock.ts`
 and serves the other requests from the recordings in the same way, honouring `WAX_TEST_API_MODE` (in `replay` and `record` modes it answers `database_api.get_dynamic_global_properties` with the static value from `jsonRpcMock.ts`).
 Its log is `python/wax/mock-server.log`.
+The test-tools hived handle tests (`python/test_tools/tests/hived_handle_tests/run_tests.sh`) use it the same way; their batch requests are always served from the recordings, so record them with `WAX_TEST_API_MODE=record` set for that script. Its log is `python/test_tools/mock-server.log`.
 
 And examples:
 

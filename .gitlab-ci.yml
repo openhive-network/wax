@@ -1221,14 +1221,13 @@ test_tools_hived_handle:
   extends:
   - .test_tools_test_env
   - .python_test_matrix
-  variables:
-    HIVED_HTTP_ENDPOINT: "https://api.hive.blog/"
   script:
   - echo -e "${TXT_BLUE}Running test-tools hived handle tests...${TXT_CLEAR}"
-  - python3 -m pytest -n auto --hived-http-endpoint="${HIVED_HTTP_ENDPOINT}" "${TEST_TOOLS_DIR}/tests/hived_handle_tests"
-    --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
+  - ${TEST_TOOLS_DIR}/tests/hived_handle_tests/run_tests.sh --junitxml="${CI_PROJECT_DIR}/test_tools_hived_report.xml"
   artifacts:
     when: always
     expire_in: 1 week
     reports:
       junit: $CI_PROJECT_DIR/test_tools_hived_report.xml
+    paths:
+    - $TEST_TOOLS_DIR/mock-server.log
