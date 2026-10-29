@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from hiveio_api import HBD_ASSET, HIVE_ASSET, VESTS_ASSET
 
 import test_tools as tt
-from schemas import HBD_ASSET, HIVE_ASSET, VESTS_ASSET
 
 if TYPE_CHECKING:
-    from schemas import AssetInfo
+    from hiveio_api import AssetInfo
+
     from test_tools.__private.asset import AssetFactory
 
 

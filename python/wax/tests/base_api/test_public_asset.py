@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-from schemas import Asset as PublicAsset
+from hiveio_api import Asset as PublicAsset
 
 from wax._private.models.asset import Asset
 from wax.complex_operations.recurrent_transfer import DefineRecurrentTransferOperation, RecurrentTransferData
@@ -43,8 +43,8 @@ def test_values_which_are_not_assets_of_the_expected_kind_are_rejected(asset: ob
         Asset().resolve_from_convertible_type(AssetName.Hive, asset)  # type: ignore[arg-type]
 
 
-def test_contract_of_schemas_public_assets_are_equal_to_protobuf_assets(wax: IWaxBaseInterface) -> None:
-    """Contract with schemas - public assets are compared with and created from protobuf assets of wax."""
+def test_contract_of_hiveio_api_public_assets_are_equal_to_protobuf_assets(wax: IWaxBaseInterface) -> None:
+    """Contract with hiveio-api - public assets are compared with and created from protobuf assets of wax."""
     # ARRANGE
     protobuf_asset = wax.hive.satoshis(1001)
 

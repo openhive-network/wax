@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from beekeepy import AsyncUnlockedWallet
     from wax.interfaces import IWaxBaseInterface
 
-from schemas.fields.hive_datetime import HiveDateTime
+from hiveio_api.fields.hive_datetime import HiveDateTime
 
 from wax.proto.operations import operation, recurrent_transfer, vote
 from wax.proto.transaction import transaction

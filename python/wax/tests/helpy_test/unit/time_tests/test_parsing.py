@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-from schemas.fields.hive_datetime import HiveDateTime
+from hiveio_api.fields.hive_datetime import HiveDateTime
 
 from wax.helpy import Time
 from wax.helpy.exceptions import ParseError
