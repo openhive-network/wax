@@ -15,9 +15,8 @@ if TYPE_CHECKING:
     from datetime import timedelta
 
     from beekeepy.communication import ResponseCallback
-
-    from schemas.fields.hive_datetime import HiveDateTime
-    from schemas.fields.public import AccountName
+    from hiveio_api.fields.hive_datetime import HiveDateTime
+    from hiveio_api.fields.public import AccountName
 
 
 class HivedTemplate(

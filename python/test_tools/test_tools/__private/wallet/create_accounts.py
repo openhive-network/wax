@@ -7,10 +7,10 @@ import time
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any
 
+from hiveio_api.fields.public import Asset
 from hiveio_api.operations import AccountCreateOperation, Authority
 from loguru import logger
 
-from schemas import Asset
 from test_tools.__private.account import Account
 from test_tools.__private.remote_node import RemoteNode
 from test_tools.__private.wallet.constants import (
@@ -31,9 +31,9 @@ if TYPE_CHECKING:
 
     from beekeepy import Beekeeper, PackedSyncBeekeeper, UnlockedWallet
     from beekeepy.interfaces import HttpUrl
+    from hiveio_api.fields.public import PublicKey
     from hiveio_api.operations import Hf26OperationValue as Hf26Operations
 
-    from schemas.fields.public import PublicKey
     from test_tools.__private.node import Node
 
     AnyNode = Node | RemoteNode

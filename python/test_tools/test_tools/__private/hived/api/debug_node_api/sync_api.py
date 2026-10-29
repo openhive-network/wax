@@ -4,9 +4,8 @@ from datetime import datetime  # noqa: TCH003
 
 from beekeepy.handle.remote import AbstractSyncApi
 from hiveio_api import debug_node_api
+from hiveio_api.fields.public import TransactionId
 from hiveio_api.operations import Price
-
-from schemas.fields.public import TransactionId
 
 
 class DebugNodeApi(AbstractSyncApi):

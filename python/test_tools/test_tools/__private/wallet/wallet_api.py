@@ -8,6 +8,9 @@ from datetime import datetime, timedelta
 from functools import wraps
 from typing import TYPE_CHECKING, Annotated, Any, ParamSpec, get_args
 
+from hiveio_api.fields import user_friendly
+from hiveio_api.fields.hive_datetime import HiveDateTime
+from hiveio_api.fields.public import Asset
 from hiveio_api.operations import (
     AccountCreateOperation,
     AccountCreateWithDelegationOperation,
@@ -57,11 +60,8 @@ from hiveio_api.operations import (
     WithdrawVestingOperation,
     WitnessUpdateOperation,
 )
+from hiveio_api.validation import is_matching_model
 
-from schemas import Asset
-from schemas.fields import user_friendly
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.validation import is_matching_model
 from test_tools.__private import exceptions
 from test_tools.__private.wallet.constants import (
     HIVE_MAX_TIME_UNTIL_EXPIRATION,
@@ -96,11 +96,11 @@ if TYPE_CHECKING:
 
     import hiveio_api.wallet_bridge_api as wallet_bridge_models
     from beekeepy import UnlockedWallet
+    from hiveio_api.fields.public import AccountName, AssetHbd, AssetHive, AssetVests, Hex, HiveInt, PublicKey
+    from hiveio_api.fields.public import AssetHiveOrHbd as AssetUnionAssetHiveAssetHbd
     from hiveio_api.wallet_bridge_api import Block as Hf26Block
+    from msgspec import Meta
 
-    from schemas.base import Meta
-    from schemas.fields.public import AccountName, AssetHbd, AssetHive, AssetVests, Hex, HiveInt, PublicKey
-    from schemas.fields.public import AssetHiveOrHbd as AssetUnionAssetHiveAssetHbd
     from test_tools.__private.hived.api.metadata_api.models import FindAccountMetadata, GetAccountMetadata
     from test_tools.__private.hived.api.wallet_bridge_api.response_schemas import (
         FindProposals,

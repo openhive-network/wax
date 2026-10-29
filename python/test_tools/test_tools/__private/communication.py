@@ -9,8 +9,8 @@ from typing import Any, Callable
 
 import requests
 
-from schemas.fields.json_string import JsonString
-from schemas._preconfigured_base_model import PreconfiguredBaseModel
+from hiveio_api.fields.json_string import JsonString
+from hiveio_api.validation.model import PreconfiguredBaseModel
 from hiveio_api import Asset, HiveModel
 from hiveio_api.client import to_api_builtins
 from beekeepy.exceptions import UnableToAcquireDatabaseLockError, UnableToAcquireForkdbLockError, CommunicationError

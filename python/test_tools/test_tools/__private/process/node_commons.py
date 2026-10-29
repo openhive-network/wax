@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar
 
-from schemas.fields.serializable import Serializable
+from hiveio_api.fields.serializable import Serializable
 
 if TYPE_CHECKING:
     BacktraceAllowedValues = Literal["yes", "no"]

@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Any, Final, get_args
 from beekeepy import Beekeeper
 from beekeepy.exceptions import ErrorInResponseError, WalletWithSuchNameAlreadyExistsError
 from beekeepy.settings import InterfaceSettings as Settings
+from hiveio_api.fields import user_friendly
 
-from schemas.fields import user_friendly
 from test_tools.__private import exceptions
 from test_tools.__private.account import Account
 from test_tools.__private.asset import Asset
@@ -46,9 +46,9 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from beekeepy import Session, UnlockedWallet
+    from hiveio_api.fields.public import Hex, PublicKey
     from hiveio_api.operations import Hf26OperationValue as Hf26Operations
 
-    from schemas.fields.public import Hex, PublicKey
     from test_tools.__private.user_handles.handles.wallet_handle import WalletHandle
 
     AnyNode = Node | RemoteNode

@@ -5,13 +5,14 @@ import subprocess
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from schemas.fields import user_friendly
+from hiveio_api.fields import user_friendly
+
 from test_tools.__private import paths_to_executables
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from schemas.fields.public import AccountName, PublicKey
+    from hiveio_api.fields.public import AccountName, PublicKey
 
 
 @dataclass

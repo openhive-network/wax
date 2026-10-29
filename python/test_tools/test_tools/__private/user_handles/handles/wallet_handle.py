@@ -13,9 +13,9 @@ from test_tools.__private.wallet.wallet import Wallet
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from hiveio_api.fields.public import Hex
     from hiveio_api.operations import Hf26OperationValue as Hf26Operations
 
-    from schemas.fields.public import Hex
     from test_tools.__private.account import Account
     from test_tools.__private.asset import Asset
     from test_tools.__private.type_annotations.any_node import AnyNode

@@ -10,10 +10,9 @@ from pathlib import Path
 from typing import ClassVar, Final, Literal, overload
 
 from hiveio_api import HiveModel
-from hiveio_api.operations import Transaction, TransactionLegacy
 
 # runtime types of the models below (their annotations are resolved when the models are built)
-from schemas.fields.public import (  # noqa: TCH001
+from hiveio_api.fields.public import (  # noqa: TCH002
     AccountName,
     BlockId,
     HiveDateTime,
@@ -22,6 +21,8 @@ from schemas.fields.public import (  # noqa: TCH001
     Signature,
     TransactionId,
 )
+from hiveio_api.operations import Transaction, TransactionLegacy
+
 from test_tools.__private import paths_to_executables
 from test_tools.__private.exceptions import BlockLogError, BlockLogUtilError, MissingBlockLogArtifactsError
 from wax.helpy import Time, TimeFormats

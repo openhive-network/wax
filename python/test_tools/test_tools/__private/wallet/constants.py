@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Final, Literal, TypedDict
 
+from hiveio_api.fields.hive_datetime import HiveDateTime
+from hiveio_api.fields.public import AccountName, Asset, PublicKey, WitnessUrl
 from hiveio_api.operations import (
     LegacyChainProperties,
     Price,
@@ -12,10 +14,6 @@ from hiveio_api.operations import (
     hf26_operation,
     legacy_operation,
 )
-
-from schemas import Asset
-from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.public import AccountName, PublicKey, WitnessUrl
 
 if TYPE_CHECKING:
     from hiveio_api.operations import OperationBase

@@ -4,7 +4,7 @@ Assets of test_tools (`tt.Asset`) - created as the public `Asset` of hiveio-api.
 `tt.Asset.Test(10)` is 10.000 TESTS, `tt.Asset.Vest(1)` 1.000000 VESTS, ... Assets of the testnet (`tt.Asset.Test`,
 `tt.Asset.Tbd`) are displayed with symbols of the testnet. `tt.Asset.TestT`, `tt.Asset.TbdT`, ... annotate assets - their
 kinds are told by `asset.is_hive()`, `asset.is_hbd()` and `asset.is_vests()`. The factories give the information about
-their kind (`AssetInfo` of schemas): `tt.Asset.Test.token()` is displayed as `TESTS`.
+their kind (`AssetInfo` of hiveio-api): `tt.Asset.Test.token()` is displayed as `TESTS`.
 """
 
 from __future__ import annotations
@@ -14,13 +14,13 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
-from schemas.fields.public import Asset as PublicAsset
-from schemas.fields.public import AssetFactory as PublicAssetFactory
+from hiveio_api.fields.public import Asset as PublicAsset
+from hiveio_api.fields.public import AssetFactory as PublicAssetFactory
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from schemas.fields.public import AssetInfo, AssetKind
+    from hiveio_api.fields.public import AssetInfo, AssetKind
 
 AssetAmountT = int | float | str
 

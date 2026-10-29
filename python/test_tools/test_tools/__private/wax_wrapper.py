@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
-from schemas import Asset
+from hiveio_api.fields.public import Asset
 
 # Import wrapped functions from wax public API (handles subclass conversions internally)
 from wax import calculate_legacy_sig_digest as wax_calculate_legacy_sig_digest
@@ -33,10 +33,10 @@ from wax.wax_result import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from hiveio_api.fields.public import AssetHbd, AssetHive, PublicKey
     from hiveio_api.operations import Authority, Transaction
     from hiveio_api.wallet_bridge_api import Account as AccountSchema
 
-    from schemas.fields.public import AssetHbd, AssetHive, PublicKey
     from test_tools.__private.wallet.constants import AccountNameApiType
     from wax.models.key_data import IBrainKeyData
     from wax.wax_result import python_ref_block_data

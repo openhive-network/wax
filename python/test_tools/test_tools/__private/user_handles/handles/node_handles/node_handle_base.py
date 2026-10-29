@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from beekeepy.interfaces import HttpUrl
+    from hiveio_api.fields.hive_datetime import HiveDateTime
 
-    from schemas.fields.hive_datetime import HiveDateTime
     from test_tools.__private.hived.api.api_collection import HivedSyncApiCollection
 
 

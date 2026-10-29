@@ -3,11 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from schemas.fields import user_friendly
+from hiveio_api.fields import user_friendly
+
 from test_tools.__private.key_generator import KeyGenerator, KeyGeneratorItem
 
 if TYPE_CHECKING:
-    from schemas.fields.public import PublicKey as PublicKeyType
+    from hiveio_api.fields.public import PublicKey as PublicKeyType
 
 
 @dataclass

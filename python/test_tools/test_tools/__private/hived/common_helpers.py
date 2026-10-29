@@ -8,9 +8,8 @@ if TYPE_CHECKING:
     from typing import TypeAlias
 
     from hiveio_api.database_api import GetVersionResponse
-
-    from schemas.fields.hive_datetime import HiveDateTime
-    from schemas.fields.public import AccountName
+    from hiveio_api.fields.hive_datetime import HiveDateTime
+    from hiveio_api.fields.public import AccountName
 
 
 class HiveHandleCommonHelpers:

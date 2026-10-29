@@ -4,11 +4,12 @@ from enum import Enum
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
-from schemas._preconfigured_base_model import PreconfiguredBaseModel
+from hiveio_api.validation.model import PreconfiguredBaseModel
+
 from test_tools.__private.user_handles import context
 
 if TYPE_CHECKING:
-    from schemas.decoders import DecoderFactory
+    from hiveio_api.validation.decoders import DecoderFactory
 
 
 class Protocol(str, Enum):
@@ -54,7 +55,7 @@ class AlternateChainSpecs(PreconfiguredBaseModel):
     def parse_file(cls, path: Path, custom_decoder_factory: DecoderFactory | None = None) -> AlternateChainSpecs:
         # Default decoder is hf26_decoder
         if custom_decoder_factory is None:
-            from schemas.decoders import get_hf26_decoder
+            from hiveio_api.validation.decoders import get_hf26_decoder
 
             custom_decoder_factory = get_hf26_decoder
 

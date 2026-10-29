@@ -5,8 +5,8 @@ from typing import Any, Literal, Self, overload
 
 from beekeepy.handle.runnable import Arguments
 from beekeepy.interfaces import HttpUrl, P2PUrl, Url, WsUrl
+from msgspec import field
 
-from schemas.base import field
 from test_tools.__private.process.node_commons import PathQuoted, QuotedMarker, StringQuoted, UniqueList
 
 BacktraceAllowedValues = Literal["yes", "no"]
