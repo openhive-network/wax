@@ -10,16 +10,19 @@ import directSigners_6 from "./data/directSigners_6";
 import alice from "./data/alice";
 import hivebuzz from "./data/hivebuzz";
 import hivefund from "./data/hivefund";
+import guest4test from "./data/guest4test";
+import guest4test1 from "./data/guest4test1";
 import guest4test8 from "./data/guest4test8";
 import zero_max_block_age from "./data/zero_max_block_age";
 import alphaManabar1 from "./data/vote.manabar-1";
 import alphaManabar50 from "./data/vote.manabar-50";
 import alphaManabar100 from "./data/vote.manabar-100";
 import largeinput from "./data/largeinput";
+import tooShortAccountNameBroadcast from "./data/too_short_account_name_broadcast";
 
-// Note: database_api.get_dynamic_global_properties is fetched and cached
-// at mock server startup (see start-proxy-mock-server.ts) to keep in sync
-// with the real API. This static fallback is only used if that fetch fails.
+// Note: with WAX_TEST_API_MODE=live, start-proxy-mock-server.ts fetches and caches
+// database_api.get_dynamic_global_properties from the real API at startup and
+// uses this static value only if that fetch fails.
 const dgpoFallback = {
   jsonrpc: "2.0",
   result: {
@@ -147,6 +150,12 @@ export default {
     if (accounts.length === 1 && accounts[0] === 'hive.fund')
       return hivefund;
 
+    if (accounts.length === 1 && accounts[0] === 'guest4test')
+      return guest4test;
+
+    if (accounts.length === 1 && accounts[0] === 'guest4test1')
+      return guest4test1;
+
     if (accounts.length === 1 && accounts[0] === 'guest4test8')
       return guest4test8;
 
@@ -162,7 +171,11 @@ export default {
     return;
   },
   "network_broadcast_api.broadcast_transaction": (params: Record<string, any>) => {
-    const { max_block_age } = params;
+    const { max_block_age, trx } = params;
+
+    // hived rejects such a transaction while validating its operations, before checking its TaPoS, expiration or signatures
+    if (Array.isArray(trx?.operations) && trx.operations.some((op: any) => op?.type === "transfer_operation" && op.value?.from === "a"))
+      return tooShortAccountNameBroadcast;
 
     if (max_block_age === undefined || !(typeof max_block_age === "number"))
       return;

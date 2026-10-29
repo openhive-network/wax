@@ -411,6 +411,10 @@ WAX_TEST_API_MODE=record pnpm run test -- --project=wax_testsuite
 To re-record everything, remove the files in `wasm/__tests__/assets/mock/recordings` and run all the projects except `healthchecker_tests` in `record` mode.
 Then run the tests again in the default mode, to check that they pass on the new data: the recorded chain state (head block, accounts) is what they see from then on.
 
+The Python tests (`python/wax/tests/run_tests.sh`) call `wasm/__tests__/assets/start-proxy-mock-server.ts`, which answers from `wasm/__tests__/assets/mock/jsonRpcMock.ts`
+and serves the other requests from the recordings in the same way, honouring `WAX_TEST_API_MODE` (in `replay` and `record` modes it answers `database_api.get_dynamic_global_properties` with the static value from `jsonRpcMock.ts`).
+Its log is `python/wax/mock-server.log`.
+
 And examples:
 
 ```bash
