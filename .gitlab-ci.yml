@@ -632,6 +632,7 @@ test_wax_protobuf_python:
       junit: python/wax/tests/report.xml
     paths:
     - $PYPROJECT_DIR/mock-server.log
+    when: always
 
 test_wax_protobuf_python_pattern:
   extends:
