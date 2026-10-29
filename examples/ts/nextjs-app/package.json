@@ -6,23 +6,24 @@
     "dev": "next dev",
     "build": "rm -rf ./.next && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hiveio/wax": "file:../../../ts",
-    "next": "14.2.25",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "catalog:react-toolset",
+    "react": "catalog:react-toolset",
+    "react-dom": "catalog:react-toolset"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "catalog:tailwind-toolset",
     "@types/node": "^24",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.25",
+    "@types/react": "catalog:react-toolset",
+    "@types/react-dom": "catalog:react-toolset",
+    "eslint": "^9",
+    "eslint-config-next": "catalog:react-toolset",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "tailwindcss": "catalog:tailwind-toolset",
+    "typescript": "catalog:typescript-toolset"
   },
-  "packageManager": "pnpm@10.0.0+sha512.b8fef5494bd3fe4cbd4edabd0745df2ee5be3e4b0b8b08fa643aa3e4c6702ccc0f00d68fa8a8c9858a735a0032485a44990ed2810526c875e416f001b17df12b"
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }

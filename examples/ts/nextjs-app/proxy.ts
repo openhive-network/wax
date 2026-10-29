@@ -2,7 +2,7 @@ import { createHiveChain } from '@hiveio/wax';
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(_: NextRequest) {
+export async function proxy(_: NextRequest) {
   await createHiveChain();
 
   return NextResponse.next();

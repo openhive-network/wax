@@ -30,3 +30,5 @@ In this file, you can see example protobuf wax module usage along with the data 
 ### [proto_sign_transaction.example.html](assets/proto_sign_transaction.example.html)
 
 In this file, you can see example protobuf transaction creation along with the example cooperation between wax and beekeeper packages in order to sign the transaction
+
+For its lockfile, the `catalog:` versions and using it outside this repository, see [the examples README](../README.md).
