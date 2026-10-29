@@ -23,3 +23,5 @@ To test this example:
 4. Install dependencies: `pnpm install`
 5. Run parcel: `pnpm test:manual`
 6. Goto [http://localhost:1234](http://localhost:1234), sign the transaction and check logs
+
+For its lockfile, the `catalog:` versions and using it outside this repository, see [the examples README](../README.md).

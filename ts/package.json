@@ -21,16 +21,16 @@
     "examples:group-a": "run-s examples:memory-used examples:html examples:node-app examples:vue-webpack",
     "examples:group-b": "run-s examples:vue-vite examples:react-vite examples:nuxt-app",
     "examples:group-c": "run-s examples:nextjs-app examples:react-ssr",
-    "examples:memory-used": "cd ../examples/ts/memory-used && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:html": "cd ../examples/ts/html && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && rm -rf node_modules && pnpm install && pnpm run build && cd ../../../ts",
-    "examples:node-app": "cd ../examples/ts/node-app && rm -rf node_modules && pnpm install && pnpm run test && cd ../../../ts",
-    "examples:vue-webpack": "cd ../examples/ts/vue-webpack && rm -rf node_modules && pnpm install && pnpm run build && cd ../../../ts",
-    "examples:vue-vite": "cd ../examples/ts/vue-vite && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:react-vite": "cd ../examples/ts/react-vite && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:react-ssr": "cd ../examples/ts/react-router-ssr && rm -rf node_modules && pnpm install && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && rm -rf node_modules && pnpm install --config.engine-strict=false && pnpm run test && pnpm run build && cd ../../../ts",
-    "examples:signature-extension": "cd ../examples/ts/signature-extension && rm -rf node_modules && pnpm install && pnpm run build && pnpm run test && cd ../../../ts"
+    "examples:memory-used": "cd ../examples/ts/memory-used && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
+    "examples:html": "cd ../examples/ts/html && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
+    "examples:nextjs-app": "cd ../examples/ts/nextjs-app && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run build && cd ../../../ts",
+    "examples:node-app": "cd ../examples/ts/node-app && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && cd ../../../ts",
+    "examples:vue-webpack": "cd ../examples/ts/vue-webpack && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run build && cd ../../../ts",
+    "examples:vue-vite": "cd ../examples/ts/vue-vite && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:react-vite": "cd ../examples/ts/react-vite && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:react-ssr": "cd ../examples/ts/react-router-ssr && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:nuxt-app": "cd ../examples/ts/nuxt-app && rm -rf node_modules && pnpm install --frozen-lockfile --config.engine-strict=false && pnpm run test && pnpm run build && cd ../../../ts",
+    "examples:signature-extension": "cd ../examples/ts/signature-extension && rm -rf node_modules && pnpm install --frozen-lockfile && pnpm run build && pnpm run test && cd ../../../ts"
   },
   "exports": {
     ".": {
