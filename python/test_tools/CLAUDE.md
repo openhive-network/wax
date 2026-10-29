@@ -27,9 +27,11 @@ pre-commit install
 # Run unit tests (no hived executables required)
 pytest -n auto -m "not requires_hived_executables" tests/unit_tests
 
-# Run hived handle tests (requires HIVED_HTTP_ENDPOINT or local hived)
-cd tests/hived_handle_tests
-pytest -n auto --durations 0
+# Run hived handle tests against the proxy mock server (responses recorded from api.hive.blog)
+./tests/hived_handle_tests/run_tests.sh --durations 0
+
+# ...or against another node
+pytest -n auto --hived-http-endpoint=<url> tests/hived_handle_tests
 
 # Run all functional tests (requires HIVE_BUILD_ROOT_PATH)
 pytest -n auto tests/functional_tests
@@ -218,7 +220,7 @@ Pipeline runs on GitLab (`.gitlab-ci.yml`):
 
 **Tests Stage**:
 - `unit_tests_launch` - Fast tests without hived (`-m "not requires_hived_executables"`)
-- `test_hived_handle` - Integration tests with real hived endpoint
+- `test_tools_hived_handle` - Hived handle tests against the proxy mock server, which replays responses recorded from api.hive.blog (log in the `mock-server.log` artifact)
 
 ## Flaky Test Debugging
 
