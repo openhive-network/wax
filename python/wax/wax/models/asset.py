@@ -5,7 +5,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Protocol, TypeAlias
 
-from schemas.fields.public import Asset as PublicAsset
+from hiveio_api.fields.public import Asset as PublicAsset
 
 from wax.proto.asset import asset as proto_asset
 

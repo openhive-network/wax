@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING, Final
 
-from schemas.fields.public import Asset as PublicAsset
+from hiveio_api.fields.public import Asset as PublicAsset
 
 from wax._private.converters.decimal_converter import DecimalConverter
 from wax.cpp_python_bridge import hbd, hive, vests
@@ -128,7 +128,7 @@ class Asset:
 
         Args:
             asset: protobuf asset, `Asset` of models of hiveio_api, an object of the NAI form (also as JSON) or the
-                legacy form (e.g. `"1.000 HIVE"`) - also assets of test_tools or validating assets of schemas.
+                legacy form (e.g. `"1.000 HIVE"`) - also assets of test_tools.
 
         Returns:
             NaiAsset: the protobuf asset.

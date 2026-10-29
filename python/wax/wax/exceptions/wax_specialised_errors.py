@@ -5,9 +5,9 @@ import re
 from functools import wraps
 from typing import TYPE_CHECKING, Any
 
-from schemas._preconfigured_base_model import PreconfiguredBaseModel
-from schemas.errors import DecodeError
-from schemas.fields.hive_datetime import HiveDateTime  # noqa: TCH002
+from hiveio_api.fields.hive_datetime import HiveDateTime  # noqa: TCH002
+from hiveio_api.validation.errors import DecodeError
+from hiveio_api.validation.model import PreconfiguredBaseModel
 
 from wax.exceptions.wax_error import (
     WaxAssertionError,

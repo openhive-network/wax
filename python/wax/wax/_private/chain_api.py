@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Any, Final, Generic, cast
 
-from schemas.fields.hive_datetime import HiveDateTime
+from hiveio_api.fields.hive_datetime import HiveDateTime
 
 from wax._private.api.api_caller import WaxApiCaller
 from wax._private.api.models import ApiTransaction

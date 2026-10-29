@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeAlias
 
 if TYPE_CHECKING:
-    from schemas.fields.hive_datetime import HiveDateTime
+    from hiveio_api.fields.hive_datetime import HiveDateTime
 
 AccountName: TypeAlias = str
 """AccountName is a type alias for the name of an account on the Hive blockchain."""
