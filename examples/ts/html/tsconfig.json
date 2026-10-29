@@ -4,7 +4,7 @@
     "target": "es2017",
     "allowSyntheticDefaultImports": true,
     "rootDir": ".",
-    "moduleResolution": "Node"
+    "moduleResolution": "bundler"
   },
   "ts-node": {
     "esm": true

@@ -4,7 +4,8 @@
     "rootDir": "./wasm/lib",
     "outDir": "./wasm/dist/lib",
     "incremental": true,
-    "tsBuildInfoFile": "./wasm/dist/.tsbuildinfo"
+    "tsBuildInfoFile": "./wasm/dist/.tsbuildinfo",
+    "types": ["node"]
   },
   "include": [
     "./wasm/lib"

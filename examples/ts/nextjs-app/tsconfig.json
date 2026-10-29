@@ -10,6 +10,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noUncheckedSideEffectImports": false,
     "jsx": "preserve",
     "incremental": true,
     "paths": {
