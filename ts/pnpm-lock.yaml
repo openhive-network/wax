@@ -5,6 +5,10 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  hiveio-toolset:
+    '@hiveio/beekeeper':
+      specifier: 1.28.9-rc0-stable.261028200530
+      version: 1.28.9-rc0-stable.261028200530
   husky:
     husky:
       specifier: 9.1.5
@@ -83,8 +87,8 @@ importers:
         version: 3.3.0
     devDependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.8-stable.261010174216
-        version: 1.28.8-stable.261010174216
+        specifier: catalog:hiveio-toolset
+        version: 1.28.9-rc0-stable.261028200530
       '@playwright/test':
         specifier: catalog:playwright-toolset
         version: 1.64.1
@@ -182,8 +186,8 @@ importers:
   packages/signers-beekeeper:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.8-stable.261010174216
-        version: 1.28.8-stable.261010174216
+        specifier: catalog:hiveio-toolset
+        version: 1.28.9-rc0-stable.261028200530
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -201,8 +205,8 @@ importers:
   packages/signers-external:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.8-stable.261010174216
-        version: 1.28.8-stable.261010174216
+        specifier: catalog:hiveio-toolset
+        version: 1.28.9-rc0-stable.261028200530
       '@hiveio/wax':
         specifier: workspace:../..
         version: link:../..
@@ -435,8 +439,8 @@ packages:
   '@gerrit0/mini-shiki@3.23.0':
     resolution: {integrity: sha512-bEMORlG0cqdjVyCEuU0cDQbORWX+kYCeo0kV1lbxF5bt4r7SID2l9bqsxJEM0zndaxpOUT7riCyIVEuqq/Ynxg==}
 
-  '@hiveio/beekeeper@1.28.8-stable.261010174216':
-    resolution: {integrity: sha1-mTT7Kpwm4u6hQzhUNP80nn1ASP4=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.8-stable.261010174216.tgz}
+  '@hiveio/beekeeper@1.28.9-rc0-stable.261028200530':
+    resolution: {integrity: sha1-nzTNga2OqN6212HzkKyHGZoMuAk=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.9-rc0-stable.261028200530.tgz}
     engines: {node: '>=24'}
 
   '@isaacs/cliui@8.0.2':
@@ -2228,7 +2232,7 @@ snapshots:
       '@shikijs/types': 3.23.0
       '@shikijs/vscode-textmate': 10.1.0
 
-  '@hiveio/beekeeper@1.28.8-stable.261010174216': {}
+  '@hiveio/beekeeper@1.28.9-rc0-stable.261028200530': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
