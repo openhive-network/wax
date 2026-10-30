@@ -19,7 +19,7 @@
     "@playwright/test": "catalog:playwright-toolset",
     "@types/react": "catalog:react-toolset",
     "@types/react-dom": "catalog:react-toolset",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^6.0.0",
     "globals": "^15.14.0",
     "playwright": "catalog:playwright-toolset",
     "vite": "^6.0.11"
