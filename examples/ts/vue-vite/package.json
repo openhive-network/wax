@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@playwright/test": "catalog:playwright-toolset",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.0",
     "playwright": "catalog:playwright-toolset",
     "vite": "^6.0.5"
   },
