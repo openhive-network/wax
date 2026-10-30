@@ -194,6 +194,18 @@ hiveio_api_package:
     fi
     GENERATED_PACKAGE_DIR="${API_GENERATION_DIR}/python_api_package"
     poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run >/dev/null  # installs the plugin giving the version
+    # The detached hive submodule has no branch, so its version follows CI_COMMIT_REF_NAME: pipelines of feature
+    # branches get the development version even of a commit of hive develop, which the releases of the dependencies
+    # (hiveio-beekeepy) do not admit. When the pipeline of hive develop released hiveio-api for the commit of the
+    # submodule, check the submodule out as develop to take that release.
+    RELEASE_VERSION=$(CI_COMMIT_REF_NAME=develop poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+    RELEASED=$(curl -fsS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+      "${CI_API_V4_URL}/projects/${PACKAGE_REGISTRY_PROJECT_ID}/packages?package_type=pypi&package_name=hiveio-api&package_version=${RELEASE_VERSION}" \
+      || echo "[]")
+    if [[ "${RELEASED}" != "[]" ]]; then
+      echo "hiveio-api ${RELEASE_VERSION} is released by hive develop - taking it"
+      git -C "${HIVE_PROJECT_ROOT}" checkout -q -B develop
+    fi
     HIVEIO_API_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
     PUBLISHED=$(curl -fsS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
       "${CI_API_V4_URL}/projects/${PACKAGE_REGISTRY_PROJECT_ID}/packages?package_type=pypi&package_name=hiveio-api&package_version=${HIVEIO_API_VERSION}")
