@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@playwright/test": "catalog:playwright-toolset",
-    "@types/node": "^24",
+    "@types/node": "^26.0.0",
     "@types/react": "catalog:react-toolset",
     "@types/react-dom": "catalog:react-toolset",
     "playwright": "catalog:playwright-toolset",

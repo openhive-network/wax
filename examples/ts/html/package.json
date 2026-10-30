@@ -10,7 +10,7 @@
     "@parcel/transformer-raw": "2.14.2",
     "@playwright/test": "catalog:playwright-toolset",
     "@types/http-server": "^0.12.4",
-    "@types/node": "^24",
+    "@types/node": "^26.0.0",
     "buffer": "^6.0.3",
     "http-server": "^14.1.1",
     "playwright": "catalog:playwright-toolset",
