@@ -46,7 +46,7 @@ hiveio-beekeepy = {version = "1.28.6.post20261030002956", source = "gitlab-hive"
 
 [tool.poetry.group.static-analysis.dependencies]
 mypy = "^1.11.2"
-mypy-protobuf = "^3.5.0"
+mypy-protobuf = "^4.0.0"
 pre-commit = "^4.0.0"
 ruff = "^0.6.5"
 types-setuptools = "^76.0.0"
