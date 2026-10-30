@@ -32,7 +32,7 @@ abstractcp = "^1.0.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
 hiveio-beekeepy = {version = "1.28.6.post20261030002956", source = "gitlab-hive"} # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
-msgspec = "^0.20.0"  # configurations of nodes (msgspec models of hiveio_api.validation)
+msgspec = "^0.22.0"  # configurations of nodes (msgspec models of hiveio_api.validation)
 # The range admits only releases of develop since hive/hive!2126 - earlier .post releases of this version lack
 # the field types and the validation of the former hiveio-schemas.
 hiveio-api = {version = ">=1.28.8rc3.post20261029210300,<1.28.8rc3.post99999999999999", source = "gitlab-hive", allow-prereleases = true}
