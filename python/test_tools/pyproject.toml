@@ -39,7 +39,7 @@ hiveio-api = {version = ">=1.28.8rc3.post20261029210300,<1.28.8rc3.post999999999
 
 
 [tool.poetry.group.static-analysis.dependencies]
-mypy = "^1.11.2"
+mypy = "^2.0.0"
 pre-commit = "^4.0.0"
 ruff = "^0.6.5"
 
