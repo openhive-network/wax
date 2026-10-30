@@ -822,13 +822,13 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-beekeepy"
-version = "1.28.6.post20261030002956"
+version = "1.28.6.post20261030080658"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_beekeepy-1.28.6.post20261030002956-py3-none-any.whl", hash = "sha256:470b73d91767c83030873626113ce41fb9483a416707844f90bf1a049cdf917f"},
+    {file = "hiveio_beekeepy-1.28.6.post20261030080658-py3-none-any.whl", hash = "sha256:2fdab456b809a7b7dc097af26e4c6b5a943aa6f814b7f71d1c4adb3834154ded"},
 ]
 
 [package.dependencies]
@@ -2536,4 +2536,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "ac9709d80bc938475f350a5626fc9738d64d66dded2dfda2a2a6c1e2ad73937a"
+content-hash = "36c67c03a279bd25e498b7bd1c0d8f67fb468a802f58c17dc070ce39dfa62558"
