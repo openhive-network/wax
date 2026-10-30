@@ -13,8 +13,8 @@
     "@hiveio/wax-signers-external": "file:../../../ts/packages/signers-external"
   },
   "devDependencies": {
-    "@parcel/config-default": "2.14.2",
-    "@parcel/transformer-raw": "2.14.2",
+    "@parcel/config-default": "2.16.4",
+    "@parcel/transformer-raw": "2.16.4",
     "buffer": "^6.0.3",
     "parcel": "^2.14.2"
   },
