@@ -582,13 +582,13 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc3.dev20261029052500"
+version = "1.28.8rc3.post20261029210300"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc3.dev20261029052500-py3-none-any.whl", hash = "sha256:689fb350c9ac95aa41b6608d23522eba076cedc978721185795fbab9f6b3479e"},
+    {file = "hiveio_api-1.28.8rc3.post20261029210300-py3-none-any.whl", hash = "sha256:835c6c46f353121836f4695e89f7d7b8f4bec24ea15cbc6a8554e654ee447795"},
 ]
 
 [package.dependencies]
@@ -601,18 +601,18 @@ reference = "gitlab-hive"
 
 [[package]]
 name = "hiveio-beekeepy"
-version = "1.28.6.dev20261029053450"
+version = "1.28.6.post20261030002956"
 description = "All in one package for beekeeper interaction via Python interface."
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_beekeepy-1.28.6.dev20261029053450-py3-none-any.whl", hash = "sha256:7d4febb7666f9b6d872402f30cae875b83ce56f72538029623190799a6ac02ec"},
+    {file = "hiveio_beekeepy-1.28.6.post20261030002956-py3-none-any.whl", hash = "sha256:470b73d91767c83030873626113ce41fb9483a416707844f90bf1a049cdf917f"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.11.15,<4.0.0"
-hiveio-api = ">=1.28.8rc3.dev20261029052500,<1.28.8rc3.dev99999999999999"
+hiveio-api = ">=1.28.8rc3.post20261029210300,<1.28.8rc3.post99999999999999"
 loguru = ">=0.7.2,<0.8.0"
 msgspec = ">=0.20.0,<0.21.0"
 psutil = ">=7.0.0,<8.0.0"
@@ -635,8 +635,8 @@ files = []
 develop = true
 
 [package.dependencies]
-hiveio-api = "1.28.8rc3.dev20261029052500"
-hiveio-beekeepy = "1.28.6.dev20261029053450"
+hiveio-api = "1.28.8rc3.post20261029210300"
+hiveio-beekeepy = "1.28.6.post20261030002956"
 httpx = {version = "^0.28.0", extras = ["http2"]}
 loguru = "^0.7.2"
 protobuf = "^6.33.0"
@@ -1882,4 +1882,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "aa79c49c93e139703fe5146f97c37dfef5c7604c4d81826ed3f0f744e08f44f0"
+content-hash = "58d09eba7e6c939e2345f2aad77b2b415341ca141c86ea2b5238d6026ee6b4e6"
