@@ -27,7 +27,7 @@ poetry-dynamic-versioning = { version = "1.9.1", extras = ["plugin"] }
 
 [tool.poetry.dependencies]
 python = ">=3.12,<4"
-python-dateutil = "^2.8.2"
+python-dateutil = "^3.0.0"
 abstractcp = "^1.0.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
