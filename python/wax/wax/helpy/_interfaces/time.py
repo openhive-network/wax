@@ -147,7 +147,7 @@ class Time:
     @classmethod
     def parse(
         cls,
-        time: str,
+        time: str | datetime,
         *,
         format_: TimeFormats | str | None = None,
         time_zone: timezone | None = timezone.utc,
@@ -160,7 +160,7 @@ class Time:
             and ISO format including milliseconds (Time.DEFAULT_FORMAT_WITH_MILLIS) could be parsed.
 
         Args:
-            time: time string to parse
+            time: time string to parse, or a datetime (e.g. a date of models) - taken in UTC, as its string would be
             format_: format of given time string
             time_zone: timezone to set after parsing
 
@@ -171,7 +171,9 @@ class Time:
             datetime.datetime object
         """
         if isinstance(time, datetime):
-            return time
+            if time.tzinfo is not None:
+                time = time.astimezone(timezone.utc)
+            return time if time.tzinfo == time_zone else datetime.combine(time.date(), time.time(), tzinfo=time_zone)
 
         def __parse_in_specified_format(_format: TimeFormats | str) -> datetime:
             if isinstance(_format, str):

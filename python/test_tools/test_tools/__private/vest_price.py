@@ -3,11 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
-from schemas.fields.compound import Price
+from hiveio_api.operations import Price
 
 if TYPE_CHECKING:
-    from schemas.fields.assets._base import AssetNaiAmount
-    from wax.helpy import Hf26Asset
+    from test_tools.__private.asset import Asset
 
 
 class HasVestingInfo(Protocol):
@@ -17,26 +16,23 @@ class HasVestingInfo(Protocol):
 
 @dataclass
 class VestPrice:
-    base: Hf26Asset.VestsT | Hf26Asset.HiveT | Hf26Asset.HbdT
-    quote: Hf26Asset.VestsT | Hf26Asset.HiveT | Hf26Asset.HbdT
+    base: Asset.VestsT | Asset.HiveT | Asset.HbdT
+    quote: Asset.VestsT | Asset.HiveT | Asset.HbdT
 
     def __str__(self) -> str:
-        ratio = int(self.quote.amount) / int(self.base.amount) / 10 ** int(self.base.precision())
-        return f"{ratio} {self.quote.get_asset_information().get_symbol()} per 1 {self.base.get_asset_information().get_symbol()}"
+        ratio = int(self.quote.amount) / int(self.base.amount) / 10 ** int(self.base.precision)
+        return f"{ratio} {self.quote.token()} per 1 {self.base.token()}"
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.as_nai()})"
 
     @classmethod
     def from_dgpo(cls, dgpo: HasVestingInfo) -> VestPrice:
-        from wax.helpy import Hf26Asset as Asset
+        from test_tools.__private.asset import Asset
 
-        def _to_asset(raw: Any) -> Asset.AnyT:
-            return Asset.from_nai({"amount": str(raw.amount), "nai": raw.nai, "precision": int(raw.precision)})
+        return cls(quote=Asset.from_nai(dgpo.total_vesting_shares), base=Asset.from_nai(dgpo.total_vesting_fund_hive))
 
-        return cls(quote=_to_asset(dgpo.total_vesting_shares), base=_to_asset(dgpo.total_vesting_fund_hive))
-
-    def as_nai(self) -> dict[str, dict[str, AssetNaiAmount | str]]:
+    def as_nai(self) -> dict[str, dict[str, object]]:
         return {"quote": self.quote.as_nai(), "base": self.base.as_nai()}
 
     def as_schema(self) -> Price:

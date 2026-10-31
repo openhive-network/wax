@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime  # noqa: TCH003
 
 from beekeepy.handle.remote import AbstractSyncApi, ApiArgumentSerialization
+from hiveio_api.operations import Transaction
 
-from schemas.apis import wallet_bridge_api
-from schemas.transaction import Transaction
+from test_tools.__private.hived.api.wallet_bridge_api import response_schemas as wallet_bridge_api
 from test_tools.__private.hived.api.wallet_bridge_api.common import WalletBridgeApiCommons
 
 

@@ -30,10 +30,6 @@ from wax._private.models.asset import Asset
 from wax._private.models.brain_key_data import BrainKeyData
 from wax._private.models.manabar_data import ManabarData
 from wax._private.models.private_key_data import PrivateKeyData
-from wax._private.result_tools import (
-    expose_result_as_python_string,
-    validate_wax_result,
-)
 from wax._private.transaction import Transaction
 from wax.cpp_python_bridge import (  # type: ignore[attr-defined]
     calculate_account_hp,
@@ -62,6 +58,7 @@ from wax.models.asset import (
     VestsNaiAssetConvertible,
 )
 from wax.models.authority import WaxAuthorities
+from wax.wax_result import expose_result_as_python_string, validate_wax_result
 
 if TYPE_CHECKING:
     from decimal import Decimal

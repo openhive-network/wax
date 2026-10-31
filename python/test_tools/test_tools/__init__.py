@@ -14,6 +14,7 @@ from test_tools.__private import (
 )
 from test_tools.__private.account import Account, PrivateKey, PublicKey
 from test_tools.__private.alternate_chain_specs import AlternateChainSpecs, HardforkSchedule, InitialVesting
+from test_tools.__private.asset import Asset
 from test_tools.__private.block_log import BlockLog
 from test_tools.__private.process.node_arguments import NodeArguments
 from test_tools.__private.process.node_config import NodeConfig
@@ -30,7 +31,6 @@ from test_tools.__private.user_handles import RemoteNodeHandle as RemoteNode
 from test_tools.__private.user_handles import WalletHandle as Wallet
 from test_tools.__private.user_handles import WitnessNodeHandle as WitnessNode
 from test_tools.__private.user_handles import context
-from wax.helpy import Hf26Asset as Asset
 from wax.helpy import OffsetTimeControl, SpeedUpRateTimeControl, StartTimeControl, Time, TimeFormats
 
 __version__ = "0.0.0"

@@ -3,14 +3,15 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+from beekeepy.communication import SchemaValidationRules
 from beekeepy.settings import RunnableHandleSettings as Settings
 
 from test_tools.__private.hived.sync_handle import HivedTemplate
 from test_tools.__private.scope import context
 from test_tools.__private.user_handles.implementation import Implementation as UserHandleImplementation
-from wax._private.api.overseer import WaxOverseer
 
 if TYPE_CHECKING:
+    from beekeepy.communication import ResponseCallback
     from beekeepy.interfaces import HttpUrl
 
     from test_tools.__private.user_handles.handles.node_handles.node_handle_base import NodeHandleBase
@@ -24,7 +25,6 @@ class BaseNode(UserHandleImplementation, HivedTemplate[Settings]):
             settings=Settings(
                 period_between_retries=timedelta(seconds=0.5),
                 max_retries=8,
-                overseer=WaxOverseer,
                 propagate_sigint=False,
             ),
         )
@@ -40,6 +40,10 @@ class BaseNode(UserHandleImplementation, HivedTemplate[Settings]):
 
     def is_running(self) -> bool:
         return True
+
+    def _rules(self) -> list[ResponseCallback]:
+        """Rules of the node - results of responses (also of batches) are validated with validation models too."""
+        return [*super()._rules(), SchemaValidationRules()]
 
     def _logger_extras(self) -> dict[str, Any]:
         return {**super()._logger_extras(), "name": self.get_name()}

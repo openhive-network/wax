@@ -33,10 +33,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from beekeepy.handle.runnable import PortMatchingResult
+    from hiveio_api.app_status_api.app_status_api_description import AppStatusGetAppStatusResponse as GetAppStatus
+    from hiveio_api.app_status_api.app_status_api_description import AppStatusWebserverItem as WebserverItem
+    from hiveio_api.network_node_api import NetworkNodeSetAllowedPeersResponse as SetAllowedPeers
 
-    from schemas.apis.app_status_api.fundaments_of_responses import WebserverItem
-    from schemas.apis.app_status_api.response_schemas import GetAppStatus
-    from schemas.apis.network_node_api.response_schemas import SetAllowedPeers
     from test_tools.__private.alternate_chain_specs import AlternateChainSpecs
     from test_tools.__private.executable_info import ExecutableInfo
     from test_tools.__private.user_handles.handles.network_handle import NetworkHandle

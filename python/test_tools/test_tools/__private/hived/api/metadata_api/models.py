@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from schemas._preconfigured_base_model import PreconfiguredBaseModel
+from hiveio_api.validation.model import PreconfiguredBaseModel
 
 
 class GetAccountMetadata(PreconfiguredBaseModel, kw_only=True):

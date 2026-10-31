@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import TYPE_CHECKING, Callable, TypeAlias
 
+from wax.exceptions.validation_errors import WaxValidationFailedError
+
 if TYPE_CHECKING:
     string: TypeAlias = str  # noqa: PYI042
 
@@ -167,3 +169,14 @@ class python_minimize_required_signatures_data:  # noqa: N801
     max_membership: int | None = None
     max_account_auths: int | None = None
     allow_strict_and_mixed_authorities: bool = False
+
+
+def validate_wax_result(result: python_result) -> None:
+    """Validate a wax result and raise an error if it failed."""
+    if result.status == python_error_code.fail:
+        raise WaxValidationFailedError(result.exception_message)
+
+
+def expose_result_as_python_string(result: python_result) -> str:
+    """Extract the result string from a wax result."""
+    return result.result

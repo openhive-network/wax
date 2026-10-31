@@ -344,7 +344,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: Estimated HIVE collateral.
 
         Raises:
-            CannotCreateAssetError/UnknownAssetTypeError/AssertionError: When passed asset is incorrect.
+            CannotCreateAssetError/UnknownAssetTypeError: When passed asset is incorrect.
         """
 
     @abstractmethod
@@ -374,7 +374,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: Estimated HBD interest.
 
         Raises:
-            CannotCreateAssetError/UnknownAssetTypeError/AssertionError: When passed asset is incorrect.
+            CannotCreateAssetError/UnknownAssetTypeError: When passed asset is incorrect.
         """
 
     @property
@@ -411,7 +411,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: converted asset into HP (HIVE).
 
         Raises:
-            CannotCreateAssetError/UnknownAssetTypeError/AssertionError: When passed asset is incorrect.
+            CannotCreateAssetError/UnknownAssetTypeError: When passed asset is incorrect.
         """
 
     @abstractmethod
@@ -430,7 +430,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: asset converted asset into HIVE.
 
         Raises:
-            UnknownAssetTypeError/CannotCreateAssetError/AssertionError: When passed asset it is incorrect.
+            UnknownAssetTypeError/CannotCreateAssetError: When passed asset it is incorrect.
         """
 
     @abstractmethod
@@ -449,7 +449,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: converted asset into HBD.
 
         Raises:
-            UnknownAssetTypeError/CannotCreateAssetError/AssertionError: When passed asset is incorrect.
+            UnknownAssetTypeError/CannotCreateAssetError: When passed asset is incorrect.
         """
 
     @staticmethod
@@ -584,7 +584,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: calculated HP for the given vests, total vesting fund HIVE and total vesting shares.
 
         Raises:
-            UnknownAssetTypeError/CannotCreateAssetError/AssertionError: When passed asset is incorrect.
+            UnknownAssetTypeError/CannotCreateAssetError: When passed asset is incorrect.
         """
 
     @abstractmethod
@@ -606,7 +606,7 @@ class IWaxBaseInterface(ABC):
             NaiAsset: Calculated votes in nai asset form.
 
         Raises:
-             UnknownAssetTypeError/CannotCreateAssetError/AssertionError: When passed asset is incorrect.
+             UnknownAssetTypeError/CannotCreateAssetError: When passed asset is incorrect.
         """
 
     @abstractmethod
@@ -727,6 +727,13 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
     ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
         """
         Extends the current API collection with a new one.
+
+        The new chain shares the connection with this chain - the endpoint (`endpoint_url` set on one of them applies to
+        both); the connection is closed by the teardown of this chain (the teardown of the new chain leaves it open).
+
+        APIs of the collection are its attributes set to API classes in `__init__` (as in the example), or API classes
+        of its `_API_MAP` (`{"my_custom_api": MyCustomApi}`, as in `WaxApiCollection`) - merged with the APIs of this
+        chain, an API of the same name is replaced.
 
         Args:
             new_api: New API collection class to be added.
