@@ -19,7 +19,7 @@
     "@types/node": "^24",
     "@types/react": "catalog:react-toolset",
     "@types/react-dom": "catalog:react-toolset",
-    "eslint": "^9",
+    "eslint": "^10.0.0",
     "eslint-config-next": "catalog:react-toolset",
     "postcss": "^8",
     "tailwindcss": "catalog:tailwind-toolset",
