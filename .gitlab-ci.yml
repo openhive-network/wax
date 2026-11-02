@@ -504,6 +504,8 @@ pre_commit_checks:
     # (wax is already installed from wheel above, no need to fetch from registry)
   - poetry -C "${TEST_TOOLS_DIR}" remove --lock -- hiveio-wax
   - poetry -C "${TEST_TOOLS_DIR}" install --no-root
+    # mypy checks the tests and test_tools, which import pytest (from ccc's constraints since #213)
+  - !reference [.install_python_test_tools, script]
   artifacts:
     when: always
     expire_in: 1 week
