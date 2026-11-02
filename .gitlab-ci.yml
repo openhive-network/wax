@@ -26,7 +26,7 @@ workflow:
 include:
   # Override common-ci-configuration templates with our submodule ref (must come AFTER hive/hive include)
 - project: 'hive/common-ci-configuration'
-  ref: 097d2172e38dddfc1eed98b724d90fdabeec3de7
+  ref: 468f7fbcdea42fa2ae391b9db4fe0138bb514cf2
   file:
   - '/templates/npm_projects.gitlab-ci.yml'
   - '/templates/wasm_build.gitlab-ci.yml'
@@ -581,12 +581,20 @@ push_to_wiki:
   tags:
   - public-runner-docker
 
+# pytest-family versions come from common-ci-configuration's python-test-tools constraints, not the
+# packages' dev groups; the job fails when the constraints of PYTHON_TEST_TOOLS_TAG cannot be read.
+.install_python_test_tools:
+  script:
+  - !reference [.python_test_tools_constraints, script]
+  - python3 -m pip install -c "${PYTHON_TEST_TOOLS_CONSTRAINTS}" pytest pytest-asyncio pytest-xdist
+
 .test_python_env:
   extends: .runtime_like_python_env
   before_script:
   - !reference [.runtime_like_python_env, before_script]
   - !reference [.update_deps_for_tests, script]
   - poetry -C "${PYPROJECT_DIR}" install --no-root    # install dependencies for tests
+  - !reference [.install_python_test_tools, script]
   - pip list
 
 .python_test_matrix:
@@ -1194,7 +1202,7 @@ deploy_test_tools_wheel_to_pypi:
   - !reference [.configuration_template, before_script]
   - rm -f build_wheel.env
 
-# test-tools tests only need test-tools + wax (from registry) + dev deps (pytest, etc.)
+# test-tools tests only need test-tools + wax (from registry) + the test tools (pytest, etc.)
 .test_tools_test_env:
   extends: .test_tools_base
   needs:
@@ -1209,6 +1217,7 @@ deploy_test_tools_wheel_to_pypi:
   - poetry -C "${TEST_TOOLS_DIR}" add --lock -- "hiveio-wax==${WAX_VERSION}"
   - !reference [.update_deps_for_tests, script]
   - poetry -C "${TEST_TOOLS_DIR}" install
+  - !reference [.install_python_test_tools, script]
   - pip list
 
 test_tools_unit_tests:

@@ -18,6 +18,11 @@ source venv/bin/activate
 pip install poetry
 poetry install
 
+# pytest and pytest-xdist are not in the dev group: install the versions common-ci-configuration's
+# python-test-tools image pins (CI does the same in .test_tools_test_env), e.g. with its
+# scripts/python/python-test-tools-constraints.py writing constraints.txt
+pip install -c constraints.txt pytest pytest-xdist
+
 # Initialize git hooks
 pre-commit install
 ```

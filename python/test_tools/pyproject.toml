@@ -43,10 +43,6 @@ mypy = "^1.11.2"
 pre-commit = "^4.0.0"
 ruff = "^0.6.5"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^9.0.2"
-pytest-xdist = "^3.6.1"
-
 
 [tool.poetry-dynamic-versioning]
 enable = true
