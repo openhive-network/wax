@@ -4,9 +4,10 @@ AIDEV verifies changes to wax through the slots in `project.yaml`, integrates th
 `aidev/integration`, and people merge that into `develop` through merge requests (as in
 hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `workflow:`.
 
-Only the TypeScript package (`ts/`, `@hiveio/wax`) is bound. The Rust package (`rust/`)
-has a suite, `run-rust.sh` (see [The Rust suite](#the-rust-suite-run-rustsh)), that no slot
-binds yet. The Python package (`python/`) is verified by CI only.
+The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
+(`rust/`) is bound in full, baseline and canary as an advisory suite, `run-rust.sh` (see
+[The Rust suite](#the-rust-suite-run-rustsh)). The Python package (`python/`) is verified
+by CI only.
 
 ## Suites
 
@@ -15,10 +16,10 @@ binds yet. The Python package (`python/`) is verified by CI only.
 as the failure body. `tests` adds `playwright-junit.xml` beside it, one case per test.
 A step after a failed one is reported as skipped.
 
-A `<project>` is a name in `OFFLINE_PROJECTS`. Naming any restricts `tests` to those
-Playwright projects; naming none runs them all. The other steps run whenever they are
-listed, because every test needs them. An argument that is neither a step nor an offline
-project exits 2 before anything runs.
+A `<project>` is a name in `OFFLINE_PROJECTS` or `UNMAPPED_OFFLINE_PROJECTS`. Naming any
+restricts `tests` to those Playwright projects; naming none runs both lists. The other
+steps run whenever they are listed, because every test needs them. An argument that is
+neither a step nor an offline project exits 2 before anything runs.
 
 | Step | What | CI job it mirrors |
 |---|---|---|
@@ -28,18 +29,26 @@ project exits 2 before anything runs.
 | `bundle` | rollup, terser, `size-limit` (3420 kB), through `pnpm exec` as CI's build leaves `npm_package_*` unset | `wax_wasm_proto_tsc_generation` (`postbuild`) |
 | `proto-pattern` | generated protobuf output equals `ts/protobuf_patterns/proto` | `test_wax_wasm_proto_pattern`, without its npm-pack listing |
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
-| `tests` | Playwright, the projects in `OFFLINE_PROJECTS` | `test_wax_wasm` |
+| `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
 
-| Slot | Steps |
-|---|---|
-| quick, baseline, coverage | proto wasm tsc bundle build-tests tests |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests |
-| static | proto wasm tsc proto-pattern |
-| system | proto wasm tsc bundle |
+| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, advisory) |
+|---|---|---|
+| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — |
+| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests |
+| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests |
+| coverage | proto wasm tsc bundle build-tests tests | — |
+| static | proto wasm tsc proto-pattern | — |
+| system | proto wasm tsc bundle | — |
+
+A slot with a single binding names no suites; full, baseline and canary list `ts` and
+`rust` under `suites:`. The `rust` suite's label is `<slot>-rust`, so its results go to
+`test-results/aidev-<slot>-rust/` and never to the `ts` suite's
+`test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
-scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs the
-same work as without them.
+scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs exactly
+those eleven. The slots that name no project also run `UNMAPPED_OFFLINE_PROJECTS`
+(`wax_testsuite`), which is not in the approved scope.
 
 ### Test selection (`selector.py`, `observe`)
 
@@ -73,14 +82,20 @@ aidev's `testbed_runner`; no slot runs them. To see what a diff proposes, run
 Suites run with `--network none`. The Playwright tests get the responses of the public
 nodes (`api.hive.blog`, the mirrornet, ...) from the API replay server, which serves the
 recordings in `ts/wasm/__tests__/assets/mock/recordings` (see "Tests and the public API
-nodes" in `ts/README.md`). Not run: `wax_testsuite`, which replays too but has no
-`testMatch` for the selector to map, and `healthchecker_tests`, which checks a live node
-(CI's advisory `test_wax_wasm_live_api`).
+nodes" in `ts/README.md`). `wax_testsuite` (the `index.spec*` files: `detailed/base`,
+`protocol`, `hive_base`, `hive_chain`, ... and the two custom-chain specs under its mainnet
+config) runs in every slot that names no project, but not in quick: it has no `testMatch`
+for the selector to map, so it is kept out of quick's approved scope. Not run anywhere:
+`healthchecker_tests`, which checks a live node (CI's advisory `test_wax_wasm_live_api`).
 
 Also not run: the npm examples (`test_wax_wasm_examples`, they `pnpm install` from the
 network), the signature-extension example, and the npm-pack file listing.
 
 ## The Rust suite (`run-rust.sh`)
+
+Bound as the `rust` suite of full, baseline and canary (`run-rust.sh <slot>-rust`,
+`mode: advisory`, `timeout: 1200`), in its own image (below): its failures are reported
+and never block. Moving it to blocking is a separate change, made from the recorded runs.
 
 `.aidev/run-rust.sh <suite>` runs CI's `build_rust` and `test_rust` offline:
 `rust/build.sh --in-container release`, then `rust/test.sh --in-container release --test
@@ -119,8 +134,10 @@ When either lock file differs from `cargo-lock.sha256`, the script writes one fa
 before building anything. Then rebuild the image: the CI job
 `build_wax_rust_aidev_tests_image` runs on its own when the dockerfile or a lock file
 changes (manual otherwise), pushes `wax-rust-aidev-tests:${WAX_RUST_AIDEV_TESTS_IMAGE_TAG}`
-and ends its log with `Pushed …/wax-rust-aidev-tests@sha256:<digest>`. Bind that digest
-where the suite is bound. Bump the tag's `-aidevN` suffix when the dockerfile changes.
+and ends its log with `Pushed …/wax-rust-aidev-tests@sha256:<digest>`. Put that digest in
+the `image:` of the `rust` suite of `verification.full`, `.baseline` and `.canary` in
+`project.yaml`, all three in the same commit. Bump the tag's `-aidevN` suffix when the
+dockerfile changes. The bound digest is tag `pypa_2_28-17-rust3-aidev1`.
 
 To build and run it locally (build context `rust/`, submodules checked out recursively):
 

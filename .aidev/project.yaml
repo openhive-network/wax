@@ -52,13 +52,15 @@ issues:
 # seven gates report on the same evidence while claiming to check seven
 # different things.
 #
-# The TypeScript package is the only part bound: every step needs the emscripten
+# The TypeScript package is bound in every slot: every step needs the emscripten
 # wasm build of core/ + hive's protocol (about a minute), so each slot starts
 # with proto/wasm/tsc. `tests` runs the Playwright projects that need no network
 # (slots run with --network none; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
-# `coverage` runs the tests. The Python and Rust packages are not bound.
-# See .aidev/README.md.
+# `coverage` runs the tests. full, baseline and canary also run the Rust suite
+# (.aidev/run-rust.sh) in its own image, advisory; its label is `<slot>-rust` so
+# it never shares the ts suite's test-results/aidev-<slot>/, which run-checks.sh
+# clears when it starts. The Python package is not bound. See .aidev/README.md.
 verification:
   quick:
     adapter: command
@@ -80,17 +82,44 @@ verification:
       - wax_testsuite_custom_chain_options
     artifacts: ["test-results/aidev-quick/"]
   full:
-    adapter: command
-    args: [".aidev/run-checks.sh", "full", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
-    artifacts: ["test-results/aidev-full/"]
+    suites:
+      - name: ts
+        adapter: command
+        args: [".aidev/run-checks.sh", "full", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
+        artifacts: ["test-results/aidev-full/"]
+      - name: rust
+        adapter: command
+        args: [".aidev/run-rust.sh", "full-rust"]
+        artifacts: ["test-results/aidev-full-rust/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
+        mode: advisory
+        timeout: 1200
   baseline:
-    adapter: command
-    args: [".aidev/run-checks.sh", "baseline", "proto", "wasm", "tsc", "bundle", "build-tests", "tests"]
-    artifacts: ["test-results/aidev-baseline/"]
+    suites:
+      - name: ts
+        adapter: command
+        args: [".aidev/run-checks.sh", "baseline", "proto", "wasm", "tsc", "bundle", "build-tests", "tests"]
+        artifacts: ["test-results/aidev-baseline/"]
+      - name: rust
+        adapter: command
+        args: [".aidev/run-rust.sh", "baseline-rust"]
+        artifacts: ["test-results/aidev-baseline-rust/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
+        mode: advisory
+        timeout: 1200
   canary:
-    adapter: command
-    args: [".aidev/run-checks.sh", "canary", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
-    artifacts: ["test-results/aidev-canary/"]
+    suites:
+      - name: ts
+        adapter: command
+        args: [".aidev/run-checks.sh", "canary", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
+        artifacts: ["test-results/aidev-canary/"]
+      - name: rust
+        adapter: command
+        args: [".aidev/run-rust.sh", "canary-rust"]
+        artifacts: ["test-results/aidev-canary-rust/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
+        mode: advisory
+        timeout: 1200
   static:
     adapter: command
     args: [".aidev/run-checks.sh", "static", "proto", "wasm", "tsc", "proto-pattern"]
