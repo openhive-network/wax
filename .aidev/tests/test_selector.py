@@ -35,9 +35,12 @@ def _select(*paths: str, tree_root: Path = _ROOT, scope: tuple[str, ...] = SCOPE
 
 def test_the_approved_scope_is_run_checks_offline_projects() -> None:
     run_checks = (_AIDEV / "run-checks.sh").read_text()
-    block = run_checks.split("OFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
+    block = run_checks.split("\nOFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
+    unmapped = run_checks.split("\nUNMAPPED_OFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
     assert SCOPE == tuple(block.split())
     assert len(SCOPE) == 11
+    assert "wax_testsuite" in unmapped.split()
+    assert "wax_testsuite" not in SCOPE
 
 
 def test_python_and_rust_only_propose_nothing() -> None:

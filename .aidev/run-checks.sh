@@ -6,9 +6,10 @@
 #
 #   .aidev/run-checks.sh <suite> <step>... [<project>...]
 #
-# A <project> is a name in OFFLINE_PROJECTS: naming any restricts the `tests` step
-# to those projects (the targets of verification.quick in project.yaml); naming
-# none runs them all. Any other argument exits 2 before anything runs.
+# A <project> is a name in OFFLINE_PROJECTS or UNMAPPED_OFFLINE_PROJECTS: naming
+# any restricts the `tests` step to those projects (quick names the targets of
+# verification.quick in project.yaml, OFFLINE_PROJECTS); naming none runs both
+# lists. Any other argument exits 2 before anything runs.
 #
 # Steps, in the order the TypeScript package builds (each needs the ones before it):
 #   proto        ts/scripts/compile_proto_ts.sh: ts-proto from hive/libraries/protocol/proto
@@ -20,7 +21,8 @@
 #   proto-pattern  generated protobuf output equals ts/protobuf_patterns/proto
 #                (CI's test_wax_wasm_proto_pattern, without its npm-pack listing)
 #   build-tests  package.json `build:test`: the beekeeper signer and the test sources
-#   tests        Playwright, the projects in OFFLINE_PROJECTS below (or the named ones)
+#   tests        Playwright, the projects in OFFLINE_PROJECTS and UNMAPPED_OFFLINE_PROJECTS
+#                below (or the named ones)
 #
 # Suites run with --network none. The Playwright projects get the responses of
 # api.hive.blog recorded (ts/wasm/__tests__/assets/mock/recordings), except
@@ -35,7 +37,7 @@ suite="${1:?usage: $0 <suite> <step>... [<project>...]}"; shift
 # The Playwright projects CI runs (test_wax_wasm's matrix) that have a testMatch
 # (.aidev/selector.py maps test modules to projects by it): they call the wasm
 # module itself, the local mock server (wax_mock_tests, localhost:8000) or the API
-# replay server. wax_testsuite runs every *.spec file, so it has no testMatch.
+# replay server. This list is quick's approved scope.
 OFFLINE_PROJECTS=(
     wax_utils
     wax_non_encrypted_operations
@@ -49,6 +51,11 @@ OFFLINE_PROJECTS=(
     wax_custom_chain_online_tx
     wax_testsuite_custom_chain_options
 )
+# Offline projects CI runs too that the selector cannot map, so they are not in
+# quick's scope: wax_testsuite runs every index.spec* file and has no testMatch.
+UNMAPPED_OFFLINE_PROJECTS=(
+    wax_testsuite
+)
 
 steps=()
 projects=()
@@ -57,14 +64,14 @@ for a in "$@"; do
         proto|wasm|tsc|bundle|proto-pattern|build-tests|tests) steps+=("$a") ;;
         *)
             known=0
-            for p in "${OFFLINE_PROJECTS[@]}"; do [ "$a" = "$p" ] && known=1; done
+            for p in "${OFFLINE_PROJECTS[@]}" "${UNMAPPED_OFFLINE_PROJECTS[@]}"; do [ "$a" = "$p" ] && known=1; done
             if [ "$known" -eq 0 ]; then
                 echo "unknown step or offline Playwright project: $a" >&2; exit 2
             fi
             projects+=("$a") ;;
     esac
 done
-[ "${#projects[@]}" -eq 0 ] && projects=("${OFFLINE_PROJECTS[@]}")
+[ "${#projects[@]}" -eq 0 ] && projects=("${OFFLINE_PROJECTS[@]}" "${UNMAPPED_OFFLINE_PROJECTS[@]}")
 
 out="$root/test-results/aidev-$suite"
 rm -rf "$out"; mkdir -p "$out"
