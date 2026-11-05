@@ -6,7 +6,7 @@ hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `wo
 
 The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
 (`rust/`) and the Python packages (`python/`: `hiveio-wax` and `hiveio-test-tools`) are
-bound in full, baseline and canary as advisory suites, `run-rust.sh` and `run-python.sh`
+bound in full, baseline and canary as blocking suites, `run-rust.sh` and `run-python.sh`
 (see [The Rust suite](#the-rust-suite-run-rustsh) and
 [The Python suite](#the-python-suite-run-pythonsh)).
 
@@ -32,7 +32,7 @@ neither a step nor an offline project exits 2 before anything runs.
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
 | `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
 
-| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, advisory) | Suite `python` (`run-python.sh <slot>-python`, advisory) |
+| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) |
 |---|---|---|---|
 | quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — |
 | baseline | proto wasm tsc bundle build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
@@ -46,6 +46,11 @@ A slot with a single binding names no suites; full, baseline and canary list `ts
 `<slot>-rust` and `<slot>-python`, so their results go to `test-results/aidev-<slot>-rust/`
 and `test-results/aidev-<slot>-python/`, never to the `ts` suite's
 `test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
+
+All three suites block: a failure in any of them fails the slot. A workflow runs the
+bindings approved on `aidev/integration`, so if the `rust` or `python` suite fails on
+pull hosts for an environmental reason, the recovery is a direct commit to
+`aidev/integration` that gives that suite `mode: advisory` again.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs exactly
@@ -96,8 +101,10 @@ network), the signature-extension example, and the npm-pack file listing.
 ## The Rust suite (`run-rust.sh`)
 
 Bound as the `rust` suite of full, baseline and canary (`run-rust.sh <slot>-rust`,
-`mode: advisory`, `timeout: 1200`), in its own image (below): its failures are reported
-and never block. Moving it to blocking is a separate change, made from the recorded runs.
+blocking, `timeout: 1200`), in its own image (below): a failure fails the slot as one in
+`ts` does, so a change under `rust/` must pass it. So does a stale image: a change to
+`rust/Cargo.lock` or `rust/proto_builder/Cargo.lock` must rebuild the image and re-pin it
+in the same commit.
 
 `.aidev/run-rust.sh <suite>` runs CI's `build_rust` and `test_rust` offline:
 `rust/build.sh --in-container release`, then `rust/test.sh --in-container release --test
@@ -157,8 +164,10 @@ does.
 ## The Python suite (`run-python.sh`)
 
 Bound as the `python` suite of full, baseline and canary (`run-python.sh <slot>-python`,
-`mode: advisory`, `timeout: 1200`), in its own image (below): its failures are reported
-and never block. Moving it to blocking is a separate change, made from the recorded runs.
+blocking, `timeout: 1200`), in its own image (below): a failure fails the slot as one in
+`ts` does, so a change under `python/` must pass it. So does a stale image: a change to
+an input the image records (below) must rebuild the image and re-pin it in the same
+commit, merges of `develop` into `aidev/integration` included.
 
 `.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (CI also runs 3.14), what
 CI's Python jobs run, against the checkout:
