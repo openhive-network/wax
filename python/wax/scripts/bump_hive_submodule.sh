@@ -12,9 +12,9 @@
 #
 # Steps:
 #   1. (unless --skip-submodule-update) Fetch and checkout <ref> in hive submodule
-#   2. Determine hiveio-api version from the submodule's git state
-#   3. Download hiveio-api from registry (or build locally if not available)
-#   4. Update pyproject.toml + poetry.lock with the new version
+#   2. Determine the version of hiveio-api released by hive develop for the submodule commit
+#   3. Check that the registry has that release - fail when it has only the merge-request-branch (.dev) build
+#   4. Update pyproject.toml + poetry.lock of wax and test-tools with the new version
 #   5. Commit changes
 
 set -euo pipefail
@@ -23,6 +23,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WAX_PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 WAX_ROOT_DIR="$(cd "${WAX_PROJECT_DIR}/../.." && pwd)"
 HIVE_SUBMODULE_DIR="${WAX_ROOT_DIR}/hive"
+TEST_TOOLS_PROJECT_DIR="${WAX_ROOT_DIR}/python/test_tools"
 GENERATED_PACKAGE_DIR="${HIVE_SUBMODULE_DIR}/libraries/plugins/apis/api_generation/python_api_package"
 
 REGISTRY_URL="${HIVE_PYPI_INDEX:-https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple}"
@@ -58,6 +59,8 @@ if [[ "${SKIP_SUBMODULE_UPDATE}" == false ]]; then
     git -C "${HIVE_SUBMODULE_DIR}" fetch origin
     git -C "${HIVE_SUBMODULE_DIR}" checkout "${REF}"
 fi
+# A checked out branch would override CI_COMMIT_REF_NAME, which chooses the kind of version below
+git -C "${HIVE_SUBMODULE_DIR}" checkout -q --detach
 
 HIVE_COMMIT=$(git -C "${HIVE_SUBMODULE_DIR}" rev-parse --short HEAD)
 log_success "Hive submodule at: ${HIVE_COMMIT}"
@@ -70,7 +73,15 @@ if ! POETRY_OUTPUT=$(poetry -C "${GENERATED_PACKAGE_DIR}" install --dry-run 2>&1
     echo "${POETRY_OUTPUT}" >&2
     exit 1
 fi
-HIVEIO_API_VERSION=$(poetry -C "${GENERATED_PACKAGE_DIR}" version -s)
+
+# The version of a detached commit follows CI_COMMIT_REF_NAME: the pipeline of hive develop publishes the stable
+# .post build of the commit, a pipeline of a merge request branch the .dev build of the same code. Only the .post
+# build is admitted by the releases depending on hiveio-api (e.g. hiveio-beekeepy), whatever branch runs this script.
+hiveio_api_version() {
+    CI_COMMIT_REF_NAME="$1" poetry -C "${GENERATED_PACKAGE_DIR}" version -s
+}
+HIVEIO_API_VERSION=$(hiveio_api_version develop)
+BRANCH_BUILD_VERSION=$(hiveio_api_version merge-request-branch)
 
 if [[ "${HIVEIO_API_VERSION}" == "0.0.0" ]]; then
     log_error "poetry-dynamic-versioning returned 0.0.0 — plugin not active"
@@ -86,70 +97,62 @@ log_info "hiveio-api version: ${HIVEIO_API_VERSION}"
 
 # --- Check if update is needed ---
 
-CURRENT_PIN=$(grep -oP 'hiveio-api = "==\K[^"]+' "${WAX_PROJECT_DIR}/pyproject.toml" 2>/dev/null || echo "")
+CURRENT_PIN=$(grep -oP '^hiveio-api = \{version = "\K[^"]+' "${WAX_PROJECT_DIR}/pyproject.toml" 2>/dev/null || echo "")
 if [[ "${CURRENT_PIN}" == "${HIVEIO_API_VERSION}" ]]; then
     log_success "hiveio-api already at ${HIVEIO_API_VERSION}, nothing to do"
     exit 0
 fi
 
-# --- Step 3: Get wheel (registry first, build as fallback) ---
+# --- Step 3: Check the release in the registry ---
 
-WHEEL_DIR="${GENERATED_PACKAGE_DIR}/dist"
-mkdir -p "${WHEEL_DIR}"
+DOWNLOAD_DIR=$(mktemp -d)
+trap 'rm -rf "${DOWNLOAD_DIR}"' EXIT
 
-if pip download "hiveio-api==${HIVEIO_API_VERSION}" \
-    --index-url "${REGISTRY_URL}" \
-    --no-deps --only-binary=:all: \
-    --dest "${WHEEL_DIR}" \
-    --trusted-host gitlab.syncad.com 2>/dev/null; then
-    log_success "Downloaded from registry"
+is_published() {
+    pip download "hiveio-api==$1" \
+        --index-url "${REGISTRY_URL}" \
+        --no-deps --only-binary=:all: \
+        --dest "${DOWNLOAD_DIR}" \
+        --trusted-host gitlab.syncad.com >/dev/null 2>&1
+}
+
+if is_published "${HIVEIO_API_VERSION}"; then
+    log_success "hiveio-api ${HIVEIO_API_VERSION} is released by hive develop"
+elif [[ "${BRANCH_BUILD_VERSION}" != "${HIVEIO_API_VERSION}" ]] && is_published "${BRANCH_BUILD_VERSION}"; then
+    log_error "Only the merge request branch build hiveio-api ${BRANCH_BUILD_VERSION} is published for hive ${HIVE_COMMIT}," \
+        "not the build of hive develop (${HIVEIO_API_VERSION}) - the .dev build is not admitted by the releases" \
+        "depending on hiveio-api. Point the hive submodule at a commit of hive develop whose pipeline published hiveio-api."
+    exit 1
 else
-    log_info "Not in registry, building locally..."
-    rm -rf "${WHEEL_DIR}"
-
-    "${HIVE_SUBMODULE_DIR}/scripts/ci-helpers/hiveio_api_package.sh" \
-        --hive-project-root="${HIVE_SUBMODULE_DIR}" \
-        --apis="database_api network_broadcast_api rc_api" \
-        --skip-deploy --skip-tests --skip-registry-check
+    log_error "hiveio-api ${HIVEIO_API_VERSION} is not published in ${REGISTRY_URL} -" \
+        "run the pipeline of hive develop for ${HIVE_COMMIT} first"
+    exit 1
 fi
 
 # --- Step 4: Update pyproject.toml + lock ---
 
-cd "${WAX_PROJECT_DIR}"
+pin_hiveio_api() {  # $1: pyproject.toml, $2: sed expression replacing the version
+    sed -i -E "$2" "$1"
+    if ! grep -qF "${HIVEIO_API_VERSION}" <(grep '^hiveio-api = ' "$1"); then
+        log_error "Failed to update the hiveio-api pin in $1 to ${HIVEIO_API_VERSION}:"
+        grep "^hiveio-api" "$1" || echo "(not found)"
+        exit 1
+    fi
+}
 
-WHEEL_FILE=$(ls "${WHEEL_DIR}/"*.whl 2>/dev/null | head -1)
+pin_hiveio_api "${WAX_PROJECT_DIR}/pyproject.toml" \
+    "s|^(hiveio-api = \{version = \")[^\"]+|\1${HIVEIO_API_VERSION}|"
+pin_hiveio_api "${TEST_TOOLS_PROJECT_DIR}/pyproject.toml" \
+    "s|^(hiveio-api = \{version = \">=)[^,\"]+|\1${HIVEIO_API_VERSION}|"
 
-if [[ -z "${WHEEL_FILE}" ]]; then
-    log_error "No wheel found in ${WHEEL_DIR}"
-    exit 1
-fi
-
-# Use poetry add with the wheel — updates both pyproject.toml and poetry.lock atomically
-# This works even if the version is not yet in registry (uses local wheel)
-PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring \
-    poetry add "${WHEEL_FILE}"
-
-# poetry add changes constraint format; restore exact pin style
-sed -i "s|^hiveio-api = .*|hiveio-api = \"==${HIVEIO_API_VERSION}\"  # pinned: must match the version built from the hived submodule|" \
-    pyproject.toml
-
-# Verify sed actually replaced the line
-if ! grep -q "hiveio-api = \"==${HIVEIO_API_VERSION}\"" pyproject.toml; then
-    log_error "Failed to update hiveio-api pin in pyproject.toml"
-    log_error "Expected: hiveio-api = \"==${HIVEIO_API_VERSION}\""
-    log_error "Current content:"
-    grep "hiveio-api" pyproject.toml || echo "(not found)"
-    exit 1
-fi
-
-# Re-lock to match restored constraint (wheel is already in cache from poetry add)
-PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring poetry lock
+PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring poetry -C "${WAX_PROJECT_DIR}" lock
+PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring poetry -C "${TEST_TOOLS_PROJECT_DIR}" lock
 
 # --- Step 5: Commit ---
 
 cd "${WAX_ROOT_DIR}"
 
-FILES_TO_ADD=(python/wax/pyproject.toml python/wax/poetry.lock)
+FILES_TO_ADD=(python/wax/pyproject.toml python/wax/poetry.lock python/test_tools/pyproject.toml python/test_tools/poetry.lock)
 if [[ "${SKIP_SUBMODULE_UPDATE}" == false ]]; then
     FILES_TO_ADD+=(hive)
 fi
