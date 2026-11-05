@@ -35,7 +35,7 @@ hiveio-beekeepy = {version = "1.28.6.post20261105164928", source = "gitlab-hive"
 msgspec = "^0.20.0"  # configurations of nodes (msgspec models of hiveio_api.validation)
 # The range admits only releases of develop: the lower bound is the hiveio-api that wax pins for the hive submodule,
 # moved with it by python/wax/scripts/bump_hive_submodule.sh, so test-tools never admits an older hiveio-api than wax.
-hiveio-api = {version = ">=1.28.8rc3.post20261105111906,<1.28.8rc3.post99999999999999", source = "gitlab-hive", allow-prereleases = true}
+hiveio-api = {version = ">=1.28.8rc3.post20261105173357,<1.28.8rc3.post99999999999999", source = "gitlab-hive", allow-prereleases = true}
 
 
 [tool.poetry.group.static-analysis.dependencies]
