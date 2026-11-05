@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # AIDEV's Rust suite: CI's build_rust + test_rust (`rust/build.sh --in-container
 # release`, then the `detailed` integration tests) with --network none, in the
-# wax-rust-aidev-tests image (rust/docker/wax-rust-aidev-tests.dockerfile), which
-# carries the crates and the hiveio-beekeeper crate those would download.
+# test runtime image (.aidev/runtime/Dockerfile), which carries the Rust toolchain,
+# static Boost, the crates and the hiveio-beekeeper crate those would download.
 #
 #   .aidev/run-rust.sh <suite>
 #
@@ -43,19 +43,6 @@ cases="$logs/cases.tsv"; : > "$cases"
 
 source .aidev/junit-helpers.sh
 
-if ! (cd rust && sha256sum --check --status "$BAKED/cargo-lock.sha256"); then
-    {
-        echo "The lock files differ from the ones the test image fetched crates for:"
-        echo "image ($BAKED/cargo-lock.sha256):"; cat "$BAKED/cargo-lock.sha256"
-        echo "checkout:"; (cd rust && sha256sum Cargo.lock proto_builder/Cargo.lock)
-    } > "$logs/stale.log" 2>&1
-    cat "$logs/stale.log" >&2
-    printf 'case\timage freshness\tfail\t0\ttest image is stale for this Cargo.lock — rebuild wax-rust-aidev-tests\t%s\n' \
-        "$logs/stale.log" >> "$cases"
-    junit_write_cases "$junit" rust "$cases"
-    exit 1
-fi
-
 backup="$(mktemp -d)"
 tar -cf "$backup/tracked.tar" "${RESTORED_PATHS[@]}"
 restore() {
@@ -65,6 +52,12 @@ restore() {
 trap restore EXIT
 
 export CARGO_HOME="$BAKED/cargo-home" CARGO_NET_OFFLINE=true
+# The image's static Boost (WAX_BOOST_ROOT), as BOOST_ROOT and on the default include
+# path, where CI's ci-base-image has its headers (hive's fc and the cxx bridge
+# build.rs compiles add no Boost include of their own). Only this suite gets it: the
+# wasm build of the ts suite, in the same image, must find emscripten's Boost.
+export BOOST_ROOT="${WAX_BOOST_ROOT:?the test image sets WAX_BOOST_ROOT}"
+export CPLUS_INCLUDE_PATH="$BOOST_ROOT/include${CPLUS_INCLUDE_PATH:+:$CPLUS_INCLUDE_PATH}"
 BEEKEEPER_VERSION="$(sed -n 's/^version = "\(.*\)"$/\1/p' "$BAKED/beekeeper/Cargo.toml" | head -1)"
 export BEEKEEPER_VERSION
 rm -rf rust/crates/hiveio-beekeeper

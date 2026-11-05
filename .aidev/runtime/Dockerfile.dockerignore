@@ -1,0 +1,24 @@
+# The build context of Dockerfile is the checkout; it reads only these files.
+*
+!python/wax/scripts/prepare_boost.sh
+!ts/package.json
+!ts/pnpm-lock.yaml
+!ts/npm-common-config/pnpm-config/pnpm-workspace.yaml
+!ts/npm-common-config/pnpm-config/.npmrc
+!ts/npm-common-config/scripts/python/python-test-tools-constraints.py
+!ts/npm-common-config/scripts/python/registry_auth.py
+!rust/Cargo.toml
+!rust/Cargo.lock
+!rust/fetch_beekeeper.sh
+!rust/wax/Cargo.toml
+!rust/wax_macros/Cargo.toml
+!rust/signers/beekeeper/Cargo.toml
+!rust/proto_builder/Cargo.toml
+!rust/proto_builder/Cargo.lock
+!python/wax/pyproject.toml
+!python/wax/poetry.lock
+!python/wax/tests/wax-local-tools
+python/wax/tests/wax-local-tools/**/__pycache__
+!python/test_tools/pyproject.toml
+!python/test_tools/poetry.lock
+!python/test_tools/readme.md

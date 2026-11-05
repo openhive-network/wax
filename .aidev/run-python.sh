@@ -2,11 +2,10 @@
 # AIDEV's Python suite: CI's build_wheel and its Python test jobs (test_wax_protobuf_python,
 # test_helpy, test_tools_unit_tests, test_tools_hived_handle, test_wax_protobuf_python_pattern,
 # test_wax_protobuf_python_examples) on Python 3.12 with --network none, in the
-# wax-python-aidev-tests image (python/wax/docker/wax-python-aidev-tests.dockerfile), which
-# carries the dependencies, build requirements, pytest and pnpm store those would download.
+# test runtime image (.aidev/runtime/Dockerfile), which carries static Boost, the
+# dependencies, build requirements, pytest and pnpm store those would download.
 #
 #   .aidev/run-python.sh <suite>
-#   .aidev/run-python.sh --inputs    # what the image was built for (it records this)
 #
 # Writes test-results/aidev-<suite>/python-junit.xml: a `build` case, the protobuf pattern
 # and visitor example cases, one case per test of each pytest group (its own junit), and the
@@ -17,16 +16,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 root="$PWD"
 
-# The files the image's dependencies were installed from; a checkout whose output differs
-# from the image's needs a rebuilt image.
-image_inputs() {
-    sha256sum python/wax/poetry.lock python/test_tools/poetry.lock \
-        ts/pnpm-lock.yaml ts/pnpm-workspace.yaml ts/.npmrc
-    grep '"packageManager"' ts/package.json
-}
-if [ "${1:-}" = "--inputs" ]; then image_inputs; exit; fi
-
-suite="${1:?usage: $0 <suite> | --inputs}"
+suite="${1:?usage: $0 <suite>}"
 
 BAKED="${WAX_AIDEV:-/opt/wax-aidev}"
 PROTO_DIR=hive/libraries/protocol/proto
@@ -46,19 +36,6 @@ rm -rf "$junit" "$logs"; mkdir -p "$logs"
 cases="$logs/cases.tsv"; : > "$cases"
 
 source .aidev/junit-helpers.sh
-
-if ! image_inputs 2>&1 | cmp -s - "$BAKED/inputs"; then
-    {
-        echo "The lock files differ from the ones the test image installed dependencies for:"
-        echo "image ($BAKED/inputs):"; cat "$BAKED/inputs"
-        echo "checkout:"; image_inputs
-    } > "$logs/stale.log" 2>&1
-    cat "$logs/stale.log" >&2
-    printf 'case\timage freshness\tfail\t0\ttest image is stale for these lock files, rebuild wax-python-aidev-tests\t%s\n' \
-        "$logs/stale.log" >> "$cases"
-    junit_write_cases "$junit" python "$cases"
-    exit 1
-fi
 
 # The suite may run as a uid with no passwd entry, and git refuses a bind-mounted
 # checkout owned by another uid.
@@ -96,6 +73,10 @@ trap restore EXIT
 # Everything is installed in the image's venvs; pip and pnpm must not look for more.
 export PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 npm_config_offline=true \
     PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+# hive's fc reaches Boost headers through the default include path, where CI's
+# ci-base-image has them; the image's static Boost (WAX_BOOST_ROOT) is put there for
+# this suite only, as the wasm build of the ts suite must find emscripten's Boost.
+export CPLUS_INCLUDE_PATH="${WAX_BOOST_ROOT:?the test image sets WAX_BOOST_ROOT}/include${CPLUS_INCLUDE_PATH:+:$CPLUS_INCLUDE_PATH}"
 # poetry-dynamic-versioning reads git tags, which a checkout may not have.
 export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0+aidev
 
@@ -112,6 +93,16 @@ in_venv() {
 # It runs as a step's condition, where `set -e` has no effect: every command is checked.
 build_wheel() {
     cd python/wax || return 1
+    # The C++ build directory stays between runs, and its CMake cache keeps the checkout
+    # path and the Python it was configured with; a rebuilt image can carry another
+    # Python, and a checkout can be mounted elsewhere. It is reused only for the same,
+    # and setuptools' build/ (the extension modules the wheel packs) goes with it.
+    local stamp=.build/aidev-configured-for configured_for
+    configured_for="$PWD $(python3 -c 'import sysconfig; print(sysconfig.get_config_var("INCLUDEPY"))')" || return 1
+    if [ -d .build ] && [ "$(cat "$stamp" 2>/dev/null)" != "$configured_for" ]; then
+        echo "python/wax/.build was not configured for $configured_for; configuring it again" >&2
+        rm -rf .build build || return 1
+    fi
     rm -rf setup.py dist wax/_private/proto && mkdir -p wax/_private/proto || return 1
     local protos=()
     for p in "$root/$PROTO_DIR"/*.proto; do
@@ -124,6 +115,7 @@ build_wheel() {
     printf '%s\n' "import sys" "from pathlib import Path" "" \
         "sys.path.append(str(Path(__file__).parent.absolute()))" > wax/_private/proto/__init__.py || return 1
     python3 -m pip wheel --no-deps --no-build-isolation -w dist . || return 1
+    printf '%s\n' "$configured_for" > "$stamp" || return 1
     local wheel=(dist/*.whl)
     [ -f "${wheel[0]}" ] || { echo "pip wheel left no wheel in python/wax/dist" >&2; return 1; }
     "$BAKED/venv-wax/bin/python3" -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
