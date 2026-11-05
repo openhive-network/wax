@@ -567,13 +567,33 @@ hyperframe = ">=6.1,<7"
 
 [[package]]
 name = "hiveio-api"
-version = "1.28.8rc3.post20261029210300"
+version = "1.28.8rc3.post20261105111906"
 description = "Hive JSON-RPC API client package with lazy-loaded submodules for all Hive APIs"
 optional = false
 python-versions = ">=3.12,<4"
 groups = ["main"]
 files = [
-    {file = "hiveio_api-1.28.8rc3.post20261029210300-py3-none-any.whl", hash = "sha256:835c6c46f353121836f4695e89f7d7b8f4bec24ea15cbc6a8554e654ee447795"},
+    {file = "hiveio_api-1.28.8rc3.post20261105111906-py3-none-any.whl", hash = "sha256:33919fb2223a1e22eddb9c1d2b34b82396e17ba871d151177e152090796fa703"},
+]
+
+[package.dependencies]
+hiveio-api-client = ">=1.7.1.post20261105045512,<2"
+msgspec = ">=0.20.0,<0.21.0"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/groups/136/-/packages/pypi/simple"
+reference = "gitlab-hive"
+
+[[package]]
+name = "hiveio-api-client"
+version = "1.7.1.post20261105045512"
+description = "Runtime of generated Hive API clients - base classes of APIs and an HTTP transport"
+optional = false
+python-versions = ">=3.12,<4"
+groups = ["main"]
+files = [
+    {file = "hiveio_api_client-1.7.1.post20261105045512-py3-none-any.whl", hash = "sha256:3b6e6cef38dc88287c22db80c253cafa0bbf0ef3b19ae4c237b2d35290d06414"},
 ]
 
 [package.dependencies]
@@ -620,7 +640,7 @@ files = []
 develop = true
 
 [package.dependencies]
-hiveio-api = "1.28.8rc3.post20261029210300"
+hiveio-api = "1.28.8rc3.post20261105111906"
 hiveio-beekeepy = "1.28.6.post20261030002956"
 httpx = {version = "^0.28.0", extras = ["http2"]}
 loguru = "^0.7.2"
@@ -1769,4 +1789,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4"
-content-hash = "26d07243e26262e11dbd693cf7739805a733e71b4cb79392cec92aa6e8ee63dd"
+content-hash = "04c5a5fa6ac684b6a9c09a3a7226b417190c4e0825474f40c42181c6dd5bba5c"
