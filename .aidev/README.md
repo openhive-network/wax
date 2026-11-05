@@ -5,9 +5,10 @@ AIDEV verifies changes to wax through the slots in `project.yaml`, integrates th
 hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `workflow:`.
 
 The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
-(`rust/`) is bound in full, baseline and canary as an advisory suite, `run-rust.sh` (see
-[The Rust suite](#the-rust-suite-run-rustsh)). The Python package (`python/`) is verified
-by CI only.
+(`rust/`) and the Python packages (`python/`: `hiveio-wax` and `hiveio-test-tools`) are
+bound in full, baseline and canary as advisory suites, `run-rust.sh` and `run-python.sh`
+(see [The Rust suite](#the-rust-suite-run-rustsh) and
+[The Python suite](#the-python-suite-run-pythonsh)).
 
 ## Suites
 
@@ -31,18 +32,19 @@ neither a step nor an offline project exits 2 before anything runs.
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
 | `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
 
-| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, advisory) |
-|---|---|---|
-| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — |
-| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests |
-| coverage | proto wasm tsc bundle build-tests tests | — |
-| static | proto wasm tsc proto-pattern | — |
-| system | proto wasm tsc bundle | — |
+| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, advisory) | Suite `python` (`run-python.sh <slot>-python`, advisory) |
+|---|---|---|---|
+| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — |
+| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
+| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
+| coverage | proto wasm tsc bundle build-tests tests | — | — |
+| static | proto wasm tsc proto-pattern | — | — |
+| system | proto wasm tsc bundle | — | — |
 
-A slot with a single binding names no suites; full, baseline and canary list `ts` and
-`rust` under `suites:`. The `rust` suite's label is `<slot>-rust`, so its results go to
-`test-results/aidev-<slot>-rust/` and never to the `ts` suite's
+A slot with a single binding names no suites; full, baseline and canary list `ts`,
+`rust` and `python` under `suites:`. The `rust` and `python` suites' labels are
+`<slot>-rust` and `<slot>-python`, so their results go to `test-results/aidev-<slot>-rust/`
+and `test-results/aidev-<slot>-python/`, never to the `ts` suite's
 `test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
@@ -63,7 +65,7 @@ Moving to `enforce` is a separate change, made with the observe evidence and its
 |---|---|
 | `ts/wasm/__tests__/detailed/<name>.ts` | the offline project whose `testMatch` in `ts/playwright.config.ts` matches `<name>.js` (`utils.ts` → `wax_utils`, `mock_base.ts` → `wax_mock_tests`); nothing when none does, as the online projects alone run it |
 | anything else under `ts/`, `core/`, `hive`, `.aidev/`, `.gitlab-ci.yml`, `.gitmodules` | all nine, `degenerate`: most tests run against the whole bundle through the `wasmTest` fixture, so a library change cannot be narrowed by imports |
-| `python/`, `rust/`, `examples/`, `.md` files outside `ts/` | nothing, `irrelevant`: no slot builds them |
+| `python/`, `rust/`, `examples/`, `.md` files outside `ts/` | nothing, `irrelevant`: no quick target builds them (the `rust` and `python` suites of full, baseline and canary do) |
 | any other path | nothing, `unrecognised` |
 
 Before proposing anything, `stale_rules()` checks the table against the checkout: each
@@ -151,6 +153,86 @@ docker run --rm --network none --user "$(id -u):$(id -g)" \
 fc's CMake reads the git HEAD of `hive/libraries/fc`, so in a git worktree or a checkout
 with submodule gitfiles the git directories they point to must be mounted too, as AIDEV
 does.
+
+## The Python suite (`run-python.sh`)
+
+Bound as the `python` suite of full, baseline and canary (`run-python.sh <slot>-python`,
+`mode: advisory`, `timeout: 1200`), in its own image (below): its failures are reported
+and never block. Moving it to blocking is a separate change, made from the recorded runs.
+
+`.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (CI also runs 3.14), what
+CI's Python jobs run, against the checkout:
+
+| Case | What | CI job it mirrors |
+|---|---|---|
+| `build` | `build_wax.sh 1` without its network calls: the protos with `grpc_tools.protoc` as `compile_proto.sh` calls it (without its `poetry lock` and `poetry install`), then `pip wheel --no-deps --no-build-isolation`; the wheel is installed into both of the image's venvs, with `wax-local-tools` and `python/test_tools` editable. The version is `0.0.0+aidev` (`POETRY_DYNAMIC_VERSIONING_BYPASS`), as a checkout may have no tags | `build_wheel` |
+| `protobuf pattern` | `diff` of the generated `python/wax/wax/_private/proto` against `python/wax/protobuf_patterns` | `test_wax_protobuf_python_pattern` |
+| `ts dependencies` | `pnpm-deps.sh`, so the `pnpm install --frozen-lockfile` of `proxy-mock-server.sh` finds `ts/node_modules` current | — |
+| `wax` | `python/wax/tests/run_tests.sh`: pytest behind the API replay server (`proxy-mock-server.sh`, `replay`) | `test_wax_protobuf_python` |
+| `helpy` | pytest in `python/wax/tests/helpy_test` | `test_helpy` |
+| `test-tools-unit` | pytest `-m "not requires_hived_executables"` of `python/test_tools/tests/unit_tests`, against the wheel just built (CI takes it from the registry) | `test_tools_unit_tests` |
+| `test-tools-hived-handle` | `python/test_tools/tests/hived_handle_tests/run_tests.sh`, behind the replay server | `test_tools_hived_handle` |
+| `visitor example` | `examples/python/run_example.sh` | `test_wax_protobuf_python_examples` |
+
+It writes `test-results/aidev-<suite>/python-junit.xml`: a testsuite `python` with the
+step cases above, then each pytest group's own junit as a testsuite named after the
+group. A failing step's log tail is its failure body; after a failed build the other
+steps are skipped cases. Logs, the per-group junit files and the replay servers' logs go
+to `test-results/aidev-<suite>/python/`. It exits non-zero when any case failed. On
+2026-11-05: wax 1121 passed and 8 skipped, helpy 99, test-tools unit 110 and hived-handle
+8 passed.
+
+- `NO_RECORDING_TESTS` lists, one per line with its reason, the tests that fail only
+  because the replay server has no recording for a request they make (HTTP 501), as
+  repository-relative node ids. Each is passed to its group as `--deselect` and reported
+  as a skipped case, and an entry that no longer names a test fails the run. It is empty:
+  every test passes against the recordings.
+- `compile_proto.sh` regenerates the tracked `python/wax/wax/_private/proto`, and the
+  build writes `dist/` and other untracked files. The script snapshots the tracked files
+  under `python/` and `examples/python/` before the build and puts them back on exit,
+  uncommitted edits included, and removes the untracked files the run created (ignored
+  ones, like the C++ and Cython build directories, stay, so the next build is
+  incremental): `git status --porcelain` after a run is what it was before.
+
+### The image (`python/wax/docker/wax-python-aidev-tests.dockerfile`)
+
+The suite runs in `registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests`:
+CI's `CI_BASE_IMAGE` (wax ci-base-image: Python 3.12 and 3.14, Poetry, the C++ toolchain
+and Boost, Node), pinned by digest, plus what the build and the tests would download.
+
+| Path | What |
+|---|---|
+| `/opt/wax-aidev/venv-wax` | Python 3.12 venv with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
+| `/opt/wax-aidev/venv-test-tools` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
+| `/opt/wax-aidev/inputs` | `run-python.sh --inputs`: `sha256sum` of both `poetry.lock` files, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` and `ts/.npmrc`, and `packageManager` |
+| `/opt/pnpm-store`, `/opt/corepack` | `pnpm fetch` of `ts/pnpm-lock.yaml` and the `packageManager` pnpm, as in the test runtime image |
+
+poetry-dynamic-versioning is installed into Poetry's own environment, so the
+`requires-plugins` of the `poetry run` in the CI scripts are satisfied offline.
+
+When an input differs from `inputs`, the script writes one failing case, "test image is
+stale for these lock files, rebuild wax-python-aidev-tests", and exits 1 before building
+anything. A hive submodule bump lands there too: it moves the `hiveio-api` pin and its
+lock entry (`sync_hiveio_api`). Then rebuild the image:
+
+```bash
+python/wax/scripts/build_wax_python_aidev_tests_image.sh --push
+# registry digest if aidev-<input hash> exists, else build + push; prints repo@sha256:<digest>
+```
+
+or let the CI job `build_wax_python_aidev_tests_image` do it (it runs the script when an
+input changes, manual otherwise, and ends its log with `Pushed …@sha256:<digest>`). Put
+the printed reference in the `image:` of the `python` suite of `verification.full`,
+`.baseline` and `.canary` in `project.yaml`, all three in the same commit. The base is
+`CI_BASE_IMAGE_TAG` from `.gitlab-ci.yml`, so a CI base image bump gives a new tag too.
+
+To run it locally (submodules checked out recursively; in a git worktree mount the git
+directory the `.git` file points to as well):
+
+```bash
+docker run --rm --network none --user "$(id -u):$(id -g)" \
+  -v "$PWD":/work -w /work <the python suite's image> .aidev/run-python.sh full-python
+```
 
 ## The test runtime image (`runtime/`)
 

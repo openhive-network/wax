@@ -15,7 +15,8 @@ A path table, walked by :func:`~testbed_runner.selection.path_map`:
   tests run against the whole bundle through the ``wasmTest`` fixture, so a
   library change cannot be narrowed by its imports;
 * ``python/``, ``rust/``, ``examples/`` and Markdown outside ``ts/`` are
-  irrelevant: no slot builds them;
+  irrelevant: no quick target builds them (the Rust and Python suites of
+  full, baseline and canary do);
 * any other path is unrecognised.
 
 A table names paths and projects, so it can go stale. :func:`stale_rules`

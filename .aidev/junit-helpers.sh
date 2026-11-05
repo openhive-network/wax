@@ -124,3 +124,36 @@ fs.writeFileSync(JUNIT,
   properties + body.join("\n") + `\n</testsuite>\n`);
 ' < /dev/null
 }
+
+# junit_merge JUNIT NAME=FILE...
+#   Writes JUNIT as one <testsuites> holding the testsuites of every FILE (a
+#   <testsuite> or a <testsuites> report, e.g. pytest's), each named NAME, with the
+#   root counts summed. A FILE that does not exist is left out.
+junit_merge() {
+    local junit="$1"; shift
+    JUNIT="$junit" node -e '
+const fs = require("fs");
+const esc = (s) => String(s).replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" })[c]);
+const totals = { tests: 0, failures: 0, errors: 0, skipped: 0 };
+let time = 0;
+const suites = [];
+for (const arg of process.argv.slice(1)) {
+  const at = arg.indexOf("=");
+  const name = arg.slice(0, at), file = arg.slice(at + 1);
+  if (!fs.existsSync(file)) continue;
+  const xml = fs.readFileSync(file, "utf8");
+  for (const suite of xml.match(/<testsuite\b[^>]*\/>|<testsuite\b[^>]*[^/]>[\s\S]*?<\/testsuite>/g) || []) {
+    const open = suite.match(/<testsuite\b[^>]*>/)[0];
+    const attr = (a) => Number((open.match(new RegExp(`\\b${a}="([^"]*)"`)) || [])[1]) || 0;
+    for (const a of Object.keys(totals)) totals[a] += attr(a);
+    time += attr("time");
+    suites.push(suite.replace(/<testsuite\b[^>]*>/, (tag) => /\bname="/.test(tag)
+      ? tag.replace(/\bname="[^"]*"/, `name="${esc(name)}"`)
+      : tag.replace("<testsuite", `<testsuite name="${esc(name)}"`)));
+  }
+}
+const counts = Object.entries(totals).map(([a, n]) => `${a}="${n}"`).join(" ");
+fs.writeFileSync(process.env.JUNIT,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites ${counts} time="${time.toFixed(3)}">\n${suites.join("\n")}\n</testsuites>\n`);
+' "$@" < /dev/null
+}
