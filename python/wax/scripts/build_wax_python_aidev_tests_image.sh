@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # Build (and with --push, publish) the image AIDEV's Python suite (.aidev/run-python.sh)
 # runs in, python/wax/docker/wax-python-aidev-tests.dockerfile, and print the reference
-# to bind as the `image:` of the `python` suites in .aidev/project.yaml. See .aidev/README.md.
+# to bind as the `image:` of the `python` and `python314` suites in .aidev/project.yaml.
+# See .aidev/README.md.
 #
 # The base is CI_BASE_IMAGE (its tag from .gitlab-ci.yml), resolved to its registry digest.
 # The tag is `aidev-<hash>`, the hash of that digest, the dockerfile and the build context
-# (the lock files and pyproject.toml files the dependencies are installed from, the ts/ pnpm
+# (the lock files and pyproject.toml files the dependencies are installed from,
+# python/.pre-commit-config.yaml whose hook environments it installs, the ts/ pnpm
 # inputs, common-ci-configuration's python-test-tools constraints script, and
 # `.aidev/run-python.sh --inputs`, which the image records); the registry
 # cleanup policy keeps `aidev-*` tags. When <repository>:aidev-<hash> is already in the
@@ -51,6 +53,7 @@ mkdir -p "$context/python/wax/tests" "$context/python/test_tools" "$context/ts" 
 cp python/wax/pyproject.toml python/wax/poetry.lock "$context/python/wax/"
 git ls-files -z python/wax/tests/wax-local-tools | xargs -0 cp --parents -t "$context"
 cp python/test_tools/pyproject.toml python/test_tools/poetry.lock python/test_tools/readme.md "$context/python/test_tools/"
+cp python/.pre-commit-config.yaml "$context/python/"
 cp -L ts/package.json ts/pnpm-lock.yaml ts/pnpm-workspace.yaml ts/.npmrc "$context/ts/"
 cp ts/npm-common-config/scripts/python/python-test-tools-constraints.py \
     ts/npm-common-config/scripts/python/registry_auth.py "$context/ccc/"

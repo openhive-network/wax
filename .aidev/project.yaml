@@ -58,10 +58,11 @@ issues:
 # (slots run with --network none; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
 # `coverage` runs the tests. full, baseline and canary also run the Rust suite
-# (.aidev/run-rust.sh) and the Python suite (.aidev/run-python.sh), each in its own
-# image and blocking like ts (a lock file change that leaves an image stale fails the
-# slot until the image is rebuilt and re-pinned); their labels are `<slot>-rust` and
-# `<slot>-python` so they never share the ts suite's test-results/aidev-<slot>/,
+# (.aidev/run-rust.sh) and the Python suites (.aidev/run-python.sh: `python` on Python
+# 3.12, `python314` on 3.14 with CI's pre-commit hooks, one image for both), each
+# blocking like ts (a lock file change that leaves an image stale fails the slot until
+# the image is rebuilt and re-pinned); their labels are `<slot>-rust`, `<slot>-python`
+# and `<slot>-python314` so they never share the ts suite's test-results/aidev-<slot>/,
 # which run-checks.sh clears when it starts. See .aidev/README.md.
 verification:
   quick:
@@ -99,7 +100,13 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "full-python"]
         artifacts: ["test-results/aidev-full-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
+        timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "full-python314", "--python", "3.14", "--pre-commit"]
+        artifacts: ["test-results/aidev-full-python314/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
         timeout: 1200
   baseline:
     suites:
@@ -117,7 +124,13 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "baseline-python"]
         artifacts: ["test-results/aidev-baseline-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
+        timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "baseline-python314", "--python", "3.14", "--pre-commit"]
+        artifacts: ["test-results/aidev-baseline-python314/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
         timeout: 1200
   canary:
     suites:
@@ -135,7 +148,13 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "canary-python"]
         artifacts: ["test-results/aidev-canary-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
+        timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "canary-python314", "--python", "3.14", "--pre-commit"]
+        artifacts: ["test-results/aidev-canary-python314/"]
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:1d6ec9d15986fb5e3f4a4e09cd83f0079fe3ea6045f2d46612fd10fb6024ed39"
         timeout: 1200
   static:
     adapter: command

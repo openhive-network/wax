@@ -1,32 +1,60 @@
 #!/usr/bin/env bash
-# AIDEV's Python suite: CI's build_wheel and its Python test jobs (test_wax_protobuf_python,
+# AIDEV's Python suites: CI's build_wheel and its Python test jobs (test_wax_protobuf_python,
 # test_helpy, test_tools_unit_tests, test_tools_hived_handle, test_wax_protobuf_python_pattern,
-# test_wax_protobuf_python_examples) on Python 3.12 with --network none, in the
-# wax-python-aidev-tests image (python/wax/docker/wax-python-aidev-tests.dockerfile), which
-# carries the dependencies, build requirements, pytest and pnpm store those would download.
+# test_wax_protobuf_python_examples) on one of CI's Python versions and, with --pre-commit,
+# its pre_commit_checks, with --network none, in the wax-python-aidev-tests image
+# (python/wax/docker/wax-python-aidev-tests.dockerfile), which carries the dependencies,
+# build requirements, pytest, pre-commit hook environments and pnpm store those would download.
 #
-#   .aidev/run-python.sh <suite>
+#   .aidev/run-python.sh <suite> [--python 3.12|3.14] [--pre-commit]
 #   .aidev/run-python.sh --inputs    # what the image was built for (it records this)
 #
 # Writes test-results/aidev-<suite>/python-junit.xml: a `build` case, the protobuf pattern
-# and visitor example cases, one case per test of each pytest group (its own junit), and the
-# tests in NO_RECORDING_TESTS as skipped. Tracked files the build rewrites (the regenerated
-# protos, ...) are put back as they were before the run and new untracked files are removed.
-# See .aidev/README.md.
+# and visitor example cases, one case per test of each pytest group (its own junit), the
+# tests in NO_RECORDING_TESTS as skipped and, with --pre-commit, one case per hook. On 3.12
+# (the default) the names are as they always were; on another version the step cases and
+# testsuites carry it (`build (3.14)`, `wax-3.14`). Tracked files the build or a hook
+# rewrites (the regenerated protos, ...) are put back as they were before the run and new
+# untracked files are removed. See .aidev/README.md.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 root="$PWD"
 
-# The files the image's dependencies were installed from; a checkout whose output differs
-# from the image's needs a rebuilt image.
+PRE_COMMIT_CONFIG=python/.pre-commit-config.yaml
+
+# The files the image's dependencies and hook environments were installed from; a
+# checkout whose output differs from the image's needs a rebuilt image.
 image_inputs() {
-    sha256sum python/wax/poetry.lock python/test_tools/poetry.lock \
+    sha256sum python/wax/poetry.lock python/test_tools/poetry.lock "$PRE_COMMIT_CONFIG" \
         ts/pnpm-lock.yaml ts/pnpm-workspace.yaml ts/.npmrc
     grep '"packageManager"' ts/package.json
 }
 if [ "${1:-}" = "--inputs" ]; then image_inputs; exit; fi
 
-suite="${1:?usage: $0 <suite> | --inputs}"
+usage() { echo "usage: $0 <suite> [--python 3.12|3.14] [--pre-commit] | --inputs" >&2; exit 2; }
+suite="${1:-}"
+[ -n "$suite" ] && [[ "$suite" != -* ]] || usage
+shift
+python_version=3.12 pre_commit=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --python) [ $# -ge 2 ] || usage; python_version="$2"; shift 2 ;;
+        --pre-commit) pre_commit=1; shift ;;
+        *) usage ;;
+    esac
+done
+case "$python_version" in 3.12|3.14) ;; *) usage ;; esac
+if [ "$pre_commit" = 1 ] && [ "$python_version" != 3.14 ]; then
+    echo "--pre-commit needs --python 3.14: CI's pre_commit_checks runs on Python 3.14" >&2
+    exit 2
+fi
+# 3.12's case and testsuite names, and its venvs' (an image older than 3.14 has those
+# only), predate the other versions and stay as they are.
+case_tag="" suite_tag="" venv_tag=""
+if [ "$python_version" != 3.12 ]; then
+    case_tag=" ($python_version)" suite_tag="-$python_version" venv_tag="-$python_version"
+fi
+steps_suite="python$suite_tag"
 
 BAKED="${WAX_AIDEV:-/opt/wax-aidev}"
 PROTO_DIR=hive/libraries/protocol/proto
@@ -47,16 +75,25 @@ cases="$logs/cases.tsv"; : > "$cases"
 
 source .aidev/junit-helpers.sh
 
-if ! image_inputs 2>&1 | cmp -s - "$BAKED/inputs"; then
+# The checkout's inputs as far as the image recorded them: an image built before a file
+# became an input is held to the files it recorded (the approved bindings of a workflow
+# that adds an input still name such an image).
+recorded_inputs() {
+    image_inputs 2>&1 | awk '
+        function is_sum(s) { return length(s) == 64 && s ~ /^[0-9a-f]+$/ }
+        NR == FNR { if (is_sum($1)) recorded[$2] = 1; next }
+        !is_sum($1) || ($2 in recorded)' "$BAKED/inputs" -
+}
+if ! recorded_inputs | cmp -s - "$BAKED/inputs"; then
     {
-        echo "The lock files differ from the ones the test image installed dependencies for:"
+        echo "The image's inputs differ from the ones the test image was built for:"
         echo "image ($BAKED/inputs):"; cat "$BAKED/inputs"
         echo "checkout:"; image_inputs
     } > "$logs/stale.log" 2>&1
     cat "$logs/stale.log" >&2
-    printf 'case\timage freshness\tfail\t0\ttest image is stale for these lock files, rebuild wax-python-aidev-tests\t%s\n' \
-        "$logs/stale.log" >> "$cases"
-    junit_write_cases "$junit" python "$cases"
+    printf 'case\timage freshness%s\tfail\t0\ttest image is stale for these lock files and hook revs, rebuild wax-python-aidev-tests\t%s\n' \
+        "$case_tag" "$logs/stale.log" >> "$cases"
+    junit_write_cases "$junit" "$steps_suite" "$cases"
     exit 1
 fi
 
@@ -75,9 +112,9 @@ git ls-files -z --deleted > "$backup/deleted" &&
         | grep -zvxF -f <(tr '\0' '\n' < "$backup/deleted") \
         | tar --null -T - -cf "$backup/tracked.tar" 2> "$logs/snapshot.log" || {
     cat "$logs/snapshot.log" >&2
-    printf 'case\tcheckout snapshot\tfail\t0\tcannot snapshot the tracked files with git, so the build would not be undone\t%s\n' \
-        "$logs/snapshot.log" >> "$cases"
-    junit_write_cases "$junit" python "$cases"
+    printf 'case\tcheckout snapshot%s\tfail\t0\tcannot snapshot the tracked files with git, so the build would not be undone\t%s\n' \
+        "$case_tag" "$logs/snapshot.log" >> "$cases"
+    junit_write_cases "$junit" "$steps_suite" "$cases"
     rm -rf "$backup"
     exit 1
 }
@@ -98,21 +135,53 @@ export PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 npm_config_offline=true \
     PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 # poetry-dynamic-versioning reads git tags, which a checkout may not have.
 export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0+aidev
+# What CI sets for its Python 3.14 jobs.
+[ "$python_version" = 3.12 ] || export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
-# Runs CMD with the image's venv NAME (wax or test-tools) active.
+# Runs CMD with the image's venv NAME (wax, test-tools or pre-commit) for this Python
+# version active.
 in_venv() {
-    local venv="$BAKED/venv-$1"; shift
+    local venv="$BAKED/venv-$1$venv_tag"; shift
     (source "$venv/bin/activate" && "$@")
+}
+
+# The C++, Cython and setuptools build trees in python/wax are configured for one Python
+# version. The other version's trees wait in python/wax/.cache/aidev-build/<version>
+# (ignored by git, as the trees are) while this one builds, so each version's build stays
+# incremental when both suites run in one checkout. Trees with no record of their
+# version are removed. Runs in python/wax.
+BUILD_TREES=(.build build .cython_build cpp_python_bridge.cpp)
+use_build_trees() {
+    local stamp=.build/aidev-python-version parked=.cache/aidev-build built="" t
+    [ -f "$stamp" ] && built="$(cat "$stamp")"
+    [ "$built" = "$python_version" ] && return 0
+    if [ -n "$built" ]; then
+        rm -rf "${parked:?}/$built" && mkdir -p "$parked/$built" || return 1
+        for t in "${BUILD_TREES[@]}"; do
+            [ ! -e "$t" ] || mv "$t" "$parked/$built/" || return 1
+        done
+    else
+        rm -rf "${BUILD_TREES[@]}" || return 1
+    fi
+    if [ -d "$parked/$python_version" ]; then
+        for t in "${BUILD_TREES[@]}"; do
+            [ ! -e "$parked/$python_version/$t" ] || mv "$parked/$python_version/$t" . || return 1
+        done
+        rm -rf "${parked:?}/$python_version"
+    fi
+    mkdir -p .build && echo "$python_version" > "$stamp"
 }
 
 # build_wax.sh 1 without its network calls: the protos as compile_proto.sh generates them
 # (without its `poetry lock` and `poetry install`), and the wheel the way it builds it,
 # with the dependencies and build requirements the image installed. The wheel goes into
-# both venvs, with wax-local-tools and test-tools from the checkout.
+# both venvs, with wax-local-tools and test-tools from the checkout. The package's *.so
+# are the last build's, maybe of the other version, and the wheel would include them.
 # It runs as a step's condition, where `set -e` has no effect: every command is checked.
 build_wheel() {
     cd python/wax || return 1
-    rm -rf setup.py dist wax/_private/proto && mkdir -p wax/_private/proto || return 1
+    use_build_trees || return 1
+    rm -rf setup.py dist wax/_private/proto wax/*.so && mkdir -p wax/_private/proto || return 1
     local protos=()
     for p in "$root/$PROTO_DIR"/*.proto; do
         [ "$p" = "$root/$PROTO_DIR/block.proto" ] || protos+=("$p")
@@ -126,10 +195,11 @@ build_wheel() {
     python3 -m pip wheel --no-deps --no-build-isolation -w dist . || return 1
     local wheel=(dist/*.whl)
     [ -f "${wheel[0]}" ] || { echo "pip wheel left no wheel in python/wax/dist" >&2; return 1; }
-    "$BAKED/venv-wax/bin/python3" -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
-        "$BAKED/venv-test-tools/bin/python3" -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
-        "$BAKED/venv-wax/bin/python3" -m pip install --no-deps --no-build-isolation -e tests/wax-local-tools &&
-        "$BAKED/venv-test-tools/bin/python3" -m pip install --no-deps --no-build-isolation -e ../test_tools
+    local wax="$BAKED/venv-wax$venv_tag/bin/python3" test_tools="$BAKED/venv-test-tools$venv_tag/bin/python3"
+    "$wax" -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
+        "$test_tools" -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
+        "$wax" -m pip install --no-deps --no-build-isolation -e tests/wax-local-tools &&
+        "$test_tools" -m pip install --no-deps --no-build-isolation -e ../test_tools
 }
 
 # Pytest groups: name, venv, the directory of its tests (its node ids are relative to
@@ -168,8 +238,11 @@ steps_skipped_after_build() {
         read -r name venv dir <<< "$g"
         steps+=("$name tests")
     done
-    for s in "${steps[@]}" "visitor example"; do
-        printf 'case\t%s\tskip\t0\tthe build failed\n' "$s" >> "$cases"
+    steps+=("visitor example")
+    # The pre-commit environment holds the wheel (mypy-test-tools resolves wax from it).
+    [ "$pre_commit" = 0 ] || steps+=("pre-commit")
+    for s in "${steps[@]}"; do
+        printf 'case\t%s%s\tskip\t0\tthe build failed\n' "$s" "$case_tag" >> "$cases"
     done
 }
 
@@ -186,16 +259,142 @@ step_case() {
     fi
 }
 
+# CI's pre_commit_checks environment: the pre-commit venv holds wax's dependencies (with
+# its static-analysis group) and test-tools' without hiveio-wax; this adds the wheel just
+# built, wax-local-tools from the checkout (wax's `poetry install` puts that path
+# dependency in editable) and test-tools --no-deps, and checks that every hook environment
+# is in the image's PRE_COMMIT_HOME (offline, a missing one fails here).
+pre_commit_environment() {
+    local wheel=(python/wax/dist/*.whl)
+    python3 -m pip install --no-deps --force-reinstall "${wheel[@]}" &&
+        python3 -m pip install --no-deps --no-build-isolation -e python/wax/tests/wax-local-tools &&
+        python3 -m pip install --no-deps --no-build-isolation -e python/test_tools &&
+        pre-commit install-hooks --config "$PRE_COMMIT_CONFIG"
+}
+
+# The ids of the config's hooks, in its order, each once.
+pre_commit_hook_ids() {
+    python3 -c '
+import sys, yaml
+ids = []
+for repo in yaml.safe_load(open(sys.argv[1]))["repos"]:
+    for hook in repo["hooks"]:
+        if hook["id"] not in ids:
+            ids.append(hook["id"])
+print("\n".join(ids))
+' "$PRE_COMMIT_CONFIG"
+}
+
+# The changes to python/ since snapshot SNAP (a copy of its tracked files and the list of
+# its untracked ones), as a unified diff.
+tree_diff() {
+    local snap="$1" f
+    git ls-files -z -m -- python | while IFS= read -r -d '' f; do
+        if [ ! -e "$f" ]; then
+            diff -u --label "a/$f" --label /dev/null "$snap/$f" /dev/null
+        elif ! cmp -s "$snap/$f" "$f"; then
+            diff -u --label "a/$f" --label "b/$f" "$snap/$f" "$f"
+        fi
+    done
+    git ls-files -z --others --exclude-standard -- python \
+        | grep -zvxF -f <(tr '\0' '\n' < "$snap.untracked") \
+        | while IFS= read -r -d '' f; do
+            diff -u --label /dev/null --label "b/$f" /dev/null "$f"
+        done
+}
+
+# CI's pre_commit_checks: `pre-commit run --config python/.pre-commit-config.yaml
+# --all-files` from the repository root, in the pre-commit venv. Each hook id runs on its
+# own, in the config's order, so a hook's case can carry the diff of what it rewrote;
+# what a hook rewrites stays for the next one, as in one run. Writes
+# $logs/pre-commit-junit.xml: one case per hook, a failure's body its output and diff.
+pre_commit_checks() {
+    local dir="$logs/pre-commit" pc_cases="$logs/pre-commit/cases.tsv" rc=0 t0 n=0 id status
+    mkdir -p "$dir"; : > "$pc_cases"
+    # mypy and ruff would put their caches in the checkout.
+    export MYPY_CACHE_DIR="$backup/mypy-cache" RUFF_CACHE_DIR="$backup/ruff-cache"
+    t0=$SECONDS
+    if ! in_venv pre-commit pre_commit_environment > "$dir/environment.log" 2>&1 < /dev/null; then
+        tail -40 "$dir/environment.log" >&2
+        printf 'case\tpre-commit environment\tfail\t%s\tpre-commit cannot start: its environment or a hook environment is missing\t%s\n' \
+            "$((SECONDS - t0))" "$dir/environment.log" >> "$pc_cases"
+        junit_write_cases "$logs/pre-commit-junit.xml" pre-commit "$pc_cases"
+        return 1
+    fi
+    local ids
+    if ! ids="$(in_venv pre-commit pre_commit_hook_ids 2> "$dir/hook-ids.log")" || [ -z "$ids" ]; then
+        printf 'case\tpre-commit hooks\tfail\t0\tcannot read the hook ids of %s\t%s\n' \
+            "$PRE_COMMIT_CONFIG" "$dir/hook-ids.log" >> "$pc_cases"
+        junit_write_cases "$logs/pre-commit-junit.xml" pre-commit "$pc_cases"
+        return 1
+    fi
+
+    local snap="$backup/pre-commit-snapshot" log hook_lines line name result note case_log
+    while IFS= read -r id; do
+        n=$((n + 1))
+        log="$dir/$n-$id.log"
+        rm -rf "$snap"; mkdir -p "$snap"
+        git ls-files -z -- python | tar --null -T - -cf - 2> /dev/null | tar -xf - -C "$snap"
+        git ls-files -z --others --exclude-standard -- python > "$snap.untracked"
+        t0=$SECONDS
+        status=0
+        in_venv pre-commit pre-commit run --config "$PRE_COMMIT_CONFIG" --all-files --color never "$id" \
+            > "$log" 2>&1 < /dev/null || status=$?
+        tree_diff "$snap" > "$dir/$n-$id.diff"
+        # A hook's line: its name, dots, then `Passed`, `Failed` or `(<why>)Skipped`.
+        hook_lines="$(grep -E '^.+[.]{3,}(\([^)]*\))?(Passed|Failed|Skipped)$' "$log")"
+        if [ -z "$hook_lines" ]; then
+            rc=1
+            tail -40 "$log" >&2
+            printf 'case\t%s\tfail\t%s\tpre-commit could not run hook %s (exit %s)\t%s\n' \
+                "$id" "$((SECONDS - t0))" "$id" "$status" "$log" >> "$pc_cases"
+            continue
+        fi
+        while IFS= read -r line; do
+            result="${line##*.}"
+            name="${line%%...*}"
+            note=""
+            [[ "$result" =~ ^\((.*)\)(Skipped)$ ]] && { note="${BASH_REMATCH[1]}"; result=Skipped; }
+            case "$result" in
+                Passed) printf 'case\t%s: %s\tpass\t%s\t\n' "$id" "$name" "$((SECONDS - t0))" >> "$pc_cases" ;;
+                Skipped) printf 'case\t%s: %s\tskip\t0\t%s\n' "$id" "$name" "${note:-skipped}" >> "$pc_cases" ;;
+                *)
+                    rc=1
+                    case_log="$dir/$n-$id.case.log"
+                    {
+                        cat "$log"
+                        if [ -s "$dir/$n-$id.diff" ]; then
+                            echo; echo "What the hook changed ($(wc -l < "$dir/$n-$id.diff") diff lines, all in $dir/$n-$id.diff):"
+                            head -40 "$dir/$n-$id.diff"
+                        fi
+                    } > "$case_log"
+                    tail -40 "$case_log" >&2
+                    note="$id failed"
+                    grep -q '^- files were modified by this hook' "$log" && note="$id failed: it modified files"
+                    printf 'case\t%s: %s\tfail\t%s\t%s\t%s\n' "$id" "$name" "$((SECONDS - t0))" "$note" "$case_log" >> "$pc_cases"
+                    ;;
+            esac
+        done <<< "$hook_lines"
+        if [ "$status" -ne 0 ] && ! grep -qE 'Failed$' <<< "$hook_lines"; then
+            rc=1
+            printf 'case\t%s\tfail\t0\tpre-commit exited %s with no failed hook\t%s\n' "$id" "$status" "$log" >> "$pc_cases"
+        fi
+    done <<< "$ids"
+    rm -rf "$snap" "$snap.untracked"
+    junit_write_cases "$logs/pre-commit-junit.xml" pre-commit "$pc_cases"
+    return "$rc"
+}
+
 python_tests() {
     local rc=0 name venv dir entry group
-    if ! step_case build wax "$logs/build.log" build_wheel; then
+    if ! step_case "build$case_tag" wax "$logs/build.log" build_wheel; then
         steps_skipped_after_build
-        junit_write_cases "$logs/steps-junit.xml" python "$cases"
+        junit_write_cases "$logs/steps-junit.xml" "$steps_suite" "$cases"
         cp "$logs/steps-junit.xml" "$junit"
         return 1
     fi
 
-    step_case "protobuf pattern" wax "$logs/protobuf-pattern.log" \
+    step_case "protobuf pattern$case_tag" wax "$logs/protobuf-pattern.log" \
         diff --brief --recursive --color=never --no-ignore-file-name-case --no-dereference \
         python/wax/protobuf_patterns/ python/wax/wax/_private/proto/ || rc=1
 
@@ -210,17 +409,18 @@ python_tests() {
         if [ -n "$group" ] && in_venv "$venv" python3 -m pytest --collect-only -q "$entry" \
                 > "$logs/no-recording-$i.log" 2>&1 < /dev/null; then
             deselect[$group]+=" --deselect=${entry#"$rootdir"/}"
-            printf 'case\t%s\tskip\t0\tno recorded API response (NO_RECORDING_TESTS)\n' "$entry" >> "$cases"
+            printf 'case\t%s%s\tskip\t0\tno recorded API response (NO_RECORDING_TESTS)\n' \
+                "$entry" "$case_tag" >> "$cases"
         else
             rc=1
-            printf 'case\t%s\tfail\t0\tNO_RECORDING_TESTS names no test; update .aidev/run-python.sh\t%s\n' \
-                "$entry" "$logs/no-recording-$i.log" >> "$cases"
+            printf 'case\t%s%s\tfail\t0\tNO_RECORDING_TESTS names no test; update .aidev/run-python.sh\t%s\n' \
+                "$entry" "$case_tag" "$logs/no-recording-$i.log" >> "$cases"
         fi
     done
 
     # proxy-mock-server.sh runs `pnpm install --frozen-lockfile` in ts/; have node_modules
     # current first, from the image's store, as the TS suite does.
-    step_case "ts dependencies" wax "$logs/ts-dependencies.log" \
+    step_case "ts dependencies$case_tag" wax "$logs/ts-dependencies.log" \
         bash -c 'cd ts && source ../.aidev/pnpm-deps.sh' || rc=1
 
     local merged=() status
@@ -232,19 +432,24 @@ python_tests() {
         tail -3 "$log" >&2
         if [ "$status" -ne 0 ]; then
             rc=1
-            junit_add_unreported_failure "$j" "$name" "$name tests" "$log" "$status"
+            junit_add_unreported_failure "$j" "$name$suite_tag" "$name tests$case_tag" "$log" "$status"
         fi
-        merged+=("$name=$j")
+        merged+=("$name$suite_tag=$j")
     done
     for f in python/wax/mock-server.log python/test_tools/mock-server.log; do
         [ -f "$f" ] && mv "$f" "$logs/$(basename "$(dirname "$f")")-mock-server.log"
     done
 
-    step_case "visitor example" wax "$logs/visitor-example.log" bash examples/python/run_example.sh || rc=1
+    step_case "visitor example$case_tag" wax "$logs/visitor-example.log" bash examples/python/run_example.sh || rc=1
 
-    junit_write_cases "$logs/steps-junit.xml" python "$cases"
-    junit_merge "$junit" "python=$logs/steps-junit.xml" "${merged[@]}"
+    if [ "$pre_commit" = 1 ]; then
+        pre_commit_checks || rc=1
+        merged+=("pre-commit=$logs/pre-commit-junit.xml")
+    fi
+
+    junit_write_cases "$logs/steps-junit.xml" "$steps_suite" "$cases"
+    junit_merge "$junit" "$steps_suite=$logs/steps-junit.xml" "${merged[@]}"
     return "$rc"
 }
 
-run_with_junit_fallback "$junit" python python_tests
+run_with_junit_fallback "$junit" "$steps_suite" python_tests

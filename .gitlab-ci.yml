@@ -1095,7 +1095,8 @@ build_wax_rust_aidev_tests_image:
 # WAX Python AIDEV Tests Image Build Job
 # =============================================================================
 # Builds wax-python-aidev-tests = wax ci-base-image + the Python dependencies of both lock
-# files, the build requirements, pytest and the ts/ pnpm store, the image AIDEV runs
+# files (Python 3.12 and 3.14), the build requirements, pytest, the pre-commit hook
+# environments of python/.pre-commit-config.yaml and the ts/ pnpm store, the image AIDEV runs
 # .aidev/run-python.sh in (offline). The script tags it by the hash of its inputs and
 # builds only when that tag is not in the registry.
 # Runs automatically when the image's inputs change, manual otherwise.
@@ -1121,6 +1122,7 @@ build_wax_python_aidev_tests_image:
       - python/wax/pyproject.toml
       - python/test_tools/poetry.lock
       - python/test_tools/pyproject.toml
+      - python/.pre-commit-config.yaml
       - ts/pnpm-lock.yaml
       - ts/package.json
       - ts/npm-common-config
