@@ -7,8 +7,9 @@ hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `wo
 The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
 (`rust/`) and the Python packages (`python/`: `hiveio-wax` and `hiveio-test-tools`) are
 bound in full, baseline and canary as blocking suites, `run-rust.sh` and `run-python.sh`
-(see [The Rust suite](#the-rust-suite-run-rustsh) and
-[The Python suite](#the-python-suite-run-pythonsh)).
+(see [The Rust suite](#the-rust-suite-run-rustsh),
+[The Python suite](#the-python-suite-run-pythonsh) and
+[The Python 3.14 suite](#the-python-314-suite-run-pythonsh---python-314---pre-commit)).
 
 ## Suites
 
@@ -32,25 +33,27 @@ neither a step nor an offline project exits 2 before anything runs.
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
 | `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
 
-| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) |
-|---|---|---|---|
-| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — |
-| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
-| coverage | proto wasm tsc bundle build-tests tests | — | — |
-| static | proto wasm tsc proto-pattern | — | — |
-| system | proto wasm tsc bundle | — | — |
+| Slot | Suite `ts` (`run-checks.sh <slot>`) | Suite `rust` (`run-rust.sh <slot>-rust`) | Suite `python` (`run-python.sh <slot>-python`) | Suite `python314` (`run-python.sh <slot>-python314 --python 3.14 --pre-commit`) |
+|---|---|---|---|---|
+| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — | — |
+| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests | 3.12: wheel, pytest suites, pattern, example | 3.14: wheel, pytest suites, pattern, example; pre-commit hooks |
+| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests | 3.12: wheel, pytest suites, pattern, example | 3.14: wheel, pytest suites, pattern, example; pre-commit hooks |
+| coverage | proto wasm tsc bundle build-tests tests | — | — | — |
+| static | proto wasm tsc proto-pattern | — | — | — |
+| system | proto wasm tsc bundle | — | — | — |
 
 A slot with a single binding names no suites; full, baseline and canary list `ts`,
-`rust` and `python` under `suites:`. The `rust` and `python` suites' labels are
-`<slot>-rust` and `<slot>-python`, so their results go to `test-results/aidev-<slot>-rust/`
-and `test-results/aidev-<slot>-python/`, never to the `ts` suite's
+`rust`, `python` and `python314` under `suites:`. The other suites' labels are
+`<slot>-rust`, `<slot>-python` and `<slot>-python314`, so their results go to
+`test-results/aidev-<slot>-rust/`, `test-results/aidev-<slot>-python/` and
+`test-results/aidev-<slot>-python314/`, never to the `ts` suite's
 `test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
 
-All three suites block: a failure in any of them fails the slot. A workflow runs the
-bindings approved on `aidev/integration`, so if the `rust` or `python` suite fails on
-pull hosts for an environmental reason, the recovery is a direct commit to
-`aidev/integration` that gives that suite `mode: advisory` again.
+All four suites block: a failure in any of them fails the slot. A workflow runs the
+bindings approved on `aidev/integration`, so if the `rust`, `python` or `python314`
+suite fails on pull hosts for an environmental reason, the recovery is a direct commit
+to `aidev/integration` that gives that suite (for `python314`, the `python314` suites of
+full, baseline and canary only) `mode: advisory`.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs exactly
@@ -169,12 +172,12 @@ blocking, `timeout: 1200`), in its own image (below): a failure fails the slot a
 an input the image records (below) must rebuild the image and re-pin it in the same
 commit, merges of `develop` into `aidev/integration` included.
 
-`.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (CI also runs 3.14), what
-CI's Python jobs run, against the checkout:
+`.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (3.14 is the `python314`
+suite, below), what CI's Python jobs run, against the checkout:
 
 | Case | What | CI job it mirrors |
 |---|---|---|
-| `build` | `build_wax.sh 1` without its network calls: the protos with `grpc_tools.protoc` as `compile_proto.sh` calls it (without its `poetry lock` and `poetry install`), then `pip wheel --no-deps --no-build-isolation`; the wheel is installed into both of the image's venvs, with `wax-local-tools` and `python/test_tools` editable. The version is `0.0.0+aidev` (`POETRY_DYNAMIC_VERSIONING_BYPASS`), as a checkout may have no tags | `build_wheel` |
+| `build` | `build_wax.sh 1` without its network calls: the protos with `grpc_tools.protoc` as `compile_proto.sh` calls it (without its `poetry lock` and `poetry install`), then `pip wheel --no-deps --no-build-isolation`; the wheel is installed into both of the image's venvs for the version, with `wax-local-tools` and `python/test_tools` editable. The version is `0.0.0+aidev` (`POETRY_DYNAMIC_VERSIONING_BYPASS`), as a checkout may have no tags | `build_wheel` |
 | `protobuf pattern` | `diff` of the generated `python/wax/wax/_private/proto` against `python/wax/protobuf_patterns` | `test_wax_protobuf_python_pattern` |
 | `ts dependencies` | `pnpm-deps.sh`, so the `pnpm install --frozen-lockfile` of `proxy-mock-server.sh` finds `ts/node_modules` current | — |
 | `wax` | `python/wax/tests/run_tests.sh`: pytest behind the API replay server (`proxy-mock-server.sh`, `replay`) | `test_wax_protobuf_python` |
@@ -202,27 +205,87 @@ to `test-results/aidev-<suite>/python/`. It exits non-zero when any case failed.
   uncommitted edits included, and removes the untracked files the run created (ignored
   ones, like the C++ and Cython build directories, stay, so the next build is
   incremental): `git status --porcelain` after a run is what it was before.
+- The build trees in `python/wax` (`.build`, `build`, `.cython_build`,
+  `cpp_python_bridge.cpp`) are configured for one Python version, recorded in
+  `.build/aidev-python-version`. Before building, the script parks the other version's
+  trees in `python/wax/.cache/aidev-build/<version>/` (ignored by git) and takes back
+  its own, so the `python` and `python314` suites stay incremental in one checkout;
+  trees with no recorded version are removed (one cold build). The package's `*.so`
+  files are removed before each build, as the wheel would include another version's.
+
+## The Python 3.14 suite (`run-python.sh --python 3.14 --pre-commit`)
+
+Bound as the `python314` suite of full, baseline and canary, after `python`
+(`run-python.sh <slot>-python314 --python 3.14 --pre-commit`, blocking, `timeout: 1200`),
+in the same image. It closes the two gaps the `python` suite leaves to CI: the 3.14 half of
+`.python_test_matrix` and `build_wheel`, and `pre_commit_checks` (ruff, mypy, ...).
+
+`--python 3.14` runs the cases of the `python` suite on Python 3.14: the build with
+`python3.14` and `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` (as CI's 3.14 jobs), the
+protobuf pattern, the four pytest groups and the visitor example, in the image's 3.14
+venvs. Their names carry the version, so the two suites' results are never the same
+test: the step cases are `build (3.14)`, `protobuf pattern (3.14)`, ... in a testsuite
+`python-3.14`, and the groups are the testsuites `wax-3.14`, `helpy-3.14`,
+`test-tools-unit-3.14` and `test-tools-hived-handle-3.14`. Without `--python` (the
+`python` suite) the names are as before.
+
+`--pre-commit` (only with `--python 3.14`, as CI runs it on 3.14) then runs CI's
+`pre_commit_checks`: `pre-commit run --config python/.pre-commit-config.yaml --all-files`
+from the repository root, in the image's pre-commit venv with the wheel just built and
+`python/test_tools` installed `--no-deps`. Its results are the testsuite `pre-commit`:
+
+| Case | What |
+|---|---|
+| `pre-commit environment` | installs the wheel and test-tools into the venv and runs `pre-commit install-hooks`, which finds every hook environment in the image's `PRE_COMMIT_HOME`; fails (and no hook runs) when pre-commit cannot start, for example when a hook environment is missing and pre-commit would fetch it |
+| `<hook id>: <hook name>` | one per hook of the config. Passed is a pass, Skipped (`no files to check`: check-yaml and the three poetry-lock hooks, because of the config's `files` filter) a skipped case, Failed a failure whose body is the hook's output and, when the hook rewrote files (ruff `--fix`, ruff-format, pretty-format-json `--autofix`, trailing-whitespace, end-of-file-fixer, detect-missing-init `--create`), the diff of what it changed |
+
+Each hook id runs as its own `pre-commit run ... <id>` in the config's order, so the diff
+of a hook is its own; what a hook rewrites stays for the next one, as in CI's single
+run. The three poetry-lock hooks share an id and run together. mypy's and ruff's caches
+go to a temporary directory, pre-commit's log to `PRE_COMMIT_HOME`, and what the hooks
+rewrite or create is undone with the build's output, so `git status --porcelain` after a
+run is what it was before. After a failed build the other steps and `pre-commit` are
+skipped cases: its environment needs the wheel, as mypy-test-tools resolves wax from it.
+Logs go to `test-results/aidev-<slot>-python314/python/` (`pre-commit/` holds each hook's
+output and diff).
+
+On 2026-11-05: build, pattern, wax 1121 passed and 8 skipped, helpy 99, test-tools unit
+110 and hived-handle 8 passed, the visitor example passed; the hooks passed and skipped
+as in CI.
+
+Recovery: if `python314` fails on pull hosts for an environmental reason, a direct commit
+to `aidev/integration` sets `mode: advisory` on the `python314` suites of full, baseline
+and canary only; `python` keeps blocking. A failing hook is fixed in the code, as in CI.
 
 ### The image (`python/wax/docker/wax-python-aidev-tests.dockerfile`)
 
-The suite runs in `registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests`:
-CI's `CI_BASE_IMAGE` (wax ci-base-image: Python 3.12 and 3.14, Poetry, the C++ toolchain
-and Boost, Node), pinned by digest, plus what the build and the tests would download.
+The `python` and `python314` suites run in
+`registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests`: CI's `CI_BASE_IMAGE` (wax
+ci-base-image: Python 3.12 and 3.14, Poetry, the C++ toolchain and Boost, Node), pinned
+by digest, plus what the build, the tests and the pre-commit hooks would download.
 
 | Path | What |
 |---|---|
-| `/opt/wax-aidev/venv-wax` | Python 3.12 venv with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
-| `/opt/wax-aidev/venv-test-tools` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
-| `/opt/wax-aidev/inputs` | `run-python.sh --inputs`: `sha256sum` of both `poetry.lock` files, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` and `ts/.npmrc`, and `packageManager` |
+| `/opt/wax-aidev/venv-wax`, `venv-wax-3.14` | a venv per Python version (3.12's has the name it had before 3.14 was added) with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
+| `/opt/wax-aidev/venv-test-tools`, `venv-test-tools-3.14` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
+| `/opt/wax-aidev/venv-pre-commit-3.14` | `pre_commit_checks`' environment on Python 3.14: `poetry install --no-root` of `python/wax` (with its `static-analysis` group: mypy, ruff, pre-commit) and of `python/test_tools` without `hiveio-wax`, test-tools' build requirements and the pytest family; the suite adds the wheel and test-tools |
+| `/opt/wax-aidev/pre-commit-home` | `PRE_COMMIT_HOME`, writable by any uid: the hook environments of `python/.pre-commit-config.yaml` (pre-commit-hooks, poetry, codespell, detect-missing-init), installed with `pre-commit install-hooks` at build time |
+| `/opt/wax-aidev/inputs` | `run-python.sh --inputs`: `sha256sum` of both `poetry.lock` files, `python/.pre-commit-config.yaml`, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` and `ts/.npmrc`, and `packageManager` |
 | `/opt/pnpm-store`, `/opt/corepack` | `pnpm fetch` of `ts/pnpm-lock.yaml` and the `packageManager` pnpm, as in the test runtime image |
 
 poetry-dynamic-versioning is installed into Poetry's own environment, so the
 `requires-plugins` of the `poetry run` in the CI scripts are satisfied offline.
 
-When an input differs from `inputs`, the script writes one failing case, "test image is
-stale for these lock files, rebuild wax-python-aidev-tests", and exits 1 before building
+When an input differs from `inputs`, the script writes one failing case, `image
+freshness` (`image freshness (3.14)` in `python314`): "test image is stale for these lock
+files and hook revs, rebuild wax-python-aidev-tests", and exits 1 before building
 anything. A hive submodule bump lands there too: it moves the `hiveio-api` pin and its
-lock entry (`sync_hiveio_api`). Then rebuild the image:
+lock entry (`sync_hiveio_api`), and so does a changed hook `rev` in
+`python/.pre-commit-config.yaml` (offline, pre-commit could not fetch it). An image
+built before a file became an input is held only to the files it recorded, so the `python`
+suite still runs in the image a workflow's approved bindings name while that workflow
+adds an input and re-pins the image (its gates run the approved bindings). Then rebuild
+the image:
 
 ```bash
 python/wax/scripts/build_wax_python_aidev_tests_image.sh --push
@@ -231,8 +294,9 @@ python/wax/scripts/build_wax_python_aidev_tests_image.sh --push
 
 or let the CI job `build_wax_python_aidev_tests_image` do it (it runs the script when an
 input changes, manual otherwise, and ends its log with `Pushed …@sha256:<digest>`). Put
-the printed reference in the `image:` of the `python` suite of `verification.full`,
-`.baseline` and `.canary` in `project.yaml`, all three in the same commit. The base is
+the printed reference in the `image:` of the `python` and `python314` suites of
+`verification.full`, `.baseline` and `.canary` in `project.yaml`, all six in the same
+commit. The base is
 `CI_BASE_IMAGE_TAG` from `.gitlab-ci.yml`, so a CI base image bump gives a new tag too.
 
 To run it locally (submodules checked out recursively; in a git worktree mount the git
@@ -241,6 +305,9 @@ directory the `.git` file points to as well):
 ```bash
 docker run --rm --network none --user "$(id -u):$(id -g)" \
   -v "$PWD":/work -w /work <the python suite's image> .aidev/run-python.sh full-python
+docker run --rm --network none --user "$(id -u):$(id -g)" \
+  -v "$PWD":/work -w /work <the python suite's image> \
+  .aidev/run-python.sh full-python314 --python 3.14 --pre-commit
 ```
 
 ## The test runtime image (`runtime/`)
