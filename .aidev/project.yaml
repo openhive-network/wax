@@ -99,7 +99,7 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "full-python"]
         artifacts: ["test-results/aidev-full-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:cc9dc8cc3dbaf812a8de96d758138bdcf43a0ddb390cb1e5b7fbe4930dc46e10"
         timeout: 1200
   baseline:
     suites:
@@ -117,7 +117,7 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "baseline-python"]
         artifacts: ["test-results/aidev-baseline-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:cc9dc8cc3dbaf812a8de96d758138bdcf43a0ddb390cb1e5b7fbe4930dc46e10"
         timeout: 1200
   canary:
     suites:
@@ -135,7 +135,7 @@ verification:
         adapter: command
         args: [".aidev/run-python.sh", "canary-python"]
         artifacts: ["test-results/aidev-canary-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:fbdc45c95227fe6c30dc7c5e53dbdaf349cc78f30cf746bf8b0f6f0807d4ae1c"
+        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:cc9dc8cc3dbaf812a8de96d758138bdcf43a0ddb390cb1e5b7fbe4930dc46e10"
         timeout: 1200
   static:
     adapter: command
