@@ -1113,6 +1113,44 @@ build_wax_rust_aidev_tests_image:
     allow_failure: true
 
 # =============================================================================
+# WAX Python AIDEV Tests Image Build Job
+# =============================================================================
+# Builds wax-python-aidev-tests = wax ci-base-image + the Python dependencies of both lock
+# files, the build requirements, pytest and the ts/ pnpm store, the image AIDEV runs
+# .aidev/run-python.sh in (offline). The script tags it by the hash of its inputs and
+# builds only when that tag is not in the registry.
+# Runs automatically when the image's inputs change, manual otherwise.
+# The job log ends with the repository@sha256:<digest> to bind in .aidev/project.yaml.
+
+build_wax_python_aidev_tests_image:
+  extends: .docker_image_builder_job_template
+  stage: prepare
+  script:
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY"
+    --password-stdin
+  - ./python/wax/scripts/build_wax_python_aidev_tests_image.sh --push
+  tags:
+  - public-runner-docker
+  rules:
+    # Run when the image's inputs change
+  - if: $CI_COMMIT_BRANCH
+    changes:
+      paths:
+      - python/wax/docker/wax-python-aidev-tests.dockerfile
+      - python/wax/scripts/build_wax_python_aidev_tests_image.sh
+      - python/wax/poetry.lock
+      - python/wax/pyproject.toml
+      - python/test_tools/poetry.lock
+      - python/test_tools/pyproject.toml
+      - ts/pnpm-lock.yaml
+      - ts/package.json
+      - ts/npm-common-config
+    when: on_success
+    # Manual trigger available
+  - when: manual
+    allow_failure: true
+
+# =============================================================================
 # GitHub Pages Documentation Deployment
 # =============================================================================
 # Deploys versioned documentation to a dedicated GitHub repository.
