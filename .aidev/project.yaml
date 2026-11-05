@@ -30,12 +30,37 @@ branches:
   handoff_history: "linear"
 
 # How this project's suites execute (#13892): one kind, stated once.
-# The emsdk image CI builds the TypeScript package in, plus an offline pnpm store
-# (.aidev/runtime; rebuild and re-pin with .aidev/runtime/build.sh --push).
+# Every suite (ts, rust, python) runs in one image AIDEV builds itself from
+# .aidev/runtime/Dockerfile on the followed base: the emsdk image CI builds the
+# TypeScript package in (EMSCRIPTEN_IMAGE_TAG of ts/npm-common-config), plus the
+# native toolchain, Rust and Python and the offline ts, crate and Python
+# dependencies. A change to the Dockerfile or to an `inputs` file rebuilds it on
+# the next run; nothing is re-pinned. `inputs` is every file whose content decides
+# what the image bakes. `image` is only the seed pin AIDEV requires beside a
+# followed base (the base's digest at adoption); suites never run in it.
+# See .aidev/README.md.
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/wax/aidev-tests@sha256:3be7ad1fba7545a9f8f11f1b2a568c7a8cd53ce6d0310004a2aea314152881ab"
-  inputs: ["ts/pnpm-lock.yaml", ".aidev/runtime/Dockerfile", "ts/npm-common-config"]
+  image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk@sha256:80046ab0629fa83efadab83a01ca8ff23ab22f16515df02884644069d5ffd203"
+  build: {dockerfile: ".aidev/runtime/Dockerfile", context: "."}
+  base: {image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-10", follow: true}
+  inputs:
+    - ".aidev/runtime/Dockerfile.dockerignore"
+    - "ts/package.json#packageManager"
+    - "ts/pnpm-lock.yaml"
+    - "ts/pnpm-workspace.yaml"
+    - "ts/.npmrc"
+    - "ts/npm-common-config/scripts/python/python-test-tools-constraints.py"
+    - "ts/npm-common-config/scripts/python/registry_auth.py"
+    - "rust/Cargo.lock"
+    - "rust/proto_builder/Cargo.lock"
+    - "rust/fetch_beekeeper.sh"
+    - "python/wax/poetry.lock"
+    - "python/wax/pyproject.toml"
+    - "python/wax/tests/wax-local-tools/pyproject.toml"
+    - "python/test_tools/poetry.lock"
+    - "python/test_tools/pyproject.toml"
+    - "python/wax/scripts/prepare_boost.sh"
 
 issues:
   intake_label: todo
@@ -57,10 +82,11 @@ issues:
 # with proto/wasm/tsc. `tests` runs the Playwright projects that need no network
 # (slots run with --network none; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
-# `coverage` runs the tests. full, baseline and canary also run the Rust suite
-# (.aidev/run-rust.sh) and the Python suite (.aidev/run-python.sh), each in its own
-# image and blocking like ts (a lock file change that leaves an image stale fails the
-# slot until the image is rebuilt and re-pinned); their labels are `<slot>-rust` and
+# `coverage` runs the tests. full, baseline and canary also bind the Rust suite
+# (.aidev/run-rust.sh) and the Python suite (.aidev/run-python.sh), blocking like ts,
+# in the same image. Each is change-scoped by its `select` (.aidev/select-suite.sh):
+# it runs only when the change touches a path its build or tests read, or when the
+# change cannot be enumerated (a canary). Their labels are `<slot>-rust` and
 # `<slot>-python` so they never share the ts suite's test-results/aidev-<slot>/,
 # which run-checks.sh clears when it starts. See .aidev/README.md.
 verification:
@@ -92,14 +118,14 @@ verification:
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "full-rust"]
+        select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-full-rust/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "full-python"]
+        select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-full-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:4aa25518b9a6a0657015a482edcb960940dc1378859234638f998415e26680ca"
         timeout: 1200
   baseline:
     suites:
@@ -110,14 +136,14 @@ verification:
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "baseline-rust"]
+        select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-baseline-rust/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "baseline-python"]
+        select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-baseline-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:4aa25518b9a6a0657015a482edcb960940dc1378859234638f998415e26680ca"
         timeout: 1200
   canary:
     suites:
@@ -128,14 +154,14 @@ verification:
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "canary-rust"]
+        select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-canary-rust/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests@sha256:1650d760153314d28050b4f187d2879697c47f6ccd4b258ba3da2f01c9799e10"
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "canary-python"]
+        select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-canary-python/"]
-        image: "registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests@sha256:4aa25518b9a6a0657015a482edcb960940dc1378859234638f998415e26680ca"
         timeout: 1200
   static:
     adapter: command

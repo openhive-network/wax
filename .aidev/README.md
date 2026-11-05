@@ -6,9 +6,12 @@ hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `wo
 
 The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
 (`rust/`) and the Python packages (`python/`: `hiveio-wax` and `hiveio-test-tools`) are
-bound in full, baseline and canary as blocking suites, `run-rust.sh` and `run-python.sh`
-(see [The Rust suite](#the-rust-suite-run-rustsh) and
-[The Python suite](#the-python-suite-run-pythonsh)).
+bound in full, baseline and canary as blocking, change-scoped suites, `run-rust.sh` and
+`run-python.sh` (see [The Rust suite](#the-rust-suite-run-rustsh),
+[The Python suite](#the-python-suite-run-pythonsh) and
+[Which changes run them](#which-changes-run-the-rust-and-python-suites-select-suitesh)).
+Every suite runs in one image that AIDEV builds itself (see
+[The test runtime image](#the-test-runtime-image-runtime)).
 
 ## Suites
 
@@ -35,8 +38,8 @@ neither a step nor an offline project exits 2 before anything runs.
 | Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) |
 |---|---|---|---|
 | quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — |
-| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests | wheel, pytest suites, pattern, example |
+| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example, change-scoped |
+| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example, change-scoped |
 | coverage | proto wasm tsc bundle build-tests tests | — | — |
 | static | proto wasm tsc proto-pattern | — | — |
 | system | proto wasm tsc bundle | — | — |
@@ -47,10 +50,36 @@ A slot with a single binding names no suites; full, baseline and canary list `ts
 and `test-results/aidev-<slot>-python/`, never to the `ts` suite's
 `test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
 
-All three suites block: a failure in any of them fails the slot. A workflow runs the
-bindings approved on `aidev/integration`, so if the `rust` or `python` suite fails on
-pull hosts for an environmental reason, the recovery is a direct commit to
-`aidev/integration` that gives that suite `mode: advisory` again.
+All three suites block: a failure in any of them that runs fails the slot. The `rust`
+and `python` suites run only for a change that can affect them (next section); a
+TypeScript-only change runs `ts` alone. A workflow runs the bindings approved on
+`aidev/integration`, so if the `rust` or `python` suite fails on pull hosts for an
+environmental reason, the recovery is a direct commit to `aidev/integration` that gives
+that suite `mode: advisory` again.
+
+### Which changes run the rust and python suites (`select-suite.sh`)
+
+Each `rust` and `python` suite of full, baseline and canary declares
+`select: [".aidev/select-suite.sh", "<suite>"]`. AIDEV runs it on the host before the
+suite starts: exit 0 runs the suite, exit 77 skips it (recorded as skipped with the
+script's last line as the reason, neither a pass nor a failure; `ts` still has to pass).
+Any other exit, or a selector that cannot start, runs the suite. The script reads the
+changed paths from `AIDEV_CHANGED_FILES_FILE` when the host can read it, else from
+`git diff` and untracked files against `AIDEV_BASE_REF` (or `AIDEV_IMPLEMENT_BASE_SHA`).
+With neither (a canary, a run by hand outside a workflow) or when git cannot answer,
+the suite runs. A path is matched exactly or, for an entry ending in `/`, by prefix:
+
+| Suite | Changed paths that run it | Why |
+|---|---|---|
+| both | `.aidev/project.yaml`, `.aidev/runtime/`, `.aidev/select-suite.sh`, `.aidev/junit-helpers.sh` | the binding, the image and the junit writer the suite runs with |
+| both | `hive` (the submodule), `hive/`, `.gitmodules`, `core/` | the native builds compile `core/` and hive's protocol library and fc, and generate code from `hive/libraries/protocol/proto` (proto_builder, `grpc_tools.protoc`); `python/wax/poetry.lock` pins hiveio-api from the submodule |
+| `rust` | `rust/`, `.aidev/run-rust.sh` | `rust/build.sh`, `rust/test.sh` and the crates they build |
+| `python` | `python/`, `examples/python/`, `.aidev/run-python.sh`, `.aidev/pnpm-deps.sh` | the wheel, the pytest suites and the visitor example |
+| `python` | `ts/wasm/__tests__/assets/`, `ts/package.json`, every other `ts/**package.json`, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml`, `ts/.npmrc`, `ts/tsconfig.json`, `ts/npm-common-config` | the wax and hived-handle pytest groups start the API replay server (`proxy-mock-server.sh`) from these assets and recordings after a `pnpm install --frozen-lockfile` of the ts workspace |
+
+Nothing else of `ts/`, `examples/` other than `examples/python/`, docs or CI files runs
+either suite. When a build script of either suite starts reading a new path outside
+these, add it to `select-suite.sh` and to this table.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs exactly
@@ -101,10 +130,8 @@ network), the signature-extension example, and the npm-pack file listing.
 ## The Rust suite (`run-rust.sh`)
 
 Bound as the `rust` suite of full, baseline and canary (`run-rust.sh <slot>-rust`,
-blocking, `timeout: 1200`), in its own image (below): a failure fails the slot as one in
-`ts` does, so a change under `rust/` must pass it. So does a stale image: a change to
-`rust/Cargo.lock` or `rust/proto_builder/Cargo.lock` must rebuild the image and re-pin it
-in the same commit.
+blocking, change-scoped, `timeout: 1200`): when it runs, a failure fails the slot as one
+in `ts` does, so a change under `rust/` must pass it.
 
 `.aidev/run-rust.sh <suite>` runs CI's `build_rust` and `test_rust` offline:
 `rust/build.sh --in-container release`, then `rust/test.sh --in-container release --test
@@ -127,34 +154,21 @@ case per test (a failure's captured output as its body) and the tests in
   files before the build and puts them back on exit, so the checkout is as it was,
   uncommitted edits included.
 
-### The image (`rust/docker/wax-rust-aidev-tests.dockerfile`)
+What the image carries for it: rustup's stable toolchain (`/opt/rust`), static Boost
+(`WAX_BOOST_ROOT`, which the script passes to the build as `BOOST_ROOT`), and under
+`/opt/wax-aidev` the `CARGO_HOME` with every crate `rust/Cargo.lock` and
+`rust/proto_builder/Cargo.lock` pin (`cargo fetch --locked`, writable by any uid) and the
+`hiveio-beekeeper` crate at the version `rust/Cargo.lock` pins, as `fetch_beekeeper.sh`
+unpacks it; the script copies it to `rust/crates/hiveio-beekeeper` and sets
+`BEEKEEPER_VERSION` to it. A lock file change rebuilds the image (see below), so there is
+nothing to re-pin.
 
-The suite runs in `registry.gitlab.syncad.com/hive/wax/wax-rust-aidev-tests`:
-wax-rust-builder (`WAX_RUST_BUILDER_IMAGE`) plus what the build would download.
-
-| Path | What |
-|---|---|
-| `/opt/wax-aidev/cargo-home` | `CARGO_HOME` with every crate `rust/Cargo.lock` and `rust/proto_builder/Cargo.lock` pin (`cargo fetch --locked`), writable by any uid |
-| `/opt/wax-aidev/beekeeper` | the `hiveio-beekeeper` crate at the version `rust/Cargo.lock` pins, as `fetch_beekeeper.sh` unpacks it; the script copies it to `rust/crates/hiveio-beekeeper` and sets `BEEKEEPER_VERSION` to it |
-| `/opt/wax-aidev/cargo-lock.sha256` | `sha256sum` of the two lock files |
-
-When either lock file differs from `cargo-lock.sha256`, the script writes one failing case,
-"test image is stale for this Cargo.lock — rebuild wax-rust-aidev-tests", and exits 1
-before building anything. Then rebuild the image: the CI job
-`build_wax_rust_aidev_tests_image` runs on its own when the dockerfile or a lock file
-changes (manual otherwise), pushes `wax-rust-aidev-tests:${WAX_RUST_AIDEV_TESTS_IMAGE_TAG}`
-and ends its log with `Pushed …/wax-rust-aidev-tests@sha256:<digest>`. Put that digest in
-the `image:` of the `rust` suite of `verification.full`, `.baseline` and `.canary` in
-`project.yaml`, all three in the same commit. Bump the tag's `-aidevN` suffix when the
-dockerfile changes. The bound digest is tag `pypa_2_28-17-rust3-aidev1`.
-
-To build and run it locally (build context `rust/`, submodules checked out recursively):
+To run it locally, build the image (see below) and run, with submodules checked out
+recursively:
 
 ```bash
-docker buildx build --load -t wax-rust-aidev-tests:local \
-  -f rust/docker/wax-rust-aidev-tests.dockerfile rust
 docker run --rm --network none --user "$(id -u):$(id -g)" \
-  -v "$PWD":/work -w /work wax-rust-aidev-tests:local .aidev/run-rust.sh full
+  -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-rust.sh full-rust
 ```
 
 fc's CMake reads the git HEAD of `hive/libraries/fc`, so in a git worktree or a checkout
@@ -164,10 +178,8 @@ does.
 ## The Python suite (`run-python.sh`)
 
 Bound as the `python` suite of full, baseline and canary (`run-python.sh <slot>-python`,
-blocking, `timeout: 1200`), in its own image (below): a failure fails the slot as one in
-`ts` does, so a change under `python/` must pass it. So does a stale image: a change to
-an input the image records (below) must rebuild the image and re-pin it in the same
-commit, merges of `develop` into `aidev/integration` included.
+blocking, change-scoped, `timeout: 1200`): when it runs, a failure fails the slot as one
+in `ts` does, so a change under `python/` must pass it.
 
 `.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (CI also runs 3.14), what
 CI's Python jobs run, against the checkout:
@@ -203,69 +215,87 @@ to `test-results/aidev-<suite>/python/`. It exits non-zero when any case failed.
   ones, like the C++ and Cython build directories, stay, so the next build is
   incremental): `git status --porcelain` after a run is what it was before.
 
-### The image (`python/wax/docker/wax-python-aidev-tests.dockerfile`)
-
-The suite runs in `registry.gitlab.syncad.com/hive/wax/wax-python-aidev-tests`:
-CI's `CI_BASE_IMAGE` (wax ci-base-image: Python 3.12 and 3.14, Poetry, the C++ toolchain
-and Boost, Node), pinned by digest, plus what the build and the tests would download.
+What the image carries for it: static Boost (`WAX_BOOST_ROOT`) and the static OpenSSL,
+zlib and bzip2 that `python/wax/CMakeLists.txt` links from `/usr/local/lib`, Poetry
+with poetry-dynamic-versioning in its own environment (so the `requires-plugins` of the
+`poetry run` in the CI scripts are satisfied offline), the pnpm store the replay server's
+`pnpm install` takes from, and under `/opt/wax-aidev`:
 
 | Path | What |
 |---|---|
-| `/opt/wax-aidev/venv-wax` | Python 3.12 venv with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
-| `/opt/wax-aidev/venv-test-tools` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
-| `/opt/wax-aidev/inputs` | `run-python.sh --inputs`: `sha256sum` of both `poetry.lock` files, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` and `ts/.npmrc`, and `packageManager` |
-| `/opt/pnpm-store`, `/opt/corepack` | `pnpm fetch` of `ts/pnpm-lock.yaml` and the `packageManager` pnpm, as in the test runtime image |
+| `venv-wax` | Python 3.12 venv with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
+| `venv-test-tools` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
 
-poetry-dynamic-versioning is installed into Poetry's own environment, so the
-`requires-plugins` of the `poetry run` in the CI scripts are satisfied offline.
-
-When an input differs from `inputs`, the script writes one failing case, "test image is
-stale for these lock files, rebuild wax-python-aidev-tests", and exits 1 before building
-anything. A hive submodule bump lands there too: it moves the `hiveio-api` pin and its
-lock entry (`sync_hiveio_api`). Then rebuild the image:
-
-```bash
-python/wax/scripts/build_wax_python_aidev_tests_image.sh --push
-# registry digest if aidev-<input hash> exists, else build + push; prints repo@sha256:<digest>
-```
-
-or let the CI job `build_wax_python_aidev_tests_image` do it (it runs the script when an
-input changes, manual otherwise, and ends its log with `Pushed …@sha256:<digest>`). Put
-the printed reference in the `image:` of the `python` suite of `verification.full`,
-`.baseline` and `.canary` in `project.yaml`, all three in the same commit. The base is
-`CI_BASE_IMAGE_TAG` from `.gitlab-ci.yml`, so a CI base image bump gives a new tag too.
+The Python is python-build-standalone's latest CPython 3.12 (`python3.12`, installed by
+uv), not the base's Ubuntu 3.12.3, whose `typing.get_type_hints` cannot resolve
+hiveio-api's PEP 695 generics. The native build uses the base's gcc (Ubuntu 24.04), where
+CI's `build_wheel` uses the manylinux_2_28 `ci-base-image`; the Rust build differs from
+CI's wax-rust-builder the same way. The static Boost is on `CPLUS_INCLUDE_PATH` for both
+suites only (CI's image has Boost headers on the default include path; the ts suite's
+wasm build must not see them). A lock file change, including the `hiveio-api` pin a hive
+submodule bump moves (`sync_hiveio_api`), rebuilds the image (see below).
 
 To run it locally (submodules checked out recursively; in a git worktree mount the git
 directory the `.git` file points to as well):
 
 ```bash
 docker run --rm --network none --user "$(id -u):$(id -g)" \
-  -v "$PWD":/work -w /work <the python suite's image> .aidev/run-python.sh full-python
+  -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-python.sh full-python
 ```
 
 ## The test runtime image (`runtime/`)
 
-The suites run in a container with `--network none` and your uid. The image is the emsdk
-image CI's `npm_projects` template uses (`EMSCRIPTEN_IMAGE_TAG` of the
-`hive/common-ci-configuration` template in the `ts/npm-common-config` submodule;
-`build.sh` reads it there and builds `FROM` its registry digest): emscripten, cmake,
-ninja, protoc, Boost for wasm, ccc's Node, pnpm and Playwright's chromium. It adds a pnpm
-store filled with `pnpm fetch`; `pnpm-deps.sh` installs `ts/node_modules` offline from it.
-The pnpm the suites use is the `packageManager` one, installed through corepack.
+Every suite runs in one container with `--network none` and your uid, in the image
+AIDEV builds from `runtime/Dockerfile` (`environment.build` in `project.yaml`). Its base
+is **followed** (`environment.base`, `follow: true`): the emsdk image CI's
+`npm_projects` template uses, `EMSCRIPTEN_IMAGE_TAG` of `hive/common-ci-configuration`
+in the `ts/npm-common-config` submodule (emscripten, cmake, ninja, protoc, Boost for
+wasm, gcc, ccc's Node, pnpm and Playwright's chromium). wax-rust-builder and wax's
+`ci-base-image` carry more of the native toolchains, but they are manylinux_2_28
+(glibc 2.28) images that emscripten's and Playwright's Ubuntu builds do not run on, and
+the `ts` suite runs in every slot: on the emsdk base it runs exactly as in CI, and the
+native toolchains are what the Dockerfile adds:
 
-When `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml` or `ts/.npmrc` (both links into the
-`ts/npm-common-config` submodule), `packageManager` or `runtime/Dockerfile` change, or a
-submodule bump moves `EMSCRIPTEN_IMAGE_TAG` to a new emsdk image (as on a ccc Node bump),
-rebuild and re-pin **in the same commit**:
+| What | For |
+|---|---|
+| a pnpm store filled with `pnpm fetch` of `ts/pnpm-lock.yaml`, and the `packageManager` pnpm through corepack; `pnpm-deps.sh` installs `ts/node_modules` offline from it | `ts`, and the replay server of `python` |
+| static Boost built by `python/wax/scripts/prepare_boost.sh` as CI's `ci-base-image` builds it (`/wax_boost_root`, `WAX_BOOST_ROOT`), static OpenSSL, zlib and bzip2 | `rust`, `python` |
+| rustup's stable toolchain, the crates of both `Cargo.lock` files, the `hiveio-beekeeper` crate | `rust` |
+| CPython 3.12 (python-build-standalone), Poetry and the two Python venvs | `python` |
+
+Before a slot runs, AIDEV asks the registry which digest the base tag names and digests
+the Dockerfile and every `environment.inputs` file (lock files, the manifests and
+scripts the Dockerfile reads, `runtime/Dockerfile.dockerignore`). A build of that pair
+already on the host is reused; otherwise AIDEV builds and pushes it, and the slot's
+runtime line reads `… built|reused on followed base <tag>@sha256:…`. So a change to
+`ts/pnpm-lock.yaml`, `rust/Cargo.lock`, a `poetry.lock` or the Dockerfile needs no hand
+rebuild and no re-pin: the first run on each host after it pays the build (Boost and the
+toolchains come from the docker layer cache once a host has built them). A failed build
+refuses the slot as `no-environment`, naming the error. `environment.image` is only the
+seed pin AIDEV requires beside a followed base (the base's digest when it was adopted);
+it never has to move.
+
+The build context is the checkout narrowed by `runtime/Dockerfile.dockerignore` to the
+files the Dockerfile copies. When the Dockerfile starts copying a file, add it there,
+and to `environment.inputs` when its content decides what is baked, or a change to it
+would reuse a build made without it.
+
+The suite scripts do not check the image against the checkout's lock files: the build
+key is those files, so the image always matches them. An image that does not (a hand
+run in an old image) shows up as an offline install or fetch failure naming the missing
+package.
+
+The base tag is a declaration of its own: a common-ci-configuration bump that moves
+`EMSCRIPTEN_IMAGE_TAG` (as on a ccc Node bump) has to move `environment.base.image` to
+the new tag in the same commit, and the seed `environment.image` to its digest; a change
+to `base` or `build` is a protected change that waits for approval.
+
+Build the image and run a suite by hand the same way AIDEV does (submodules checked out
+recursively):
 
 ```bash
-.aidev/runtime/build.sh --push   # registry digest if aidev-<input hash> exists, else build + push
-# put the printed repo@sha256:<digest> into project.yaml environment.image
-```
-
-Run a suite by hand the same way AIDEV does (submodules checked out recursively):
-
-```bash
+docker build --build-arg BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-10 \
+  -f .aidev/runtime/Dockerfile -t wax-aidev-tests:local .
 docker run --rm --network none --user "$(id -u):$(id -g)" \
-  -v "$PWD":/work -w /work <environment.image> .aidev/run-checks.sh quick proto wasm tsc bundle build-tests tests
+  -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-checks.sh quick proto wasm tsc bundle build-tests tests
 ```
