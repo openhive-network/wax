@@ -105,7 +105,9 @@ sandbox:
 # change cannot be enumerated (a canary). Their labels are `<slot>-rust`,
 # `<slot>-python` and `<slot>-python314` so they never share the ts suite's
 # test-results/aidev-<slot>/,
-# which run-checks.sh clears when it starts. See .aidev/README.md.
+# which run-checks.sh clears when it starts. Each of their suites keeps its
+# sccache backend record and stats as `reports:` (.aidev/compiler-cache.sh), on
+# green and red runs. See .aidev/README.md.
 verification:
   quick:
     adapter: command
@@ -132,23 +134,27 @@ verification:
         adapter: command
         args: [".aidev/run-checks.sh", "full", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "proto-pattern", "build-tests", "tests"]
         artifacts: ["test-results/aidev-full/"]
+        reports: ["test-results/aidev-full/sccache.tsv", "test-results/aidev-full/sccache-stats.log"]
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "full-rust"]
         select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-full-rust/"]
+        reports: ["test-results/aidev-full-rust/sccache.tsv", "test-results/aidev-full-rust/sccache-stats.log"]
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "full-python"]
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-full-python/"]
+        reports: ["test-results/aidev-full-python/sccache.tsv", "test-results/aidev-full-python/sccache-stats.log"]
         timeout: 1200
       - name: python314
         adapter: command
         args: [".aidev/run-python.sh", "full-python314", "--python", "3.14", "--pre-commit"]
         select: [".aidev/select-suite.sh", "python314"]
         artifacts: ["test-results/aidev-full-python314/"]
+        reports: ["test-results/aidev-full-python314/sccache.tsv", "test-results/aidev-full-python314/sccache-stats.log"]
         timeout: 1200
   baseline:
     suites:
@@ -156,23 +162,27 @@ verification:
         adapter: command
         args: [".aidev/run-checks.sh", "baseline", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "build-tests", "tests"]
         artifacts: ["test-results/aidev-baseline/"]
+        reports: ["test-results/aidev-baseline/sccache.tsv", "test-results/aidev-baseline/sccache-stats.log"]
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "baseline-rust"]
         select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-baseline-rust/"]
+        reports: ["test-results/aidev-baseline-rust/sccache.tsv", "test-results/aidev-baseline-rust/sccache-stats.log"]
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "baseline-python"]
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-baseline-python/"]
+        reports: ["test-results/aidev-baseline-python/sccache.tsv", "test-results/aidev-baseline-python/sccache-stats.log"]
         timeout: 1200
       - name: python314
         adapter: command
         args: [".aidev/run-python.sh", "baseline-python314", "--python", "3.14", "--pre-commit"]
         select: [".aidev/select-suite.sh", "python314"]
         artifacts: ["test-results/aidev-baseline-python314/"]
+        reports: ["test-results/aidev-baseline-python314/sccache.tsv", "test-results/aidev-baseline-python314/sccache-stats.log"]
         timeout: 1200
   canary:
     suites:
@@ -180,23 +190,27 @@ verification:
         adapter: command
         args: [".aidev/run-checks.sh", "canary", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "proto-pattern", "build-tests", "tests"]
         artifacts: ["test-results/aidev-canary/"]
+        reports: ["test-results/aidev-canary/sccache.tsv", "test-results/aidev-canary/sccache-stats.log"]
       - name: rust
         adapter: command
         args: [".aidev/run-rust.sh", "canary-rust"]
         select: [".aidev/select-suite.sh", "rust"]
         artifacts: ["test-results/aidev-canary-rust/"]
+        reports: ["test-results/aidev-canary-rust/sccache.tsv", "test-results/aidev-canary-rust/sccache-stats.log"]
         timeout: 1200
       - name: python
         adapter: command
         args: [".aidev/run-python.sh", "canary-python"]
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-canary-python/"]
+        reports: ["test-results/aidev-canary-python/sccache.tsv", "test-results/aidev-canary-python/sccache-stats.log"]
         timeout: 1200
       - name: python314
         adapter: command
         args: [".aidev/run-python.sh", "canary-python314", "--python", "3.14", "--pre-commit"]
         select: [".aidev/select-suite.sh", "python314"]
         artifacts: ["test-results/aidev-canary-python314/"]
+        reports: ["test-results/aidev-canary-python314/sccache.tsv", "test-results/aidev-canary-python314/sccache-stats.log"]
         timeout: 1200
   static:
     adapter: command

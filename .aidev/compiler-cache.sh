@@ -1,7 +1,9 @@
 # Sourced by the suites (run-checks.sh, run-rust.sh, run-python.sh) from the repo
 # root as `source .aidev/compiler-cache.sh RECORD`: the compiler cache every wax
 # build of the suite shares. RECORD (the suite's sccache.tsv) gets the backend
-# chosen, so a run's retained artifacts say which cache it used.
+# chosen, and sccache-stats.log beside it every `sccache --show-stats` of the run
+# (compiler_cache_stats), so a run's kept reports say which cache it used and how
+# it hit (project.yaml's `reports:`).
 #
 # The cache is the host's site WebDAV cache when AIDEV hands one over
 # (AIDEV_SCCACHE_WEBDAV_ENDPOINT, the Jefferson and Poland hosts), reached directly
@@ -128,11 +130,19 @@ elif [ -n "${SCCACHE_REDIS:-}" ]; then
 fi > "$_wax_sccache_record"
 echo "sccache backend: $(cut -f1,2 "$_wax_sccache_record" | tr '\t' ' ')"
 
+# Started afresh for every run (the python and rust suites keep their output
+# directory), and never empty without a cache, so the declared report always exists.
+_wax_sccache_stats="$(dirname "$_wax_sccache_record")/sccache-stats.log"
+if [ -n "${WAX_DISABLE_COMPILER_CACHE:-}" ]; then
+    printf 'no sccache stats: building without compiler cache (%s)\n' "$(cut -f3 "$_wax_sccache_record")"
+fi > "$_wax_sccache_stats"
+
 unset -f _sccache_redis_rtt_ms _sccache_webdav_rtt_ms _wax_sccache_webdav _wax_sccache_near
 unset _WAX_SCCACHE_MAX_RTT_MS _WAX_SCCACHE_WEBDAV_RELAY _wax_sccache_record _wax_sccache_note
 
-# Prints sccache's hit and miss counts, when this run uses it.
+# Prints sccache's hit and miss counts, when this run uses it, and appends them to
+# the suite's sccache-stats.log.
 compiler_cache_stats() {
     [ -z "${WAX_DISABLE_COMPILER_CACHE:-}" ] || return 0
-    sccache --show-stats || true
+    { sccache --show-stats || true; } | tee -a "$_wax_sccache_stats"
 }

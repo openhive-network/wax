@@ -384,6 +384,18 @@ sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as hive's checks do:
 - the logs end with `sccache --show-stats` (its `Cache location` names the backend):
   `wasm.log` (ts), `rust/build.log` and the suite's output (rust), `python/build.log`
   (python).
+- `compiler_cache_stats` also appends each `sccache --show-stats` to
+  `test-results/aidev-<suite>/sccache-stats.log` (rust's has two: after the build and
+  after the tests). A suite that builds without a cache writes one line there saying so
+  instead, so the file always exists.
+- every suite of `full`, `baseline` and `canary` declares its `sccache.tsv` and
+  `sccache-stats.log` as `reports:` in `project.yaml` (aidev's
+  `docs/operations/command-suite-artifact-retention.md`, "Kept reports"). AIDEV keeps
+  them in its central artifact store as kind `suite_report`, on green and red runs, for
+  the default retention; the rest of `test-results/` is not kept. Read them with
+  `aidev artifact list --workflow <id>`, which lists e.g.
+  `full/rust:test-results/aidev-full-rust/sccache.tsv`, then
+  `aidev artifact read <citation>`.
 
 A run by hand with `--network none` builds cold. To use a site's WebDAV cache, run the
 suite on a network with a route to it and pass the endpoint:
