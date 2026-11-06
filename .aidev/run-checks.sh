@@ -18,11 +18,17 @@
 #                ts/wasm/lib/build_wasm. Incremental when ts/wasm/build_wasm survives.
 #   tsc          tsc of ts/wasm/lib (package.json `build`, after the wasm part)
 #   bundle       package.json `postbuild`: rollup, terser, size-limit (the 3420 kB limit)
+#   npm-pack     the file list of `pnpm pack` equals ts/protobuf_patterns/npm-pack.out
+#                (the npm-pack listing of CI's test_wax_wasm_proto_pattern)
 #   proto-pattern  generated protobuf output equals ts/protobuf_patterns/proto
-#                (CI's test_wax_wasm_proto_pattern, without its npm-pack listing)
+#                (the proto diff of CI's test_wax_wasm_proto_pattern)
 #   build-tests  package.json `build:test`: the beekeeper signer and the test sources
 #   tests        Playwright, the projects in OFFLINE_PROJECTS and UNMAPPED_OFFLINE_PROJECTS
 #                below (or the named ones)
+# and one step that needs none of them and skips none after it when it fails:
+#   include-refs each submodule in INCLUDE_REFS committed at the `ref:` of its
+#                project's `include:` in .gitlab-ci.yml, one case per submodule
+#                (CI's verify_include_refs)
 #
 # Suites reach nothing but the stack's sccache relay (.aidev/compiler-cache.sh),
 # as offline as --network none otherwise. The Playwright projects get the responses of
@@ -57,12 +63,17 @@ OFFLINE_PROJECTS=(
 UNMAPPED_OFFLINE_PROJECTS=(
     wax_testsuite
 )
+# VERIFY_REFS of verify_include_refs in .gitlab-ci.yml: <submodule>:<included project>.
+INCLUDE_REFS=(
+    hive:hive/hive
+    ts/npm-common-config:hive/common-ci-configuration
+)
 
 steps=()
 projects=()
 for a in "$@"; do
     case "$a" in
-        proto|wasm|tsc|bundle|proto-pattern|build-tests|tests) steps+=("$a") ;;
+        include-refs|proto|wasm|tsc|bundle|npm-pack|proto-pattern|build-tests|tests) steps+=("$a") ;;
         *)
             known=0
             for p in "${OFFLINE_PROJECTS[@]}" "${UNMAPPED_OFFLINE_PROJECTS[@]}"; do [ "$a" = "$p" ] && known=1; done
@@ -91,6 +102,17 @@ fi
 
 status=0
 failed=0
+# record <name> <rc> <t0> <log> [<message>]: the case of a check that started at
+# SECONDS=<t0> and exited <rc>; a failure fails the suite.
+record() {
+    local name="$1" rc="$2" t0="$3" log="$4" message="${5:-exit $2}"
+    if [ "$rc" -eq 0 ]; then
+        printf 'case\t%s\tpass\t%s\t\n' "$name" "$((SECONDS - t0))" >> "$cases"
+    else
+        status=1; tail -40 "$log" >&2
+        printf 'case\t%s\tfail\t%s\t%s\t%s\n' "$name" "$((SECONDS - t0))" "$message" "$log" >> "$cases"
+    fi
+}
 step() {
     local name="$1"; shift
     local log="$out/$name.log" t0=$SECONDS rc=0
@@ -100,12 +122,32 @@ step() {
     fi
     echo "== $name" >&2
     "$@" > "$log" 2>&1 < /dev/null || rc=$?
-    if [ "$rc" -eq 0 ]; then
-        printf 'case\t%s\tpass\t%s\t\n' "$name" "$((SECONDS - t0))" >> "$cases"
-    else
-        status=1; failed=1; tail -40 "$log" >&2
-        printf 'case\t%s\tfail\t%s\texit %s\t%s\n' "$name" "$((SECONDS - t0))" "$rc" "$log" >> "$cases"
-    fi
+    record "$name" "$rc" "$t0" "$log"
+    [ "$rc" -eq 0 ] || failed=1
+}
+
+# CI's verify_include_refs runs ccc's verify_submodule_ref.sh, which reads the
+# submodule's checked-out HEAD. This reads the gitlink and .gitlab-ci.yml of the
+# commit under test instead, so a stale submodule checkout cannot hide a moved
+# gitlink; the ref is the line after `project: ...<project>`, as that script reads it.
+include_refs() {
+    local pair path project log t0 gitlink ref rc
+    local git=(env GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*' git)
+    for pair in "${INCLUDE_REFS[@]}"; do
+        path="${pair%%:*}" project="${pair#*:}" t0=$SECONDS rc=0
+        log="$out/include-ref-${path//\//-}.log"
+        echo "== include-ref $path" >&2
+        gitlink="$("${git[@]}" ls-tree HEAD -- "$path" 2> "$log" | awk '$2 == "commit" { print $3 }')"
+        ref="$("${git[@]}" show HEAD:.gitlab-ci.yml 2>> "$log" \
+            | awk -v p="$project" 'found { sub(/.*ref:/, ""); gsub(/[ \047"]/, ""); print; exit } index($0, "project:") && index($0, p) { found = 1 }')"
+        {
+            echo "Submodule commit ($path in HEAD):              ${gitlink:-(none)}"
+            echo "Include ref ($project in .gitlab-ci.yml): ${ref:-(none)}"
+        } >> "$log"
+        [ -n "$gitlink" ] && [ "$gitlink" = "$ref" ] || rc=1
+        record "include-ref $path" "$rc" "$t0" "$log" \
+            "$path is at ${gitlink:-(no gitlink)}, the $project include ref is ${ref:-(not found)}"
+    done
 }
 
 wasm_build() {
@@ -129,6 +171,18 @@ bundle() (
     cd ts && pnpm exec rollup -c && pnpm exec tsx ./npm-common-config/ts-common/terser.ts && pnpm exec size-limit
 )
 
+# CI packs with ccc's npm_build_package.sh, which first fetches git tags to set the
+# version (network) and then runs `pnpm pack` (npm_pack_package.sh): the same pnpm
+# on the same tree lists the same files, so pack with it directly.
+npm_pack() {
+    local dest="$out/npm-pack"
+    rm -rf "$dest"; mkdir -p "$dest"
+    (cd ts && pnpm pack --pack-destination "$dest") || return
+    tar -tf "$dest"/*.tgz > "$dest/npm-pack.gen" || return
+    diff -u --label ts/protobuf_patterns/npm-pack.out --label 'pnpm pack' \
+        ts/protobuf_patterns/npm-pack.out "$dest/npm-pack.gen"
+}
+
 proto_pattern() {
     diff --brief --recursive --no-ignore-file-name-case --no-dereference \
         ts/protobuf_patterns/proto ts/wasm/dist/lib/proto
@@ -148,10 +202,12 @@ playwright_tests() {
 
 for s in "${steps[@]}"; do
     case "$s" in
+        include-refs) include_refs ;;
         proto) step proto bash -c 'cd ts && rm -rf wasm/dist && ./scripts/compile_proto_ts.sh' ;;
         wasm) step wasm wasm_build ;;
         tsc) step tsc bash -c 'cd ts && pnpm exec tsc' ;;
         bundle) step bundle bundle ;;
+        npm-pack) step npm-pack npm_pack ;;
         proto-pattern) step proto-pattern proto_pattern ;;
         build-tests) step build-tests bash -c 'cd ts && pnpm run build:test' ;;
         tests) step tests playwright_tests ;;
