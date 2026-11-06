@@ -289,8 +289,11 @@ print("\n".join(ids))
 # SNAP.untracked, the list of its untracked ones), as a unified diff.
 tree_diff() {
     local snap="$1" f
+    # -m also lists a tracked file deleted before the snapshot, which the snapshot lacks.
     git ls-files -z -m -- python | while IFS= read -r -d '' f; do
-        if [ ! -e "$f" ]; then
+        if [ ! -e "$snap/$f" ]; then
+            [ -e "$f" ] && diff -u --label /dev/null --label "b/$f" /dev/null "$f"
+        elif [ ! -e "$f" ]; then
             diff -u --label "a/$f" --label /dev/null "$snap/$f" /dev/null
         elif ! cmp -s "$snap/$f" "$f"; then
             diff -u --label "a/$f" --label "b/$f" "$snap/$f" "$f"
