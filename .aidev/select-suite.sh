@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# The `select` of the rust and python suites in .aidev/project.yaml: whether the
+# The `select` of the rust, python and python314 suites in .aidev/project.yaml: whether the
 # change can affect what the suite builds and tests. AIDEV runs it on the host,
 # in the checkout, before the suite starts.
 #
-#   .aidev/select-suite.sh rust|python
+#   .aidev/select-suite.sh rust|python|python314
 #
 # Exits 0 (run the suite) when a changed path is one the suite reads, or when the
 # change cannot be enumerated; exits 77 (skip it) when no changed path is, and
@@ -15,7 +15,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-suite="${1:?usage: $0 rust|python}"
+suite="${1:?usage: $0 rust|python|python314}"
 
 # Path prefixes (a trailing slash) and exact paths each suite reads. Both read
 # the image and its declaration, the compiler cache setup, the C++ of core/ and
@@ -39,7 +39,9 @@ RUST_PATHS=(
 )
 # python/wax/tests/run_tests.sh and the test-tools hived-handle tests start the
 # API replay server of ts/wasm/__tests__/assets after a `pnpm install` of the ts
-# workspace, so they read its manifests and lock file too.
+# workspace, so they read its manifests and lock file too. The python314 suite
+# reads the same: its pre-commit hooks (python/.pre-commit-config.yaml) check only
+# files under python/.
 PYTHON_PATHS=(
     python/
     examples/python/
@@ -57,8 +59,8 @@ PYTHON_PATHS=(
 
 case "$suite" in
     rust) paths=("${COMMON_PATHS[@]}" "${RUST_PATHS[@]}") ;;
-    python) paths=("${COMMON_PATHS[@]}" "${PYTHON_PATHS[@]}") ;;
-    *) echo "unknown suite $suite; expected rust or python" >&2; exit 2 ;;
+    python|python314) paths=("${COMMON_PATHS[@]}" "${PYTHON_PATHS[@]}") ;;
+    *) echo "unknown suite $suite; expected rust, python or python314" >&2; exit 2 ;;
 esac
 
 changed_files() {
@@ -75,7 +77,7 @@ changed_files() {
 reads() {
     local file="$1" p
     # A workspace member's manifest is part of the ts install the python suite runs.
-    [ "$suite" = python ] && [[ "$file" == ts/*package.json ]] && return 0
+    [ "$suite" != rust ] && [[ "$file" == ts/*package.json ]] && return 0
     for p in "${paths[@]}"; do
         if [[ "$p" == */ ]]; then
             [[ "$file" == "$p"* ]] && return 0

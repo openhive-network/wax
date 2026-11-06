@@ -7,8 +7,10 @@ hive/denser). GitLab CI doesn't run for AIDEV branches; see `.gitlab-ci.yml` `wo
 The TypeScript package (`ts/`, `@hiveio/wax`) is bound in every slot. The Rust package
 (`rust/`) and the Python packages (`python/`: `hiveio-wax` and `hiveio-test-tools`) are
 bound in full, baseline and canary as blocking, change-scoped suites, `run-rust.sh` and
-`run-python.sh` (see [The Rust suite](#the-rust-suite-run-rustsh),
-[The Python suite](#the-python-suite-run-pythonsh) and
+`run-python.sh` on Python 3.12 and, as the `python314` suite, on Python 3.14 with CI's
+pre-commit hooks (see [The Rust suite](#the-rust-suite-run-rustsh),
+[The Python suite](#the-python-suite-run-pythonsh),
+[The python314 suite](#the-python314-suite-run-pythonsh---python-314---pre-commit) and
 [Which changes run them](#which-changes-run-the-rust-and-python-suites-select-suitesh)).
 Every suite runs in one image that AIDEV builds itself (see
 [The test runtime image](#the-test-runtime-image-runtime)).
@@ -35,31 +37,33 @@ neither a step nor an offline project exits 2 before anything runs.
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
 | `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
 
-| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) |
-|---|---|---|---|
-| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — |
-| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example, change-scoped |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example, change-scoped |
-| coverage | proto wasm tsc bundle build-tests tests | — | — |
-| static | proto wasm tsc proto-pattern | — | — |
-| system | proto wasm tsc bundle | — | — |
+| Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) | Suite `python314` (`run-python.sh <slot>-python314 --python 3.14 --pre-commit`, blocking) |
+|---|---|---|---|---|
+| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — | — |
+| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
+| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
+| coverage | proto wasm tsc bundle build-tests tests | — | — | — |
+| static | proto wasm tsc proto-pattern | — | — | — |
+| system | proto wasm tsc bundle | — | — | — |
 
 A slot with a single binding names no suites; full, baseline and canary list `ts`,
-`rust` and `python` under `suites:`. The `rust` and `python` suites' labels are
-`<slot>-rust` and `<slot>-python`, so their results go to `test-results/aidev-<slot>-rust/`
-and `test-results/aidev-<slot>-python/`, never to the `ts` suite's
+`rust`, `python` and `python314` under `suites:`, in that order. The other suites'
+labels are `<slot>-rust`, `<slot>-python` and `<slot>-python314`, so their results go
+to `test-results/aidev-<slot>-rust/`, `test-results/aidev-<slot>-python/` and
+`test-results/aidev-<slot>-python314/`, never to the `ts` suite's
 `test-results/aidev-<slot>/`, which `run-checks.sh` clears when it starts.
 
-All three suites block: a failure in any of them that runs fails the slot. The `rust`
-and `python` suites run only for a change that can affect them (next section); a
-TypeScript-only change runs `ts` alone. A workflow runs the bindings approved on
-`aidev/integration`, so if the `rust` or `python` suite fails on pull hosts for an
-environmental reason, the recovery is a direct commit to `aidev/integration` that gives
-that suite `mode: advisory` again.
+All four suites block: a failure in any of them that runs fails the slot. The `rust`,
+`python` and `python314` suites run only for a change that can affect them (next
+section); a TypeScript-only change runs `ts` alone. A workflow runs the bindings
+approved on `aidev/integration`, so if the `rust`, `python` or `python314` suite fails
+on pull hosts for an environmental reason, the recovery is a direct commit to
+`aidev/integration` that gives that suite alone `mode: advisory` (for `python314`, its
+three bindings only; `python` keeps blocking).
 
 ### Which changes run the rust and python suites (`select-suite.sh`)
 
-Each `rust` and `python` suite of full, baseline and canary declares
+Each `rust`, `python` and `python314` suite of full, baseline and canary declares
 `select: [".aidev/select-suite.sh", "<suite>"]`. AIDEV runs it on the host before the
 suite starts: exit 0 runs the suite, exit 77 skips it (recorded as skipped with the
 script's last line as the reason, neither a pass nor a failure; `ts` still has to pass).
@@ -75,11 +79,11 @@ the suite runs. A path is matched exactly or, for an entry ending in `/`, by pre
 | both | `.aidev/compiler-cache.sh`, `ts/scripts/sccache_redis_probe.sh` | whether and how the native builds compile through sccache |
 | both | `hive` (the submodule), `hive/`, `.gitmodules`, `core/` | the native builds compile `core/` and hive's protocol library and fc, and generate code from `hive/libraries/protocol/proto` (proto_builder, `grpc_tools.protoc`); `python/wax/poetry.lock` pins hiveio-api from the submodule |
 | `rust` | `rust/`, `.aidev/run-rust.sh` | `rust/build.sh`, `rust/test.sh` and the crates they build |
-| `python` | `python/`, `examples/python/`, `.aidev/run-python.sh`, `.aidev/pnpm-deps.sh` | the wheel, the pytest suites and the visitor example |
-| `python` | `ts/wasm/__tests__/assets/`, `ts/package.json`, every other `ts/**package.json`, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml`, `ts/.npmrc`, `ts/tsconfig.json`, `ts/npm-common-config` | the wax and hived-handle pytest groups start the API replay server (`proxy-mock-server.sh`) from these assets and recordings after a `pnpm install --frozen-lockfile` of the ts workspace |
+| `python`, `python314` | `python/`, `examples/python/`, `.aidev/run-python.sh`, `.aidev/pnpm-deps.sh` | the wheel, the pytest suites and the visitor example; `python/.pre-commit-config.yaml` and every file its `files` filter lets the hooks check are under `python/` |
+| `python`, `python314` | `ts/wasm/__tests__/assets/`, `ts/package.json`, every other `ts/**package.json`, `ts/pnpm-lock.yaml`, `ts/pnpm-workspace.yaml`, `ts/.npmrc`, `ts/tsconfig.json`, `ts/npm-common-config` | the wax and hived-handle pytest groups start the API replay server (`proxy-mock-server.sh`) from these assets and recordings after a `pnpm install --frozen-lockfile` of the ts workspace |
 
 Nothing else of `ts/`, `examples/` other than `examples/python/`, docs or CI files runs
-either suite. When a build script of either suite starts reading a new path outside
+any of them. When a build script of one of them starts reading a new path outside
 these, add it to `select-suite.sh` and to this table.
 
 `verification.quick` lists the eleven offline projects as its `targets` (the approved
@@ -183,8 +187,8 @@ Bound as the `python` suite of full, baseline and canary (`run-python.sh <slot>-
 blocking, change-scoped, `timeout: 1200`): when it runs, a failure fails the slot as one
 in `ts` does, so a change under `python/` must pass it.
 
-`.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (CI also runs 3.14), what
-CI's Python jobs run, against the checkout:
+`.aidev/run-python.sh <suite>` runs, offline and on Python 3.12 (3.14 is the `python314`
+suite, below), what CI's Python jobs run, against the checkout:
 
 | Case | What | CI job it mirrors |
 |---|---|---|
@@ -216,6 +220,13 @@ to `test-results/aidev-<suite>/python/`. It exits non-zero when any case failed.
   uncommitted edits included, and removes the untracked files the run created (ignored
   ones, like the C++ and Cython build directories, stay, so the next build is
   incremental): `git status --porcelain` after a run is what it was before.
+- The build trees in `python/wax` (`.build`, `build`, `.cython_build`,
+  `cpp_python_bridge.cpp`) are built for one Python version and record it
+  (`.build/aidev-python-version`). Before a build, the other version's trees are moved to
+  the git-ignored `python/wax/.cache/aidev-build/<version>` and this version's are taken
+  back, so `python` and `python314` stay incremental when they alternate in one checkout.
+  Within a version, `.build/aidev-configured-for` (checkout path, Python include
+  directory, compiler launcher) still decides whether the CMake tree is reused.
 
 What the image carries for it: static Boost (`WAX_BOOST_ROOT`) and the static OpenSSL,
 zlib and bzip2 that `python/wax/CMakeLists.txt` links from `/usr/local/lib`, Poetry
@@ -227,9 +238,12 @@ with poetry-dynamic-versioning in its own environment (so the `requires-plugins`
 |---|---|
 | `venv-wax` | Python 3.12 venv with `poetry install --no-root` of `python/wax/poetry.lock`, the `[build-system].requires` and pytest, pytest-asyncio and pytest-xdist at common-ci-configuration's python-test-tools constraints |
 | `venv-test-tools` | the same for `python/test_tools/poetry.lock`, with `hiveio-wax` removed from it as CI's `.test_tools_test_env` does |
+| `venv-wax-3.14`, `venv-test-tools-3.14` | the same two on Python 3.14, for `python314` |
+| `venv-pre-commit-3.14` | `pre_commit_checks`' environment on 3.14, for `python314`: `poetry install --no-root` of both lock files into one venv (wax's with its `static-analysis` group: mypy, ruff, pre-commit; test-tools' without `hiveio-wax`), test-tools' `[build-system].requires` and pytest at the same constraints |
+| `pre-commit-home` | `PRE_COMMIT_HOME`: the hook environments of `python/.pre-commit-config.yaml`'s remote repositories (pre-commit-hooks, poetry, codespell, detect-missing-init), installed at build time with `pre-commit install-hooks` in a temporary git repository and writable by any uid |
 
-The Python is python-build-standalone's latest CPython 3.12 (`python3.12`, installed by
-uv), not the base's Ubuntu 3.12.3, whose `typing.get_type_hints` cannot resolve
+The Pythons are python-build-standalone's latest CPython 3.12 and 3.14 (`python3.12`,
+`python3.14`, installed by uv), not the base's Ubuntu 3.12.3, whose `typing.get_type_hints` cannot resolve
 hiveio-api's PEP 695 generics. The native build uses the base's gcc (Ubuntu 24.04), where
 CI's `build_wheel` uses the manylinux_2_28 `ci-base-image`; the Rust build differs from
 CI's wax-rust-builder the same way. The static Boost is on `CPLUS_INCLUDE_PATH` for both
@@ -244,6 +258,63 @@ directory the `.git` file points to as well):
 docker run --rm --network none --user "$(id -u):$(id -g)" \
   -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-python.sh full-python
 ```
+
+## The python314 suite (`run-python.sh --python 3.14 --pre-commit`)
+
+Bound as the `python314` suite of full, baseline and canary, after `python`
+(`run-python.sh <slot>-python314 --python 3.14 --pre-commit`, blocking, change-scoped by
+`select-suite.sh python314` with the `python` suite's paths, `timeout: 1200`). It is the
+`python` suite's script, not a copy: `--python 3.14` runs the same steps on Python 3.14,
+as CI's `.python_test_matrix` does, and `--pre-commit` (accepted with 3.14 only, as CI
+runs `pre_commit_checks` on 3.14; anything else is a usage error, exit 2) adds CI's
+pre-commit hooks. It has its own timeout and verdict, so the `python` suite's results
+and history are as they were.
+
+- **Python 3.14.** The protos and the pattern check, then the wheel built with
+  `python3.14` and `PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1` (what CI sets) through the
+  compiler cache, installed into `venv-wax-3.14` and `venv-test-tools-3.14`, then the
+  four pytest groups and the visitor example there. The step cases carry the version
+  (`build (3.14)`, `protobuf pattern (3.14)`, ...), the steps' testsuite is
+  `python-3.14` and the groups' are `wax-3.14`, `helpy-3.14`, `test-tools-unit-3.14`
+  and `test-tools-hived-handle-3.14`, so nothing collides with the `python` suite's
+  names. After a failed build the other steps are skipped cases.
+- **pre-commit.** `pre-commit run --config python/.pre-commit-config.yaml --all-files`
+  from the repository root, as `pre_commit_checks` runs it, in `venv-pre-commit-3.14`
+  plus the cp314 wheel just built, `wax-local-tools` (editable, as wax's `poetry
+  install` has it) and `python/test_tools` `--no-deps`. That environment needs the
+  wheel (`mypy-test-tools` type-checks against it), so after a failed build the step is
+  one skipped `pre-commit` case. A `pre-commit environment` case fails, with
+  pre-commit's output, when that environment or a hook environment cannot be prepared
+  (offline, a hook environment missing from the image's `PRE_COMMIT_HOME` fails there).
+  Otherwise each hook id runs on its own, in the config's order, and every hook it
+  reports is a case of the testsuite `pre-commit` named `<id>: <name>`: Passed is a
+  pass, Skipped (`no files to check`, from the config's `files` filter) a skipped case,
+  Failed a failure whose body is the hook's output and, when the hook rewrote files
+  (ruff `--fix`, ruff-format, pretty-format-json `--autofix`, trailing-whitespace,
+  end-of-file-fixer, detect-missing-init `--create`), the diff of what it changed. A
+  rewrite stays for the next hook, as in CI's single run. A hook that pre-commit cannot
+  run at all is a failing case with pre-commit's output. mypy's and ruff's caches go to
+  the run's temporary directory; the restore puts back what the hooks rewrote and
+  removes what they created, so `git status --porcelain` afterwards is what it was
+  before. On CI's develop pipeline 185080: 12 hooks passed, `check-yaml` and the three
+  `poetry-lock` hooks skipped (`no files to check`).
+
+It writes `test-results/aidev-<slot>-python314/python-junit.xml` and its logs under
+`test-results/aidev-<slot>-python314/python/` (the hooks' under `python/pre-commit/`:
+each hook's output and diff), and exits non-zero when any case failed.
+
+To run it locally (as above):
+
+```bash
+docker run --rm --network none --user "$(id -u):$(id -g)" \
+  -v "$PWD":/work -w /work wax-aidev-tests:local \
+  .aidev/run-python.sh full-python314 --python 3.14 --pre-commit
+```
+
+A changed hook `rev` in `python/.pre-commit-config.yaml` rebuilds the image (it is an
+`environment.inputs` file). If the suite fails on pull hosts for an environmental
+reason, the recovery is a direct commit to `aidev/integration` that sets `mode:
+advisory` on the three `python314` suites only.
 
 ## The compiler cache
 
@@ -315,10 +386,12 @@ native toolchains are what the Dockerfile adds:
 | static Boost built by `python/wax/scripts/prepare_boost.sh` as CI's `ci-base-image` builds it (`/wax_boost_root`, `WAX_BOOST_ROOT`), static OpenSSL, zlib and bzip2 | `rust`, `python` |
 | rustup's stable toolchain, the crates of both `Cargo.lock` files, the `hiveio-beekeeper` crate | `rust` |
 | CPython 3.12 (python-build-standalone), Poetry and the two Python venvs | `python` |
+| CPython 3.14 (python-build-standalone), the two 3.14 venvs, the pre-commit venv and the hook environments of `python/.pre-commit-config.yaml` (`PRE_COMMIT_HOME`) | `python314` |
 
 Before a slot runs, AIDEV asks the registry which digest the base tag names and digests
 the Dockerfile and every `environment.inputs` file (lock files, the manifests and
-scripts the Dockerfile reads, `runtime/Dockerfile.dockerignore`). A build of that pair
+scripts the Dockerfile reads, `python/.pre-commit-config.yaml` whose hook environments
+it installs, `runtime/Dockerfile.dockerignore`). A build of that pair
 already on the host is reused; otherwise AIDEV builds and pushes it, and the slot's
 runtime line reads `… built|reused on followed base <tag>@sha256:…`. So a change to
 `ts/pnpm-lock.yaml`, `rust/Cargo.lock`, a `poetry.lock` or the Dockerfile needs no hand

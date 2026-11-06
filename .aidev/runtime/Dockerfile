@@ -16,7 +16,8 @@
 #   /usr/local/lib/lib{ssl,crypto,z,bz2}.a  the static libraries python/wax/CMakeLists.txt
 #                                   links by those paths
 #   /opt/rust                       rustup's stable toolchain
-#   /opt/python, python3.12         the latest CPython 3.12 (python-build-standalone)
+#   /opt/python, python3.12,        the latest CPython 3.12 and 3.14
+#     python3.14                    (python-build-standalone)
 #   /opt/wax-aidev/cargo-home       CARGO_HOME with every crate rust/Cargo.lock and
 #                                   rust/proto_builder/Cargo.lock pin
 #   /opt/wax-aidev/beekeeper        the hiveio-beekeeper crate rust/Cargo.lock pins, as
@@ -25,6 +26,14 @@
 #                                   python/wax/poetry.lock, its [build-system] requires, pytest
 #   /opt/wax-aidev/venv-test-tools  the same for python/test_tools/poetry.lock without
 #                                   hiveio-wax, as CI's .test_tools_test_env does
+#   /opt/wax-aidev/venv-wax-3.14,   the same two on Python 3.14 (the 3.12 venvs keep
+#     venv-test-tools-3.14          the names they had before 3.14 was added)
+#   /opt/wax-aidev/venv-pre-commit-3.14  pre_commit_checks' Python 3.14 environment:
+#                                   wax's dependencies with its static-analysis group
+#                                   (mypy, ruff, pre-commit), test-tools' without
+#                                   hiveio-wax, test-tools' build requires, pytest
+#   /opt/wax-aidev/pre-commit-home  PRE_COMMIT_HOME: the hook environments of
+#                                   python/.pre-commit-config.yaml, writable by any uid
 ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE} AS boost
@@ -61,6 +70,7 @@ ENV PATH=/home/emscripten/.nvm/versions/node/${NODEJS_VERSION}/bin:/home/emscrip
     WAX_BOOST_ROOT=/wax_boost_root/ \
     RUSTUP_HOME=/opt/rust/rustup \
     CARGO_HOME=/opt/wax-aidev/cargo-home \
+    PRE_COMMIT_HOME=/opt/wax-aidev/pre-commit-home \
     PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 
 USER root
@@ -75,11 +85,14 @@ RUN set -e && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
     && chmod -R a+rX /opt/rust
 # The base's Python is Ubuntu's 3.12.3, whose typing.get_type_hints cannot resolve
 # hiveio-api's PEP 695 generics; CI's ci-base-image has a current 3.12. python3.12
-# here is python-build-standalone's latest 3.12, as uv installs it.
+# and python3.14 (CI's other version) here are python-build-standalone's latest, as
+# uv installs them.
 RUN set -e && curl -LsSf https://astral.sh/uv/install.sh | UV_UNMANAGED_INSTALL=/tmp/uv sh \
-    && UV_PYTHON_INSTALL_DIR=/opt/python /tmp/uv/uv python install 3.12 \
+    && UV_PYTHON_INSTALL_DIR=/opt/python /tmp/uv/uv python install 3.12 3.14 \
     && ln -s /opt/python/cpython-3.12.*/bin/python3.12 /usr/local/bin/python3.12 \
+    && ln -s /opt/python/cpython-3.14.*/bin/python3.14 /usr/local/bin/python3.14 \
     && /usr/local/bin/python3.12 -c 'import sys; assert sys.version_info[:2] == (3, 12) and sys.version_info[2] > 3' \
+    && /usr/local/bin/python3.14 -c 'import sys; assert sys.version_info[:2] == (3, 14)' \
     && rm -rf /tmp/uv /tmp/.cache /tmp/.local && chmod -R a+rX /opt/python
 RUN set -e && python3.12 -m venv /opt/poetry \
     && /opt/poetry/bin/pip install --no-cache-dir "poetry==${POETRY_VERSION}" \
@@ -122,26 +135,52 @@ WORKDIR /opt/wax-aidev/src
 COPY python/wax/pyproject.toml python/wax/poetry.lock python/wax/
 COPY python/wax/tests/wax-local-tools python/wax/tests/wax-local-tools/
 COPY python/test_tools/pyproject.toml python/test_tools/poetry.lock python/test_tools/readme.md python/test_tools/
+COPY python/.pre-commit-config.yaml python/
 COPY ts/npm-common-config/scripts/python/python-test-tools-constraints.py ts/npm-common-config/scripts/python/registry_auth.py ccc/
+# CI sets PYO3_USE_ABI3_FORWARD_COMPATIBILITY for every job (3.14 installs need it).
+# pre_commit_checks runs on 3.14 in one environment holding both projects'
+# dependencies; its hook environments come from GitHub, and pre-commit installs
+# them only in a git repository.
 RUN set -e && \
     plugin=$(python3.12 -c 'import sys, tomllib; d = tomllib.load(open(sys.argv[1], "rb"))["tool"]["poetry"]["requires-plugins"]["poetry-dynamic-versioning"]; print("poetry-dynamic-versioning[" + ",".join(d["extras"]) + "]==" + d["version"])' python/wax/pyproject.toml) && \
     poetry self add "${plugin}" && \
     python3.12 ccc/python-test-tools-constraints.py "${PYTHON_TEST_TOOLS_IMAGE}" /opt/wax-aidev/python-test-tools-constraints.txt && \
-    export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0 && \
+    export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0 PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 && \
     build_requires() { python3.12 -c 'import sys, tomllib; print("\n".join(tomllib.load(open(sys.argv[1], "rb"))["build-system"]["requires"]))' "$1"; } && \
-    for project in wax test_tools; do \
-        venv="/opt/wax-aidev/venv-${project//_/-}"; \
-        python3.12 -m venv "${venv}"; \
-        ( \
-            set -e; \
-            source "${venv}/bin/activate"; \
-            if [ "${project}" = test_tools ]; then poetry -C python/test_tools remove --lock -- hiveio-wax; fi; \
-            poetry -C "python/${project}" install --no-root; \
-            mapfile -t requires < <(build_requires "python/${project}/pyproject.toml"); \
-            python3 -m pip install "${requires[@]}"; \
-            python3 -m pip install -c /opt/wax-aidev/python-test-tools-constraints.txt pytest pytest-asyncio pytest-xdist; \
-        ) || exit 1; \
+    poetry -C python/test_tools remove --lock -- hiveio-wax && \
+    for version in 3.12 3.14; do \
+        tag="-${version}"; \
+        [ "${version}" != 3.12 ] || tag=""; \
+        for project in wax test_tools; do \
+            venv="/opt/wax-aidev/venv-${project//_/-}${tag}"; \
+            "python${version}" -m venv "${venv}"; \
+            ( \
+                set -e; \
+                source "${venv}/bin/activate"; \
+                poetry -C "python/${project}" install --no-root; \
+                mapfile -t requires < <(build_requires "python/${project}/pyproject.toml"); \
+                python3 -m pip install "${requires[@]}"; \
+                python3 -m pip install -c /opt/wax-aidev/python-test-tools-constraints.txt pytest pytest-asyncio pytest-xdist; \
+            ) || exit 1; \
+        done; \
     done && \
+    ( \
+        set -e; \
+        venv=/opt/wax-aidev/venv-pre-commit-3.14; \
+        python3.14 -m venv "${venv}"; \
+        source "${venv}/bin/activate"; \
+        poetry -C python/wax install --no-root; \
+        poetry -C python/test_tools install --no-root; \
+        mapfile -t requires < <(build_requires python/test_tools/pyproject.toml); \
+        python3 -m pip install "${requires[@]}"; \
+        python3 -m pip install -c /opt/wax-aidev/python-test-tools-constraints.txt pytest pytest-asyncio pytest-xdist; \
+        mkdir /tmp/hooks; \
+        cp python/.pre-commit-config.yaml /tmp/hooks/; \
+        cd /tmp/hooks; \
+        git init -q; \
+        pre-commit install-hooks --config .pre-commit-config.yaml; \
+        rm -rf /tmp/hooks; \
+    ) && \
     cd / && rm -rf /opt/wax-aidev/src /tmp/.cache /tmp/.local /tmp/.config && \
     chmod -R a+rwX /opt/wax-aidev /opt/poetry
 

@@ -22,3 +22,4 @@ python/wax/tests/wax-local-tools/**/__pycache__
 !python/test_tools/pyproject.toml
 !python/test_tools/poetry.lock
 !python/test_tools/readme.md
+!python/.pre-commit-config.yaml
