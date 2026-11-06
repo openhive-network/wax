@@ -4,8 +4,84 @@ import { expect } from '@playwright/test';
 import { test } from '../assets/jest-helper';
 import { protoVoteOp } from "../assets/data.proto-protocol";
 import { naiAsset, transaction, transactionObj, vote_operation, legacyApiTransaction } from "../assets/data.protocol";
-import type { ApiTransaction } from '../../dist/bundle';
+import type { ApiTransaction, TDelegableHpAccountData } from '../../dist/bundle';
 
+const DELEGABLE_HP_NOW = 1893456000; // 2030-01-01T00:00:00
+const MANA_REGENERATION_SECONDS = 432000;
+
+const vestsAsset = (amount: number) => ({ amount: amount.toString(), precision: 6, nai: "@@000000037" });
+
+const createDelegableHpAccount = (data: {
+  vesting: number; delegated?: number; received?: number; votingMana: number; downvoteMana: number; manaUpdateTime?: number;
+  powerDown?: { rate: number; toWithdraw: number; withdrawn: number };
+}): TDelegableHpAccountData => ({
+  vesting_shares: vestsAsset(data.vesting),
+  delegated_vesting_shares: vestsAsset(data.delegated ?? 0),
+  received_vesting_shares: vestsAsset(data.received ?? 0),
+  vesting_withdraw_rate: vestsAsset(data.powerDown?.rate ?? 0),
+  next_vesting_withdrawal: data.powerDown ? "2030-01-08T00:00:00" : "1969-12-31T23:59:59",
+  to_withdraw: data.powerDown?.toWithdraw ?? 0,
+  withdrawn: data.powerDown?.withdrawn ?? 0,
+  voting_manabar: { current_mana: data.votingMana, last_update_time: data.manaUpdateTime ?? DELEGABLE_HP_NOW },
+  downvote_manabar: { current_mana: data.downvoteMana, last_update_time: data.manaUpdateTime ?? DELEGABLE_HP_NOW }
+});
+
+const delegableHpTestCases: Array<{ name: string; account: TDelegableHpAccountData; downvotePoolPercent: number; expected: string }> = [
+  {
+    name: "whole own VESTS when mana is full",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 1_000_000, downvoteMana: 250_000 }),
+    downvotePoolPercent: 2500,
+    expected: "1000000"
+  },
+  {
+    name: "excluding received VESTS and limited by used upvote mana",
+    account: createDelegableHpAccount({ vesting: 1_000_000, delegated: 200_000, received: 500_000, votingMana: 600_000, downvoteMana: 325_000 }),
+    downvotePoolPercent: 2500,
+    expected: "600000"
+  },
+  {
+    name: "excluding delegated and received VESTS when mana is full",
+    account: createDelegableHpAccount({ vesting: 1_000_000, delegated: 200_000, received: 500_000, votingMana: 1_300_000, downvoteMana: 325_000 }),
+    downvotePoolPercent: 2500,
+    expected: "800000"
+  },
+  {
+    name: "excluding whole remaining power down",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 900_000, downvoteMana: 225_000, powerDown: { rate: 100_000, toWithdraw: 400_000, withdrawn: 100_000 } }),
+    downvotePoolPercent: 2500,
+    expected: "700000"
+  },
+  {
+    name: "excluding power down in its last week",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 900_000, downvoteMana: 225_000, powerDown: { rate: 100_000, toWithdraw: 400_000, withdrawn: 300_000 } }),
+    downvotePoolPercent: 2500,
+    expected: "900000"
+  },
+  {
+    name: "limited by used downvote mana",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 1_000_000, downvoteMana: 100_000 }),
+    downvotePoolPercent: 2500,
+    expected: "400003"
+  },
+  {
+    name: "ignoring downvote mana when there is no downvote pool",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 1_000_000, downvoteMana: 0 }),
+    downvotePoolPercent: 0,
+    expected: "1000000"
+  },
+  {
+    name: "using regenerated mana",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 0, downvoteMana: 0, manaUpdateTime: DELEGABLE_HP_NOW - MANA_REGENERATION_SECONDS / 2 }),
+    downvotePoolPercent: 2500,
+    expected: "500000"
+  },
+  {
+    name: "as zero when power down exceeds the available mana",
+    account: createDelegableHpAccount({ vesting: 1_000_000, votingMana: 100_000, downvoteMana: 250_000, powerDown: { rate: 100_000, toWithdraw: 500_000, withdrawn: 0 } }),
+    downvotePoolPercent: 2500,
+    expected: "0"
+  }
+];
 
 test.describe('Wax object interface foundation tests', () => {
   test('Should be able to create TAPOS transaction using implicit expiration time', async ({ waxTest }) => {
@@ -763,6 +839,31 @@ test.describe('Wax object interface foundation tests', () => {
       const total_vesting_shares = base.vestsSatoshis(args[2]);
       return base.calculateAccountHp(vests, total_vesting_fund_hive, total_vesting_shares);
     }, "2268225009295472", "173009633181", "300729442281783339");
+
+    expect(retVal).toEqual({
+      nai: "@@000000021",
+      precision: 3,
+      amount: "1304909734"
+    });
+  });
+
+  for(const { name, account, downvotePoolPercent, expected } of delegableHpTestCases)
+    test(`Should be able to calculate delegable HP ${name}`, async ({ waxTest }) => {
+      const retVal = await waxTest(({ base }, account, now, downvotePoolPercent) => {
+        return base.calculateDelegableHp(account, now, downvotePoolPercent, base.hiveSatoshis(1), base.vestsSatoshis(1));
+      }, account, DELEGABLE_HP_NOW, downvotePoolPercent);
+
+      expect(retVal).toEqual({
+        nai: "@@000000021",
+        precision: 3,
+        amount: expected
+      });
+    });
+
+  test('Should be able to calculate delegable HP using vesting share price', async ({ waxTest }) => {
+    const retVal = await waxTest(({ base }, account, now) => {
+      return base.calculateDelegableHp(account, now, 2500, "173009633181", "300729442281783339");
+    }, createDelegableHpAccount({ vesting: 2268225009295472, votingMana: 2268225009295472, downvoteMana: 567056252323868 }), DELEGABLE_HP_NOW);
 
     expect(retVal).toEqual({
       nai: "@@000000021",
