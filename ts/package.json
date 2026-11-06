@@ -91,7 +91,7 @@
       "path": [
         "./wasm/dist/bundle"
       ],
-      "limit": "3420 kB",
+      "limit": "3350 kB",
       "brotli": false
     }
   ],
