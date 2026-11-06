@@ -11,8 +11,8 @@
 # Writes test-results/aidev-<suite>/python-junit.xml: a `build` case, the protobuf pattern
 # and visitor example cases, one case per test of each pytest group (its own junit), the
 # tests in NO_RECORDING_TESTS as skipped and, with --pre-commit, one case per hook. On 3.12
-# (the default) the names are as they always were; on another version the step cases and
-# testsuites carry it (`build (3.14)`, `wax-3.14`). Tracked files the build or a hook
+# (the default) the names are as they always were; on another version every case and
+# testsuite carries it (`build (3.14)`, `test_reblog (3.14)`, `wax-3.14`). Tracked files the build or a hook
 # rewrites (the regenerated protos, ...) are put back as they were before the run and new
 # untracked files are removed. See .aidev/README.md.
 set -uo pipefail
@@ -434,6 +434,8 @@ python_tests() {
         status=0
         in_venv "$venv" bash -c "$(group_command "$name" "$j") ${deselect[$name]:-}" > "$log" 2>&1 < /dev/null || status=$?
         tail -3 "$log" >&2
+        # AIDEV's test id is classname and name only, so the version goes into the name.
+        [ -z "$case_tag" ] || junit_tag_cases "$j" "$case_tag"
         if [ "$status" -ne 0 ]; then
             rc=1
             junit_add_unreported_failure "$j" "$name$suite_tag" "$name tests$case_tag" "$log" "$status"
