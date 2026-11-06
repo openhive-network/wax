@@ -24,7 +24,8 @@
 #   tests        Playwright, the projects in OFFLINE_PROJECTS and UNMAPPED_OFFLINE_PROJECTS
 #                below (or the named ones)
 #
-# Suites run with --network none. The Playwright projects get the responses of
+# Suites reach nothing but the stack's sccache relay (.aidev/compiler-cache.sh),
+# as offline as --network none otherwise. The Playwright projects get the responses of
 # api.hive.blog recorded (ts/wasm/__tests__/assets/mock/recordings), except
 # healthchecker_tests, which calls the live node; `tests` runs the projects listed
 # below; see .aidev/README.md.
@@ -78,6 +79,8 @@ rm -rf "$out"; mkdir -p "$out"
 cases="$out/cases.tsv"; : > "$cases"
 
 source .aidev/junit-helpers.sh
+# shellcheck source=compiler-cache.sh
+source .aidev/compiler-cache.sh >&2
 # shellcheck source=pnpm-deps.sh
 if ! (cd ts && source ../.aidev/pnpm-deps.sh) > "$out/install.log" 2>&1; then
     tail -40 "$out/install.log" >&2
@@ -111,9 +114,12 @@ wasm_build() {
     # CMAKE_PROJECT_INCLUDE_BEFORE (a file no longer present) in the cache.
     if [ -f "$build_dir/.aidev-git-mode" ]; then rm -rf "$build_dir"; fi
     # Direct execution (`1 <repo root>`): we are already inside the emsdk image.
-    # No compiler cache: the slot has no sccache redis.
-    WAX_DISABLE_COMPILER_CACHE=1 bash ts/wasm/build_wasm_wax.sh 1 "$root" \
-        && test -s ts/wasm/lib/build_wasm/wax.common.wasm
+    # ts/wasm/src/CMakeLists.txt launches the compiles through sccache unless
+    # compiler-cache.sh found no cache (WAX_DISABLE_COMPILER_CACHE).
+    local rc=0
+    bash ts/wasm/build_wasm_wax.sh 1 "$root" && test -s ts/wasm/lib/build_wasm/wax.common.wasm || rc=$?
+    compiler_cache_stats
+    return "$rc"
 }
 
 # package.json `postbuild`, through `pnpm exec` rather than `pnpm run`: CI's
