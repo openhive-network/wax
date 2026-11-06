@@ -1,0 +1,23 @@
+# The one service the slots' stack starts: a relay to CI's sccache Redis
+# (SCCACHE_REDIS in .gitlab-ci.yml; keep the two equal), so a suite reaches the
+# compiler cache as redis://sccache:6379. The suite container joins the stack's
+# `default` network, which is internal: it reaches the relay and nothing else, as
+# offline as `--network none` otherwise; only the relay is also on `upstream`.
+# .aidev/compiler-cache.sh probes Redis through the relay (a PING, since socat
+# accepts the connection even when Redis is down) and builds without the cache
+# when it does not answer. Modelled on hive's .aidev/sccache-relay.compose.yml.
+services:
+  sccache:
+    image: alpine/socat:1.8.0.3
+    command: ["-d", "TCP-LISTEN:6379,fork,reuseaddr", "TCP:192.168.50.109:6379"]
+    networks: [default, upstream]
+    healthcheck:
+      test: ["CMD-SHELL", "pidof socat"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+networks:
+  default:
+    internal: true
+  upstream: {}

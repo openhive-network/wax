@@ -72,6 +72,7 @@ the suite runs. A path is matched exactly or, for an entry ending in `/`, by pre
 | Suite | Changed paths that run it | Why |
 |---|---|---|
 | both | `.aidev/project.yaml`, `.aidev/runtime/`, `.aidev/select-suite.sh`, `.aidev/junit-helpers.sh` | the binding, the image and the junit writer the suite runs with |
+| both | `.aidev/compiler-cache.sh`, `ts/scripts/sccache_redis_probe.sh` | whether and how the native builds compile through sccache |
 | both | `hive` (the submodule), `hive/`, `.gitmodules`, `core/` | the native builds compile `core/` and hive's protocol library and fc, and generate code from `hive/libraries/protocol/proto` (proto_builder, `grpc_tools.protoc`); `python/wax/poetry.lock` pins hiveio-api from the submodule |
 | `rust` | `rust/`, `.aidev/run-rust.sh` | `rust/build.sh`, `rust/test.sh` and the crates they build |
 | `python` | `python/`, `examples/python/`, `.aidev/run-python.sh`, `.aidev/pnpm-deps.sh` | the wheel, the pytest suites and the visitor example |
@@ -115,7 +116,8 @@ aidev's `testbed_runner`; no slot runs them. To see what a diff proposes, run
 
 ### What `tests` leaves out
 
-Suites run with `--network none`. The Playwright tests get the responses of the public
+Suites reach nothing but the compiler cache relay (see [The compiler cache](#the-compiler-cache)).
+The Playwright tests get the responses of the public
 nodes (`api.hive.blog`, the mirrornet, ...) from the API replay server, which serves the
 recordings in `ts/wasm/__tests__/assets/mock/recordings` (see "Tests and the public API
 nodes" in `ts/README.md`). `wax_testsuite` (the `index.spec*` files: `detailed/base`,
@@ -243,9 +245,60 @@ docker run --rm --network none --user "$(id -u):$(id -g)" \
   -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-python.sh full-python
 ```
 
+## The compiler cache
+
+Almost all of a suite's time is compiling the C++ of `core/` and hive (the wasm build in
+`ts`, natively through cargo in `rust` and through the wheel in `python`) and the Rust
+crates. The suites share CI's sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as
+hive's checks do:
+
+- `project.yaml`'s `sandbox` starts a one-service stack for every slot,
+  `sccache-relay.compose.yml`: a socat relay from `sccache:6379` to CI's Redis. The suite
+  container joins the stack's `default` network, which is `internal`, so it reaches the
+  relay and nothing else; only the relay is also on a network with a route out.
+- every suite sources `compiler-cache.sh`, which sets `SCCACHE_REDIS` to the relay
+  (`WAX_SCCACHE_REDIS` overrides it) and sources `ts/scripts/sccache_redis_probe.sh`, the
+  probe CI's build jobs source. It PINGs Redis through the relay (a TCP connect would not
+  do: socat accepts it even when Redis is down, and sccache 0.8.1 then fails every
+  compile). When Redis answers, the wasm build gets sccache as its CMake launcher
+  (`ts/wasm/src/CMakeLists.txt`), cargo `RUSTC_WRAPPER=sccache` with
+  `CARGO_INCREMENTAL=0` (cc-rs wraps the cxx bridge with it, and `rust/wax/build.rs` passes
+  it to the CMake build of hive and `core/` as the compiler launcher), and new CMake build
+  trees `CMAKE_<LANG>_COMPILER_LAUNCHER=sccache` (python/wax's). When it does not, the
+  probe prints one `WARNING: sccache redis ... unreachable - building without compiler
+  cache` line and every build runs uncached and cold: the cache never fails a suite.
+- the cache is used only from a host near the Redis: `compiler-cache.sh` times a PING
+  through the relay and, over 10 ms, prints one `WARNING: ... too far for a cache hit to
+  beat compiling` line and builds uncached. From a host in another data centre (40 ms)
+  a cached object reads at about 1 MB/s, and a warm rust suite took 427 s against 178 s
+  uncached; from one 0.8 ms away (about 90 MB/s) it took 49 s against 118 s. A Redis per
+  region is what would let the far hosts hit.
+- a host whose Docker address pools hand out a subnet holding Redis' address (on
+  steem-18 a compose network got `192.168.48.0/20`, and `192.168.50.109` is in it) loses
+  its route to Redis, the host included, while that network exists; the suites then
+  build cold. The cure is the daemon's `default-address-pools`, not this profile.
+- sccache keys include absolute paths. Every slot mounts the checkout at `/work`, so the
+  suites hit each other's entries on any host; CI builds under a runner-specific
+  `/builds/...` path, so they do not share entries with CI.
+- the logs end with `sccache --show-stats`: `wasm.log` (ts), `rust/build.log` and the
+  suite's output (rust), `python/build.log` (python).
+
+A run by hand with `--network none` builds cold. To use the cache, start the relay on a
+network and run the suite on it:
+
+```bash
+docker network create --internal wax-checks
+docker run -d --rm --name wax-sccache --network bridge alpine/socat:1.8.0.3 \
+    TCP-LISTEN:6379,fork,reuseaddr TCP:192.168.50.109:6379
+docker network connect --alias sccache wax-checks wax-sccache
+docker run --rm --network wax-checks --user "$(id -u):$(id -g)" \
+  -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-rust.sh full-rust
+```
+
 ## The test runtime image (`runtime/`)
 
-Every suite runs in one container with `--network none` and your uid, in the image
+Every suite runs in one container with your uid, on the stack's internal network (see
+[The compiler cache](#the-compiler-cache)), in the image
 AIDEV builds from `runtime/Dockerfile` (`environment.build` in `project.yaml`). Its base
 is **followed** (`environment.base`, `follow: true`): the emsdk image CI's
 `npm_projects` template uses, `EMSCRIPTEN_IMAGE_TAG` of `hive/common-ci-configuration`

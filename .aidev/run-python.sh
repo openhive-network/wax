@@ -79,6 +79,10 @@ export PIP_NO_INDEX=1 PIP_DISABLE_PIP_VERSION_CHECK=1 npm_config_offline=true \
 export CPLUS_INCLUDE_PATH="${WAX_BOOST_ROOT:?the test image sets WAX_BOOST_ROOT}/include${CPLUS_INCLUDE_PATH:+:$CPLUS_INCLUDE_PATH}"
 # poetry-dynamic-versioning reads git tags, which a checkout may not have.
 export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0+aidev
+# The wheel's C++ (python/wax/CMakeLists.txt) compiles through sccache when its
+# Redis answers, else uncached.
+# shellcheck source=compiler-cache.sh
+source .aidev/compiler-cache.sh >&2
 
 # Runs CMD with the image's venv NAME (wax or test-tools) active.
 in_venv() {
@@ -94,11 +98,13 @@ in_venv() {
 build_wheel() {
     cd python/wax || return 1
     # The C++ build directory stays between runs, and its CMake cache keeps the checkout
-    # path and the Python it was configured with; a rebuilt image can carry another
-    # Python, and a checkout can be mounted elsewhere. It is reused only for the same,
-    # and setuptools' build/ (the extension modules the wheel packs) goes with it.
+    # path, the Python and the compiler launcher (sccache or none, CMake reads it only
+    # when it creates the build directory) it was configured with; a rebuilt image can
+    # carry another Python, a checkout can be mounted elsewhere, and the cache can be
+    # unreachable. It is reused only for the same, and setuptools' build/ (the extension
+    # modules the wheel packs) goes with it.
     local stamp=.build/aidev-configured-for configured_for
-    configured_for="$PWD $(python3 -c 'import sysconfig; print(sysconfig.get_config_var("INCLUDEPY"))')" || return 1
+    configured_for="$PWD $(python3 -c 'import sysconfig; print(sysconfig.get_config_var("INCLUDEPY"))') launcher=${CMAKE_CXX_COMPILER_LAUNCHER:-none}" || return 1
     if [ -d .build ] && [ "$(cat "$stamp" 2>/dev/null)" != "$configured_for" ]; then
         echo "python/wax/.build was not configured for $configured_for; configuring it again" >&2
         rm -rf .build build || return 1
@@ -114,7 +120,10 @@ build_wheel() {
         --proto_path="$root/$PROTO_DIR" -I="$root/$PROTO_DIR" "${protos[@]}" || return 1
     printf '%s\n' "import sys" "from pathlib import Path" "" \
         "sys.path.append(str(Path(__file__).parent.absolute()))" > wax/_private/proto/__init__.py || return 1
-    python3 -m pip wheel --no-deps --no-build-isolation -w dist . || return 1
+    local rc=0
+    python3 -m pip wheel --no-deps --no-build-isolation -w dist . || rc=$?
+    compiler_cache_stats
+    [ "$rc" -eq 0 ] || return "$rc"
     printf '%s\n' "$configured_for" > "$stamp" || return 1
     local wheel=(dist/*.whl)
     [ -f "${wheel[0]}" ] || { echo "pip wheel left no wheel in python/wax/dist" >&2; return 1; }
