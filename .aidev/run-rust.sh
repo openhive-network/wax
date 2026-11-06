@@ -67,9 +67,9 @@ mkdir -p rust/crates && cp -a "$BAKED/beekeeper" rust/crates/hiveio-beekeeper
 [ -w "${HOME:-/}" ] || export HOME="$backup"
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*'
 # The crates, the cxx bridge and the hive/core C++ compile through sccache when
-# its Redis answers, else uncached.
+# a compiler cache answers near enough, else uncached.
 # shellcheck source=compiler-cache.sh
-source .aidev/compiler-cache.sh >&2
+source .aidev/compiler-cache.sh "$out/sccache.tsv" >&2
 
 # proto_builder's build script only reruns when hive's .proto files change, and
 # `restore` puts the previous sources back on exit: regenerate them as a fresh

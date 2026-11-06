@@ -74,10 +74,11 @@ issues:
   watcher_reports: self
 
 # Every slot compiles (the wasm build of core/ and hive's protocol; the rust and
-# python suites the same C++ natively), so each shares CI's sccache Redis through
-# this one-service stack: a relay on an internal network, which keeps the suites
-# as offline as --network none otherwise. When Redis does not answer, the suites
-# build cold (.aidev/compiler-cache.sh). See "The compiler cache" in .aidev/README.md.
+# python suites the same C++ natively), so each shares the site's sccache WebDAV
+# cache, else CI's sccache Redis, through this one-service stack: a relay on an
+# internal network, which keeps the suites as offline as --network none otherwise.
+# When no cache answers near enough, the suites build cold
+# (.aidev/compiler-cache.sh). See "The compiler cache" in .aidev/README.md.
 sandbox:
   compose: ".aidev/sccache-relay.compose.yml"
   services: [sccache]

@@ -326,42 +326,72 @@ advisory` on the three `python314` suites only.
 
 Almost all of a suite's time is compiling the C++ of `core/` and hive (the wasm build in
 `ts`, natively through cargo in `rust` and through the wheel in `python`) and the Rust
-crates. The suites share CI's sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as
-hive's checks do:
+crates. The suites use the host's site sccache cache when AIDEV hands one over, else CI's
+sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as hive's checks do:
 
+- AIDEV hands every slot one backend, in the suite's environment and in the stack's
+  compose environment: `AIDEV_SCCACHE_WEBDAV_ENDPOINT` (a disk-backed WebDAV cache,
+  `http://steem-9.syncad.com:8090/` for the Jefferson hosts, `session24.pl` for Poland)
+  or `AIDEV_SCCACHE_REDIS*` (CI's Redis, for the Alleghany hosts). See aidev's
+  `docs/operations/sccache-cache.md`.
 - `project.yaml`'s `sandbox` starts a one-service stack for every slot,
-  `sccache-relay.compose.yml`: a socat relay from `sccache:6379` to CI's Redis. The suite
-  container joins the stack's `default` network, which is `internal`, so it reaches the
-  relay and nothing else; only the relay is also on a network with a route out.
-- every suite sources `compiler-cache.sh`, which sets `SCCACHE_REDIS` to the relay
-  (`WAX_SCCACHE_REDIS` overrides it) and sources `ts/scripts/sccache_redis_probe.sh`, the
-  probe CI's build jobs source. It PINGs Redis through the relay (a TCP connect would not
-  do: socat accepts it even when Redis is down, and sccache 0.8.1 then fails every
-  compile). When Redis answers, the wasm build gets sccache as its CMake launcher
-  (`ts/wasm/src/CMakeLists.txt`), cargo `RUSTC_WRAPPER=sccache` with
-  `CARGO_INCREMENTAL=0` (cc-rs wraps the cxx bridge with it, and `rust/wax/build.rs` passes
-  it to the CMake build of hive and `core/` as the compiler launcher), and new CMake build
-  trees `CMAKE_<LANG>_COMPILER_LAUNCHER=sccache` (python/wax's). When it does not, the
-  probe prints one `WARNING: sccache redis ... unreachable - building without compiler
-  cache` line and every build runs uncached and cold: the cache never fails a suite.
-- the cache is used only from a host near the Redis: `compiler-cache.sh` times a PING
-  through the relay and, over 10 ms, prints one `WARNING: ... too far for a cache hit to
-  beat compiling` line and builds uncached. From a host in another data centre (40 ms)
-  a cached object reads at about 1 MB/s, and a warm rust suite took 427 s against 178 s
-  uncached; from one 0.8 ms away (about 90 MB/s) it took 49 s against 118 s. A Redis per
-  region is what would let the far hosts hit.
+  `sccache-relay.compose.yml`: a socat relay from `sccache:6379` to CI's Redis and, when
+  the compose environment has `AIDEV_SCCACHE_WEBDAV_ENDPOINT`, from `sccache:8090` to that
+  endpoint's `host:port`. The suite container joins the stack's `default` network, which
+  is `internal`, so it reaches the relay and nothing else; only the relay is also on a
+  network with a route out.
+- every suite sources `compiler-cache.sh`. With `AIDEV_SCCACHE_WEBDAV_ENDPOINT` set, it
+  times `HEAD /healthz` on a warm connection (the fastest of three) to the endpoint, then
+  through `http://sccache:8090/`, and uses the first that answers 200 within the gate below:
+  `SCCACHE_WEBDAV_ENDPOINT` is that address, `SCCACHE_WEBDAV_KEY_PREFIX` is `wax` and
+  `SCCACHE_REDIS` is unset. Otherwise it sets `SCCACHE_REDIS` to the relay
+  (`WAX_SCCACHE_REDIS` overrides it). Either way it then sources
+  `ts/scripts/sccache_redis_probe.sh`, the probe CI's build jobs source. It PINGs Redis
+  when that is the backend (a TCP connect would not do: socat accepts it even when Redis
+  is down, and sccache then fails every compile). When a cache answers, the wasm build
+  gets sccache as its CMake launcher (`ts/wasm/src/CMakeLists.txt`), cargo
+  `RUSTC_WRAPPER=sccache` with `CARGO_INCREMENTAL=0` (cc-rs wraps the cxx bridge with it,
+  and `rust/wax/build.rs` passes it to the CMake build of hive and `core/` as the compiler
+  launcher), and new CMake build trees `CMAKE_<LANG>_COMPILER_LAUNCHER=sccache`
+  (python/wax's). When it does not, the probe prints one `WARNING: sccache redis ...
+  unreachable - building without compiler cache` line and every build runs uncached and
+  cold: the cache never fails a suite.
+- a cache is used only from a host near it: a request's round trip after the connection
+  is up (the second PING, the fastest warm `HEAD`) must be at most 10 ms. Over that,
+  `compiler-cache.sh` prints one `WARNING: ... too far for a cache hit to beat compiling`
+  line and moves on (WebDAV to Redis, Redis to uncached). From a host in another data
+  centre (40 ms) a cached object reads at about 1 MB/s, and a warm rust suite took 427 s
+  against 178 s uncached; from one 0.8 ms away (about 90 MB/s) it took 49 s against
+  118 s.
+- the image's sccache is 0.10 (`runtime/Dockerfile`). The emsdk base's 0.8.1 stats each
+  key with `PROPFIND` before reading it, the site caches answer every `PROPFIND` as a
+  collection, and 0.8.1 then reads nothing: it never hits a WebDAV cache.
+- each suite records the backend it chose in `test-results/aidev-<suite>/sccache.tsv`,
+  one tab-separated line: the backend (`webdav`, `redis` or `none`), the cache it names,
+  and how it was reached or why none was used. E.g. `webdav`,
+  `http://steem-9.syncad.com:8090/`, `through http://sccache:8090/, 0 ms`; or `none`, an
+  empty field, `redis://sccache:6379 answers in 41 ms, over 10 ms; building cold`.
 - a host whose Docker address pools hand out a subnet holding Redis' address (on
   steem-18 a compose network got `192.168.48.0/20`, and `192.168.50.109` is in it) loses
   its route to Redis, the host included, while that network exists; the suites then
   build cold. The cure is the daemon's `default-address-pools`, not this profile.
 - sccache keys include absolute paths. Every slot mounts the checkout at `/work`, so the
-  suites hit each other's entries on any host; CI builds under a runner-specific
-  `/builds/...` path, so they do not share entries with CI.
-- the logs end with `sccache --show-stats`: `wasm.log` (ts), `rust/build.log` and the
-  suite's output (rust), `python/build.log` (python).
+  suites hit each other's entries on any host of a site; CI builds under a
+  runner-specific `/builds/...` path, so they do not share entries with CI.
+- the logs end with `sccache --show-stats` (its `Cache location` names the backend):
+  `wasm.log` (ts), `rust/build.log` and the suite's output (rust), `python/build.log`
+  (python).
 
-A run by hand with `--network none` builds cold. To use the cache, start the relay on a
-network and run the suite on it:
+A run by hand with `--network none` builds cold. To use a site's WebDAV cache, run the
+suite on a network with a route to it and pass the endpoint:
+
+```bash
+docker run --rm --network bridge --user "$(id -u):$(id -g)" \
+  -e AIDEV_SCCACHE_WEBDAV_ENDPOINT=http://steem-9.syncad.com:8090/ \
+  -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-rust.sh full-rust
+```
+
+To use CI's Redis, start the relay on a network and run the suite on it:
 
 ```bash
 docker network create --internal wax-checks
