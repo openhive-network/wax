@@ -4,7 +4,7 @@ import type { operation, transaction } from "./protocol";
 import type { EManabarType } from "./chain_api";
 import type { HiveApiTypes, HiveRestApiTypes } from "./chain_api_data";
 import type { IWaxExtendableFormatter } from "./formatters/types";
-import type { ApiOperation, ApiTransaction, IOnlineEncryptionProvider, LegacyApiTransaction, NaiAsset } from ".";
+import type { ApiAccount, ApiOperation, ApiTransaction, IOnlineEncryptionProvider, LegacyApiTransaction, NaiAsset } from ".";
 import type { EAssetName } from "./base_api";
 import type { TTransactionRequiredAuthorities } from './transaction';
 import type { OperationBase } from "./operation_base";
@@ -94,6 +94,12 @@ export interface IManabarData {
    */
   percent: number;
 }
+
+/**
+ * Account properties (as returned by the find_accounts API call) required to calculate the delegable HP
+ */
+export type TDelegableHpAccountData = Pick<ApiAccount, "vesting_shares" | "delegated_vesting_shares" | "received_vesting_shares" | "vesting_withdraw_rate"
+  | "next_vesting_withdrawal" | "withdrawn" | "to_withdraw" | "voting_manabar" | "downvote_manabar">;
 
 /**
  * Transaction id type
@@ -1011,6 +1017,21 @@ export interface IWaxBaseInterface {
   calculateAccountHp(vests: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
 
   /**
+   * Calculates HP which the account can delegate to another account, following the rules applied by the chain to the delegate_vesting_shares operation:
+   * own VESTS (excluding received delegations) reduced by the already delegated VESTS and the whole remaining power down,
+   * additionally limited by the current upvote and downvote mana of the account.
+   *
+   * @param {TDelegableHpAccountData} account account data. Can be obtained using the find_accounts API call
+   * @param {number} now head block time (in seconds). Can be obtained using time property from dynamic global properties
+   * @param {number} downvotePoolPercent downvote pool percent. Can be obtained using downvote_pool_percent property from dynamic global properties
+   * @param {TNaiAssetSource} totalVestingFundHive HIVE asset total vesting fund
+   * @param {TNaiAssetSource} totalVestingShares VESTS asset total shares
+   * @returns {NaiAsset} delegable HP in nai form (zero when the account cannot delegate anything)
+   * @throws {WaxError} on any Wax WASM related error
+   */
+  calculateDelegableHp(account: TDelegableHpAccountData, now: number, downvotePoolPercent: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset;
+
+  /**
    * Calculates witness votes HP based on given votes (expressed in VESTS), total vesting fund HIVE and total vesting shares
    *
    * @param {TNaiAssetSource} votes power of witness votes (assumed in VESTS asset)
@@ -1320,6 +1341,15 @@ export interface IHiveChainInterface extends IWaxBaseInterface {
    * @returns {Promise<Date>} Full regeneration time
    */
   calculateManabarFullRegenerationTimeForAccount(account: string, manabarType?: EManabarType): Promise<Date>;
+
+  /**
+   * Calculates HP which the given account can delegate to another account (see {@link IWaxBaseInterface.calculateDelegableHp})
+   *
+   * @param {string} account account for which we want to calculate the delegable HP
+   *
+   * @returns {Promise<NaiAsset>} delegable HP in nai form
+   */
+  calculateDelegableHpForAccount(account: string): Promise<NaiAsset>;
 
   readonly api: TDefaultJsonRpcApi;
 
