@@ -1205,4 +1205,53 @@ test.describe('Wax object interface foundation tests', () => {
       return base.calculatePublicKey(invalidPrivateKey);
     }, invalidPrivateKey)).rejects.toThrow();
   });
+
+  test('Should silence the WASM logs only when enableLogs is false', async ({ waxTest }) => {
+    const retVal = await waxTest.dynamic(async({ wax }) => {
+      const captureWasmOutput = async(enableLogs?: boolean): Promise<string[]> => {
+        const output: string[] = [];
+        const consoleMethods = ["log", "info", "debug", "warn", "error"] as const;
+        const originalConsole = consoleMethods.map(method => console[method]);
+        const nodeStreams = typeof process === "object" && process.stdout && process.stderr ? [process.stdout, process.stderr] : [];
+        const originalWrites = nodeStreams.map(stream => stream.write);
+
+        for(const method of consoleMethods)
+          console[method] = (...args: any[]) => { output.push(args.join(" ")); };
+        for(const stream of nodeStreams)
+          stream.write = ((chunk: any) => { output.push(String(chunk)); return true; }) as typeof stream.write;
+
+        try {
+          const base = await wax.createWaxFoundation(enableLogs === undefined ? {} : { enableLogs });
+          const tx = base.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+          tx.pushOperation({
+            custom_json_operation: {
+              id: "test",
+              json: "{\"unterminated\":",
+              required_auths: [],
+              required_posting_auths: ["gtg"]
+            }
+          });
+
+          try {
+            tx.validate();
+          } catch {
+            // The invalid json is rejected - only the output written while validating it is checked
+          }
+        } finally {
+          consoleMethods.forEach((method, index) => { console[method] = originalConsole[index]; });
+          nodeStreams.forEach((stream, index) => { stream.write = originalWrites[index]; });
+        }
+
+        return output;
+      };
+
+      return {
+        enabled: await captureWasmOutput(),
+        disabled: await captureWasmOutput(false)
+      };
+    });
+
+    expect(retVal.enabled.some(line => line.includes("json validation"))).toBeTruthy();
+    expect(retVal.disabled).toEqual([]);
+  });
 });
