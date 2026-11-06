@@ -6,6 +6,24 @@
     "enabled": true
   },
 
+  // verify_include_refs requires the hive/hive include ref in .gitlab-ci.yml to equal the
+  // hive submodule commit. This dep tracks the same branch (hive's default, develop) as the
+  // submodule, and the "hive submodule" group below puts both bumps in one MR.
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "hive/hive include ref in .gitlab-ci.yml, bumped with the hive submodule",
+      "managerFilePatterns": ["/^\\.gitlab-ci\\.yml$/"],
+      "matchStrings": [
+        "- project: 'hive/hive'\\n\\s+ref: (?<currentDigest>[0-9a-f]{40})\\n"
+      ],
+      "depNameTemplate": "hive",
+      "packageNameTemplate": "https://gitlab.syncad.com/hive/hive.git",
+      "datasourceTemplate": "git-refs",
+      "currentValueTemplate": "develop"
+    }
+  ],
+
   // ts/ and every examples/ts app link their pnpm-workspace.yaml (the `catalog:` versions)
   // into ts/npm-common-config, so pnpm needs that submodule to update their lockfiles.
   "cloneSubmodules": true,
@@ -38,6 +56,13 @@
       "matchManagers": ["git-submodules"],
       "matchPackageNames": ["hive"],
       "enabled": true
+    },
+    {
+      // One MR for the submodule and the include ref, or verify_include_refs fails on both.
+      "description": "Bump the hive submodule and the hive/hive include ref together",
+      "matchManagers": ["git-submodules", "custom.regex"],
+      "matchDepNames": ["hive"],
+      "groupName": "hive submodule"
     },
     {
       // The catalogs and their overrides live in common-ci-configuration; a bump there
