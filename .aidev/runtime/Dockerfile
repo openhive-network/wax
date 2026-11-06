@@ -15,6 +15,7 @@
 #                                   (prepare_boost.sh), for the native rust and python builds
 #   /usr/local/lib/lib{ssl,crypto,z,bz2}.a  the static libraries python/wax/CMakeLists.txt
 #                                   links by those paths
+#   /usr/local/bin/sccache          sccache 0.10, replacing the base's 0.8.1
 #   /opt/rust                       rustup's stable toolchain
 #   /opt/python, python3.12,        the latest CPython 3.12 and 3.14
 #     python3.14                    (python-build-standalone)
@@ -80,6 +81,18 @@ RUN set -e && apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && multiarch="$(gcc -print-multiarch)" \
     && for lib in libssl.a libcrypto.a libz.a libbz2.a; do ln -s "/usr/lib/${multiarch}/${lib}" "/usr/local/lib/${lib}"; done
+# The base's sccache 0.8.1 never hits the site WebDAV caches (.aidev/compiler-cache.sh):
+# it stats each key with PROPFIND before reading it, the caches answer every PROPFIND
+# as a collection, and it then reads nothing. 0.10 reads the object itself.
+ARG SCCACHE_VERSION=0.10.0
+ARG SCCACHE_SHA256=1fbb35e135660d04a2d5e42b59c7874d39b3deb17de56330b25b713ec59f849b
+RUN set -e && dist="sccache-v${SCCACHE_VERSION}-x86_64-unknown-linux-musl" \
+    && curl -fSL -o /tmp/sccache.tar.gz "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/${dist}.tar.gz" \
+    && echo "${SCCACHE_SHA256}  /tmp/sccache.tar.gz" | sha256sum -c - \
+    && tar -xzf /tmp/sccache.tar.gz -C /tmp "${dist}/sccache" \
+    && install -m 0755 "/tmp/${dist}/sccache" /usr/local/bin/sccache \
+    && rm -rf /tmp/sccache.tar.gz "/tmp/${dist}" \
+    && test "$(sccache --version)" = "sccache ${SCCACHE_VERSION}"
 RUN set -e && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
         | CARGO_HOME=/opt/rust/cargo sh -s -- -y --no-modify-path --profile minimal --default-toolchain "${RUST_TOOLCHAIN}" \
     && chmod -R a+rX /opt/rust

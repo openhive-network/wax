@@ -1,15 +1,33 @@
-# The one service the slots' stack starts: a relay to CI's sccache Redis
-# (SCCACHE_REDIS in .gitlab-ci.yml; keep the two equal), so a suite reaches the
-# compiler cache as redis://sccache:6379. The suite container joins the stack's
-# `default` network, which is internal: it reaches the relay and nothing else, as
-# offline as `--network none` otherwise; only the relay is also on `upstream`.
-# .aidev/compiler-cache.sh probes Redis through the relay (a PING, since socat
-# accepts the connection even when Redis is down) and builds without the cache
-# when it does not answer. Modelled on hive's .aidev/sccache-relay.compose.yml.
+# The one service the slots' stack starts: the relay to the compiler caches, so a
+# suite reaches CI's sccache Redis (SCCACHE_REDIS in .gitlab-ci.yml; keep the two
+# equal) as redis://sccache:6379 and, on a host AIDEV hands a site WebDAV cache
+# (AIDEV_SCCACHE_WEBDAV_ENDPOINT in this stack's compose environment), that cache
+# as http://sccache:8090/. The suite container joins the stack's `default`
+# network, which is internal: it reaches the relay and nothing else, as offline as
+# `--network none` otherwise; only the relay is also on `upstream`.
+# .aidev/compiler-cache.sh probes each cache through the relay (a Redis PING, an
+# HTTP HEAD /healthz, since socat accepts the connection even when the cache is
+# down) and builds without the cache when none answers near enough. Modelled on
+# hive's .aidev/sccache-relay.compose.yml.
 services:
   sccache:
     image: alpine/socat:1.8.0.3
-    command: ["-d", "TCP-LISTEN:6379,fork,reuseaddr", "TCP:192.168.50.109:6379"]
+    environment:
+      AIDEV_SCCACHE_WEBDAV_ENDPOINT: ${AIDEV_SCCACHE_WEBDAV_ENDPOINT:-}
+    # The WebDAV listener forwards to the host:port of the endpoint's http:// URL
+    # and is not started when there is none.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        case "$$AIDEV_SCCACHE_WEBDAV_ENDPOINT" in
+          http://?*)
+            upstream="$${AIDEV_SCCACHE_WEBDAV_ENDPOINT#http://}"
+            upstream="$${upstream%%/*}"
+            case "$$upstream" in *:*) ;; *) upstream="$$upstream:80" ;; esac
+            socat -d TCP-LISTEN:8090,fork,reuseaddr "TCP:$$upstream" &
+            ;;
+        esac
+        exec socat -d TCP-LISTEN:6379,fork,reuseaddr TCP:192.168.50.109:6379
     networks: [default, upstream]
     healthcheck:
       test: ["CMD-SHELL", "pidof socat"]
