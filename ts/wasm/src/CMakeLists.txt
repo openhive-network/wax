@@ -97,6 +97,16 @@ DEFINE_WASM_TARGET_FOR( wax
   # -O0 -g3 --profiling-funcs
 )
 
+add_custom_target( wax.common.wasm.identity_check ALL
+  COMMAND "${CMAKE_COMMAND}"
+    "-DWEB_WASM=$<TARGET_FILE_DIR:wax.web>/wax.common.wasm"
+    "-DNODE_WASM=$<TARGET_FILE_DIR:wax.node>/wax.common.wasm"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/compare_wasm_binaries.cmake"
+  COMMENT "Checking that the web and node wax.common.wasm are identical"
+  VERBATIM
+)
+add_dependencies( wax.common.wasm.identity_check wax.web wax.node )
+
 target_link_libraries( protocol_assertion_id_generator PUBLIC nodefs.js )
 target_link_options( protocol_assertion_id_generator PUBLIC
     -sENVIRONMENT=node -sNODERAWFS=1
