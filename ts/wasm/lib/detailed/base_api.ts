@@ -1,7 +1,7 @@
-import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, IWaxChainExtendibleOptions, TBlockHash, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
+import type { IBinaryViewArrayNode, IBinaryViewNode, IBinaryViewOutputData, IBrainKeyData, IHiveAssetData, IManabarData, IPrivateKeyData, ITransaction, IWaxBaseInterface, IWaxChainExtendibleOptions, TBlockHash, TDelegableHpAccountData, THexString, TNaiAssetConvertible, TNaiAssetSource, TPublicKey, TTimestamp } from "./interfaces";
 import type { binary_data_node, json_price, MainModule, protocol_foundation, VectorBinaryDataNode, VectorString, witness_set_properties_data, wax_authorities } from "../build_wasm/wax.common";
 import type { IChainConfig } from "../build_wasm/config";
-import type { ApiOperation, LegacyApiTransaction, NaiAsset } from "./api";
+import type { ApiManabar, ApiOperation, LegacyApiTransaction, NaiAsset } from "./api";
 
 import { ApiTransaction } from "./api";
 import type { TAccountName } from "./hive_apps_operations";
@@ -22,6 +22,8 @@ import { ensureUnixTimestamp } from "./util";
 
 const PERCENT_VALUE_DOUBLE_PRECISION = 100;
 export const ONE_HUNDRED_PERCENT = BigInt(100) * BigInt(PERCENT_VALUE_DOUBLE_PRECISION);
+// fc::time_point_sec::maximum() as serialized by the API - means no active power down
+const NO_VESTING_WITHDRAWAL_TIME = "1969-12-31T23:59:59";
 
 export enum EAssetName {
   HIVE = "HIVE",
@@ -497,6 +499,54 @@ export class WaxBaseApi implements IWaxBaseInterface {
     const totalVestingFundHiveAsset = this.createAssetWithRequiredSymbol(EAssetName.HIVE, totalVestingFundHive);
     const totalVestingSharesAsset = this.createAssetWithRequiredSymbol(EAssetName.VESTS, totalVestingShares);
     return this.vestsToHp(vestsAsset, totalVestingFundHiveAsset, totalVestingSharesAsset);
+  }
+
+  private calculateCurrentMana(now: number, maxMana: bigint, manabar: ApiManabar): bigint {
+    return this.calculateCurrentManabarValue(now, maxMana, manabar.current_mana, manabar.last_update_time).current;
+  }
+
+  // Mirrors delegate_vesting_shares_evaluator from hived (post HF 0.22)
+  private calculateDelegableVests(account: TDelegableHpAccountData, now: number, downvotePoolPercent: number): bigint {
+    const minBigInt = (lhs: bigint, rhs: bigint): bigint => lhs < rhs ? lhs : rhs;
+
+    const hasActivePowerDown = account.next_vesting_withdrawal !== NO_VESTING_WITHDRAWAL_TIME;
+    const withdrawRate = BigInt(account.vesting_withdraw_rate.amount);
+    const remainingWithdraw = BigInt(account.to_withdraw) - BigInt(account.withdrawn);
+    const weeklyWithdraw = hasActivePowerDown ? minBigInt(withdrawRate, remainingWithdraw) : 0n;
+    const receivedVests = BigInt(account.received_vesting_shares.amount);
+
+    const maxMana = BigInt(account.vesting_shares.amount) - BigInt(account.delegated_vesting_shares.amount) + receivedVests - weeklyWithdraw;
+    // Received VESTS are assumed to be consumed first and cannot be delegated further
+    const ownMana = maxMana - receivedVests;
+
+    let available = minBigInt(this.calculateCurrentMana(now, maxMana, account.voting_manabar), ownMana);
+    let availableDownvote = available;
+
+    if(downvotePoolPercent !== 0) {
+      const poolPercent = BigInt(downvotePoolPercent);
+      const currentDownvoteMana = this.calculateCurrentMana(now, (maxMana * poolPercent) / ONE_HUNDRED_PERCENT, account.downvote_manabar);
+
+      availableDownvote = minBigInt((currentDownvoteMana * ONE_HUNDRED_PERCENT) / poolPercent + ONE_HUNDRED_PERCENT / poolPercent - 1n, ownMana);
+    }
+
+    /*
+     * VESTS being powered down cannot be delegated. The current week's withdrawal is already excluded from the mana,
+     * so only the rest of the remaining power down has to be subtracted.
+     */
+    if(hasActivePowerDown && remainingWithdraw > withdrawRate) {
+      available += weeklyWithdraw - remainingWithdraw;
+      availableDownvote += weeklyWithdraw - remainingWithdraw;
+    }
+
+    const delegable = minBigInt(available, availableDownvote);
+
+    return delegable > 0n ? delegable : 0n;
+  }
+
+  public calculateDelegableHp(account: TDelegableHpAccountData, now: number, downvotePoolPercent: number, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {
+    const delegableVests = this.calculateDelegableVests(account, now, downvotePoolPercent);
+
+    return this.vestsToHp(this.vestsSatoshis(delegableVests), totalVestingFundHive, totalVestingShares);
   }
 
   public calculateWitnessVotesHp(votes: TNaiAssetSource, totalVestingFundHive: TNaiAssetSource, totalVestingShares: TNaiAssetSource): NaiAsset {

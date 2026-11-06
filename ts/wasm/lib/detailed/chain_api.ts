@@ -1,6 +1,6 @@
 import type { IHiveChainInterface, IManabarData, ITransaction, IOnlineTransaction, TTimestamp, TPublicKey, TWaxExtended, TBlockHash, TWaxRestExtended, TDeepWaxApiRequestPartial, IWaxOptionsChain, TNaiAssetConvertible, IWaxChainExtendibleOptions } from "./interfaces";
 import type { MainModule, MapStringUInt16, wax_authority, wax_authorities } from "../build_wasm/wax.common";
-import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type RcAccount } from "./api";
+import { ApiAuthority, ApiWitness, type ApiAccount, type ApiManabar, type ApiTransaction, type NaiAsset, type RcAccount } from "./api";
 
 import { WaxError, WaxChainApiError } from "./errors.js";
 import { ONE_HUNDRED_PERCENT, WaxBaseApi } from "./base_api.js";
@@ -371,5 +371,20 @@ export class HiveChainApi extends WaxBaseApi implements IHiveChainInterface {
     );
 
     return new Date(time * 1000);
+  }
+
+  public async calculateDelegableHpForAccount(accountName: string): Promise<NaiAsset> {
+    const [ dgpo, account ] = await Promise.all([
+      this.api.database_api.get_dynamic_global_properties({}),
+      this.findAccount(accountName)
+    ]);
+
+    return super.calculateDelegableHp(
+      account,
+      Math.round(new Date(`${dgpo.time}Z`).getTime() / 1000), // Convert API time to seconds
+      dgpo.downvote_pool_percent,
+      dgpo.total_vesting_fund_hive,
+      dgpo.total_vesting_shares
+    );
   }
 }
