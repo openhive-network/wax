@@ -95,7 +95,9 @@ sandbox:
 # with proto/wasm/tsc. `tests` runs the Playwright projects that need no network
 # (slots reach nothing but the sccache relay; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
-# `coverage` runs the tests. full, baseline and canary also bind the Rust suite
+# `coverage` runs the tests. The ts suite of full, baseline and canary also checks
+# the include refs against the submodules and the packed file list, as CI does.
+# full, baseline and canary also bind the Rust suite
 # (.aidev/run-rust.sh), the Python suite (.aidev/run-python.sh) and the python314
 # suite (run-python.sh on Python 3.14 with CI's pre-commit hooks), blocking like ts,
 # in the same image. Each is change-scoped by its `select` (.aidev/select-suite.sh):
@@ -128,7 +130,7 @@ verification:
     suites:
       - name: ts
         adapter: command
-        args: [".aidev/run-checks.sh", "full", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
+        args: [".aidev/run-checks.sh", "full", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "proto-pattern", "build-tests", "tests"]
         artifacts: ["test-results/aidev-full/"]
       - name: rust
         adapter: command
@@ -152,7 +154,7 @@ verification:
     suites:
       - name: ts
         adapter: command
-        args: [".aidev/run-checks.sh", "baseline", "proto", "wasm", "tsc", "bundle", "build-tests", "tests"]
+        args: [".aidev/run-checks.sh", "baseline", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "build-tests", "tests"]
         artifacts: ["test-results/aidev-baseline/"]
       - name: rust
         adapter: command
@@ -176,7 +178,7 @@ verification:
     suites:
       - name: ts
         adapter: command
-        args: [".aidev/run-checks.sh", "canary", "proto", "wasm", "tsc", "bundle", "proto-pattern", "build-tests", "tests"]
+        args: [".aidev/run-checks.sh", "canary", "include-refs", "proto", "wasm", "tsc", "bundle", "npm-pack", "proto-pattern", "build-tests", "tests"]
         artifacts: ["test-results/aidev-canary/"]
       - name: rust
         adapter: command

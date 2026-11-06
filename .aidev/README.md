@@ -20,7 +20,8 @@ Every suite runs in one image that AIDEV builds itself (see
 `.aidev/run-checks.sh <suite> <step>... [<project>...]` runs the named steps and writes
 `test-results/aidev-<suite>/junit.xml`, one test case per step with the step's log tail
 as the failure body. `tests` adds `playwright-junit.xml` beside it, one case per test.
-A step after a failed one is reported as skipped.
+A step after a failed one is reported as skipped, except after `include-refs`, which no
+step needs.
 
 A `<project>` is a name in `OFFLINE_PROJECTS` or `UNMAPPED_OFFLINE_PROJECTS`. Naming any
 restricts `tests` to those Playwright projects; naming none runs both lists. The other
@@ -33,15 +34,17 @@ neither a step nor an offline project exits 2 before anything runs.
 | `wasm` | `ts/wasm/build_wasm_wax.sh`: emscripten build of `core/` and hive's protocol, about a minute from scratch, incremental while `ts/wasm/build_wasm` survives | `wax_wasm_proto_tsc_generation` (`build`) |
 | `tsc` | `tsc` of `ts/wasm/lib` | `wax_wasm_proto_tsc_generation` (`build`) |
 | `bundle` | rollup, terser, `size-limit` (3420 kB), through `pnpm exec` as CI's build leaves `npm_package_*` unset | `wax_wasm_proto_tsc_generation` (`postbuild`) |
-| `proto-pattern` | generated protobuf output equals `ts/protobuf_patterns/proto` | `test_wax_wasm_proto_pattern`, without its npm-pack listing |
+| `npm-pack` | the file list of the packed package equals `ts/protobuf_patterns/npm-pack.out` (`diff -u`, so the files that differ are in the failure). Packed with `pnpm pack`, which CI's `npm_pack_package.sh` runs: its `npm_build_package.sh` fetches git tags to set the version first, which needs the network and changes no file of the package | `test_wax_wasm_proto_pattern` (the npm-pack listing) |
+| `proto-pattern` | generated protobuf output equals `ts/protobuf_patterns/proto` | `test_wax_wasm_proto_pattern` (the proto diff) |
 | `build-tests` | `pnpm run build:test` | `wax_wasm_build_tests` |
 | `tests` | Playwright, the projects in `OFFLINE_PROJECTS` and `UNMAPPED_OFFLINE_PROJECTS` (or the named ones) | `test_wax_wasm` |
+| `include-refs` | each submodule of `INCLUDE_REFS` (`hive` against `hive/hive`, `ts/npm-common-config` against `hive/common-ci-configuration`) is committed at the `ref:` of that project's `include:` in `.gitlab-ci.yml`, one case per submodule (`include-ref <path>`) naming both commits. Reads the gitlink and `.gitlab-ci.yml` of `HEAD` (not the submodule's checkout), and the ref on the line after `project:`, as ccc's `verify_submodule_ref.sh` does. Needs no other step: a failure skips none after it | `verify_include_refs` |
 
 | Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) | Suite `python314` (`run-python.sh <slot>-python314 --python 3.14 --pre-commit`, blocking) |
 |---|---|---|---|---|
 | quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — | — |
-| baseline | proto wasm tsc bundle build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
-| full, canary | proto wasm tsc bundle proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
+| baseline | include-refs proto wasm tsc bundle npm-pack build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
+| full, canary | include-refs proto wasm tsc bundle npm-pack proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
 | coverage | proto wasm tsc bundle build-tests tests | — | — | — |
 | static | proto wasm tsc proto-pattern | — | — | — |
 | system | proto wasm tsc bundle | — | — | — |
@@ -131,7 +134,7 @@ for the selector to map, so it is kept out of quick's approved scope. Not run an
 `healthchecker_tests`, which checks a live node (CI's advisory `test_wax_wasm_live_api`).
 
 Also not run: the npm examples (`test_wax_wasm_examples`, they `pnpm install` from the
-network), the signature-extension example, and the npm-pack file listing.
+network) and the signature-extension example.
 
 ## The Rust suite (`run-rust.sh`)
 
