@@ -60,6 +60,7 @@ environment:
     - "python/wax/tests/wax-local-tools/pyproject.toml"
     - "python/test_tools/poetry.lock"
     - "python/test_tools/pyproject.toml"
+    - "python/.pre-commit-config.yaml"
     - "python/wax/scripts/prepare_boost.sh"
 
 issues:
@@ -94,11 +95,13 @@ sandbox:
 # (slots reach nothing but the sccache relay; API calls are answered from recorded responses). There is no linter and no coverage tool in
 # ts/, so `static` is the typecheck plus the protobuf pattern check and
 # `coverage` runs the tests. full, baseline and canary also bind the Rust suite
-# (.aidev/run-rust.sh) and the Python suite (.aidev/run-python.sh), blocking like ts,
+# (.aidev/run-rust.sh), the Python suite (.aidev/run-python.sh) and the python314
+# suite (run-python.sh on Python 3.14 with CI's pre-commit hooks), blocking like ts,
 # in the same image. Each is change-scoped by its `select` (.aidev/select-suite.sh):
 # it runs only when the change touches a path its build or tests read, or when the
-# change cannot be enumerated (a canary). Their labels are `<slot>-rust` and
-# `<slot>-python` so they never share the ts suite's test-results/aidev-<slot>/,
+# change cannot be enumerated (a canary). Their labels are `<slot>-rust`,
+# `<slot>-python` and `<slot>-python314` so they never share the ts suite's
+# test-results/aidev-<slot>/,
 # which run-checks.sh clears when it starts. See .aidev/README.md.
 verification:
   quick:
@@ -138,6 +141,12 @@ verification:
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-full-python/"]
         timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "full-python314", "--python", "3.14", "--pre-commit"]
+        select: [".aidev/select-suite.sh", "python314"]
+        artifacts: ["test-results/aidev-full-python314/"]
+        timeout: 1200
   baseline:
     suites:
       - name: ts
@@ -156,6 +165,12 @@ verification:
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-baseline-python/"]
         timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "baseline-python314", "--python", "3.14", "--pre-commit"]
+        select: [".aidev/select-suite.sh", "python314"]
+        artifacts: ["test-results/aidev-baseline-python314/"]
+        timeout: 1200
   canary:
     suites:
       - name: ts
@@ -173,6 +188,12 @@ verification:
         args: [".aidev/run-python.sh", "canary-python"]
         select: [".aidev/select-suite.sh", "python"]
         artifacts: ["test-results/aidev-canary-python/"]
+        timeout: 1200
+      - name: python314
+        adapter: command
+        args: [".aidev/run-python.sh", "canary-python314", "--python", "3.14", "--pre-commit"]
+        select: [".aidev/select-suite.sh", "python314"]
+        artifacts: ["test-results/aidev-canary-python314/"]
         timeout: 1200
   static:
     adapter: command
