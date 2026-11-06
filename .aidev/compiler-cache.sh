@@ -15,13 +15,14 @@
 # CI's builds source, PINGs Redis and, when it does not answer, prints one warning
 # line and leaves every build uncached (cold) rather than failing; otherwise it
 # routes the wasm, the Rust crates and the native CMake builds through sccache.
-# Keys include absolute paths: suites build at /work, the fixed mount of every
-# slot, under the fixed WebDAV prefix `wax`, so they hit each other's entries on
-# every host of a site (not CI's, which builds under a runner-specific /builds/...
-# path).
+# SCCACHE_BASEDIRS is the checkout, so keys hold paths relative to it rather than
+# where it is mounted; under the fixed WebDAV prefix `wax`, the suites hit each
+# other's entries on every host of a site.
 
 _wax_sccache_record="${1:?usage: source .aidev/compiler-cache.sh RECORD}"
 unset SCCACHE_WEBDAV_ENDPOINT SCCACHE_WEBDAV_KEY_PREFIX
+# sccache refuses to start on a relative one; the suites source this from the root.
+export SCCACHE_BASEDIRS="$PWD"
 _wax_sccache_note=""
 
 # A cache in another data centre answers, but reads a cached object at about
@@ -79,7 +80,7 @@ _sccache_webdav_rtt_ms() {
 
 # Uses the site WebDAV cache when it answers within the gate, directly or through
 # the relay; fails, leaving the choice to Redis, when there is none or it does not.
-# Only sccache 0.10 or later reads it (.aidev/runtime/Dockerfile).
+# Only sccache 0.10 or later reads it (the base's, .aidev/runtime/Dockerfile).
 _wax_sccache_webdav() {
     local endpoint="${AIDEV_SCCACHE_WEBDAV_ENDPOINT:-}" url rtt
     [ -n "$endpoint" ] || return 1
