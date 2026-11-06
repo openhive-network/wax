@@ -41,9 +41,9 @@ branches:
 # See .aidev/README.md.
 environment:
   kind: "container"
-  image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk@sha256:80046ab0629fa83efadab83a01ca8ff23ab22f16515df02884644069d5ffd203"
+  image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk@sha256:02348ddbc766177ec89b7f8c7318b116f7a6800d47e568207d22a41d423e2c5f"
   build: {dockerfile: ".aidev/runtime/Dockerfile", context: "."}
-  base: {image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-10", follow: true}
+  base: {image: "registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-15", follow: true}
   inputs:
     - ".aidev/runtime/Dockerfile.dockerignore"
     - "ts/package.json#packageManager"
