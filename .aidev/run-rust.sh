@@ -66,6 +66,10 @@ mkdir -p rust/crates && cp -a "$BAKED/beekeeper" rust/crates/hiveio-beekeeper
 # bind-mounted checkout owned by another uid.
 [ -w "${HOME:-/}" ] || export HOME="$backup"
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*'
+# The crates, the cxx bridge and the hive/core C++ compile through sccache when
+# its Redis answers, else uncached.
+# shellcheck source=compiler-cache.sh
+source .aidev/compiler-cache.sh >&2
 
 # proto_builder's build script only reruns when hive's .proto files change, and
 # `restore` puts the previous sources back on exit: regenerate them as a fresh
@@ -73,7 +77,10 @@ export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*'
 (cd rust/proto_builder && CARGO_TARGET_DIR="$root/rust/wax/target/docker" cargo clean --quiet -p proto_builder)
 
 t0=$SECONDS
-if ! bash rust/build.sh --in-container release > "$logs/build.log" 2>&1 < /dev/null; then
+build_rc=0
+bash rust/build.sh --in-container release > "$logs/build.log" 2>&1 < /dev/null || build_rc=$?
+compiler_cache_stats >> "$logs/build.log" 2>&1
+if [ "$build_rc" -ne 0 ]; then
     tail -40 "$logs/build.log" >&2
     printf 'case\tbuild\tfail\t%s\trust/build.sh --in-container release failed\t%s\n' \
         "$((SECONDS - t0))" "$logs/build.log" >> "$cases"
@@ -140,4 +147,7 @@ rust_tests() {
     return "$rc"
 }
 
-run_with_junit_fallback "$junit" rust rust_tests
+rc=0
+run_with_junit_fallback "$junit" rust rust_tests || rc=$?
+compiler_cache_stats >&2
+exit "$rc"

@@ -18,13 +18,16 @@ cd "$(dirname "$0")/.."
 suite="${1:?usage: $0 rust|python}"
 
 # Path prefixes (a trailing slash) and exact paths each suite reads. Both read
-# the image and its declaration, the C++ of core/ and the hive submodule (its
-# protocol library, fc and the .proto sources they generate code from).
+# the image and its declaration, the compiler cache setup, the C++ of core/ and
+# the hive submodule (its protocol library, fc and the .proto sources they
+# generate code from).
 COMMON_PATHS=(
     .aidev/project.yaml
     .aidev/runtime/
     .aidev/select-suite.sh
     .aidev/junit-helpers.sh
+    .aidev/compiler-cache.sh
+    ts/scripts/sccache_redis_probe.sh
     .gitmodules
     hive
     hive/

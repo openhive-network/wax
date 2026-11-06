@@ -82,6 +82,16 @@ fn build_from_source(manifest_dir: &Path, repo_root: &Path) {
     cmake_cfg.define("CMAKE_C_FLAGS_RELEASE", "-Os -DNDEBUG");
     cmake_cfg.define("CMAKE_CXX_FLAGS_RELEASE", "-Os -DNDEBUG -fno-gnu-unique");
 
+    // cc-rs runs the bridge compile through RUSTC_WRAPPER when it is sccache;
+    // cmake-rs passes only the bare compiler, so give the C++ of hive and core/
+    // the same wrapper as its compiler launcher.
+    if let Some(wrapper) = std::env::var_os("RUSTC_WRAPPER")
+        .filter(|w| Path::new(w).file_stem().is_some_and(|stem| stem == "sccache"))
+    {
+        cmake_cfg.define("CMAKE_C_COMPILER_LAUNCHER", &wrapper);
+        cmake_cfg.define("CMAKE_CXX_COMPILER_LAUNCHER", &wrapper);
+    }
+
     for var in ["OPENSSL_ROOT_DIR", "OPENSSL_INCLUDE_DIR", "BOOST_ROOT"] {
         if let Ok(v) = std::env::var(var) {
             cmake_cfg.define(var, &v);

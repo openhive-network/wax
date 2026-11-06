@@ -54,8 +54,10 @@ variables:
   # Clone top-level submodules (hive, npm-common-config) but not nested ones.
   # Build jobs that compile from hive source override to 'recursive'.
   GIT_SUBMODULE_STRATEGY: normal
-  # Distributed compiler cache for WASM builds (sccache with Redis backend). The wasm jobs
-  # probe it first (ts/scripts/sccache_redis_probe.sh) and build uncached when it is down.
+  # Distributed compiler cache (sccache with Redis backend) for the WASM, Rust and Python
+  # builds. The jobs probe it first (ts/scripts/sccache_redis_probe.sh, which also routes
+  # cargo and the native CMake builds through sccache) and build uncached when it is down.
+  # .aidev/sccache-relay.compose.yml relays AIDEV's suites to it: keep the two equal.
   SCCACHE_REDIS: "redis://192.168.50.109:6379"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
@@ -219,7 +221,9 @@ build_wheel:
   - sudo chown -R "$(id -u):$(id -g)" "${CI_PROJECT_DIR}" || true
   - echo "Building wheel for Python ${PYTHON_VERSION}"
   - python3 --version
+  - . "${CI_PROJECT_DIR}/ts/scripts/sccache_redis_probe.sh"
   - ./python/wax/scripts/build_wax.sh 1
+  - sccache --show-stats || true
   parallel:
     matrix:
     - PYTHON_VERSION: ["3.12", "3.14"]
@@ -250,8 +254,10 @@ build_rust:
     # --in-container skips the nested docker run in build.sh: this job already runs
     # inside wax-rust-builder, which provides Rust, protobuf-compiler and the prebuilt
     # Boost/OpenSSL/CMake from the wax ci-base-image.
+  - . "${CI_PROJECT_DIR}/ts/scripts/sccache_redis_probe.sh"
   - cd "${CI_PROJECT_DIR}/rust"
   - ./build.sh --in-container release
+  - sccache --show-stats || true
   - ./fetch_beekeeper.sh
   - ./generate_version.sh "$CI_COMMIT_REF_PROTECTED" "$CI_COMMIT_TAG"
   artifacts:
@@ -290,8 +296,10 @@ test_rust:
     # hiveio-beekeeper crate (prebuilt native bundle included, so no beekeeper
     # C++ build) from the beekeeper project's GitLab generic package registry
     # — see rust/fetch_beekeeper.sh.
+  - . "${CI_PROJECT_DIR}/ts/scripts/sccache_redis_probe.sh"
   - cd "${CI_PROJECT_DIR}/rust"
   - ./test.sh --in-container release
+  - sccache --show-stats || true
   tags:
   - public-runner-docker
 
