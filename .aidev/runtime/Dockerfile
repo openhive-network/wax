@@ -8,14 +8,14 @@
 # See .aidev/README.md.
 #
 # The base provides emscripten, cmake, ninja, protoc, Boost for wasm, ccc's Node
-# and pnpm, Playwright's chromium and gcc. This adds:
+# and pnpm, Playwright's chromium, gcc and sccache. This adds:
+#   /usr/local/bin/sccache          sccache 0.19.0 when the base's is older than 0.14
 #   /opt/pnpm-store, /opt/corepack  `pnpm fetch` of ts/pnpm-lock.yaml and the
 #                                   `packageManager` pnpm (ts suite, python's mock server)
 #   /wax_boost_root                 static Boost as CI's ci-base-image builds it
 #                                   (prepare_boost.sh), for the native rust and python builds
 #   /usr/local/lib/lib{ssl,crypto,z,bz2}.a  the static libraries python/wax/CMakeLists.txt
 #                                   links by those paths
-#   /usr/local/bin/sccache          sccache 0.10, replacing the base's 0.8.1
 #   /opt/rust                       rustup's stable toolchain
 #   /opt/python, python3.12,        the latest CPython 3.12 and 3.14
 #     python3.14                    (python-build-standalone)
@@ -81,18 +81,25 @@ RUN set -e && apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && multiarch="$(gcc -print-multiarch)" \
     && for lib in libssl.a libcrypto.a libz.a libbz2.a; do ln -s "/usr/lib/${multiarch}/${lib}" "/usr/local/lib/${lib}"; done
-# The base's sccache 0.8.1 never hits the site WebDAV caches (.aidev/compiler-cache.sh):
-# it stats each key with PROPFIND before reading it, the caches answer every PROPFIND
-# as a collection, and it then reads nothing. 0.10 reads the object itself.
-ARG SCCACHE_VERSION=0.10.0
-ARG SCCACHE_SHA256=1fbb35e135660d04a2d5e42b59c7874d39b3deb17de56330b25b713ec59f849b
-RUN set -e && dist="sccache-v${SCCACHE_VERSION}-x86_64-unknown-linux-musl" \
-    && curl -fSL -o /tmp/sccache.tar.gz "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/${dist}.tar.gz" \
-    && echo "${SCCACHE_SHA256}  /tmp/sccache.tar.gz" | sha256sum -c - \
-    && tar -xzf /tmp/sccache.tar.gz -C /tmp "${dist}/sccache" \
-    && install -m 0755 "/tmp/${dist}/sccache" /usr/local/bin/sccache \
-    && rm -rf /tmp/sccache.tar.gz "/tmp/${dist}" \
-    && test "$(sccache --version)" = "sccache ${SCCACHE_VERSION}"
+# .aidev/compiler-cache.sh needs sccache 0.14 or later: older ones ignore
+# SCCACHE_BASEDIRS, and before 0.10 they never hit the site WebDAV caches (they stat
+# each key with PROPFIND, the caches answer every PROPFIND as a collection, and they
+# then read nothing). The base's is used when it is new enough (emsdk 5.0.2-15 ships
+# 0.19.0); an older base (5.0.2-10 ships 0.8.1) gets this release over it.
+ARG SCCACHE_VERSION=0.19.0
+ARG SCCACHE_SHA256=aa73c7270c997894038c0d8f0d297865f57569e1687883322bc431713d4bb9dd
+RUN set -e && at_least_0_14() { local v; v="$(sccache --version 2>/dev/null)" && v="${v#sccache }" \
+        && [ "$(printf '%s\n' 0.14.0 "$v" | sort -V | head -n1)" = 0.14.0 ]; } \
+    && if ! at_least_0_14; then \
+        dist="sccache-v${SCCACHE_VERSION}-x86_64-unknown-linux-musl" \
+        && curl -fSL -o /tmp/sccache.tar.gz "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/${dist}.tar.gz" \
+        && echo "${SCCACHE_SHA256}  /tmp/sccache.tar.gz" | sha256sum -c - \
+        && tar -xzf /tmp/sccache.tar.gz -C /tmp "${dist}/sccache" \
+        && install -m 0755 "/tmp/${dist}/sccache" /usr/local/bin/sccache \
+        && rm -rf /tmp/sccache.tar.gz "/tmp/${dist}" \
+        && test "$(sccache --version)" = "sccache ${SCCACHE_VERSION}"; \
+    fi \
+    && at_least_0_14
 RUN set -e && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
         | CARGO_HOME=/opt/rust/cargo sh -s -- -y --no-modify-path --profile minimal --default-toolchain "${RUST_TOOLCHAIN}" \
     && chmod -R a+rX /opt/rust

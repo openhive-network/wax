@@ -366,9 +366,11 @@ sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as hive's checks do:
   centre (40 ms) a cached object reads at about 1 MB/s, and a warm rust suite took 427 s
   against 178 s uncached; from one 0.8 ms away (about 90 MB/s) it took 49 s against
   118 s.
-- the image's sccache is 0.10 (`runtime/Dockerfile`). The emsdk base's 0.8.1 stats each
-  key with `PROPFIND` before reading it, the site caches answer every `PROPFIND` as a
-  collection, and 0.8.1 then reads nothing: it never hits a WebDAV cache.
+- the image's sccache is the emsdk base's (0.19.0 in `5.0.2-15`). Over a base whose
+  sccache is older than 0.14, which ignores `SCCACHE_BASEDIRS` (`5.0.2-10` ships
+  0.8.1), `runtime/Dockerfile` installs the sha256-pinned 0.19.0 release. (Before 0.10
+  sccache stats each key with `PROPFIND` before reading it, the site caches answer every
+  `PROPFIND` as a collection, and it then reads nothing: it never hits a WebDAV cache.)
 - each suite records the backend it chose in `test-results/aidev-<suite>/sccache.tsv`,
   one tab-separated line: the backend (`webdav`, `redis` or `none`), the cache it names,
   and how it was reached or why none was used. E.g. `webdav`,
@@ -378,9 +380,11 @@ sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as hive's checks do:
   steem-18 a compose network got `192.168.48.0/20`, and `192.168.50.109` is in it) loses
   its route to Redis, the host included, while that network exists; the suites then
   build cold. The cure is the daemon's `default-address-pools`, not this profile.
-- sccache keys include absolute paths. Every slot mounts the checkout at `/work`, so the
-  suites hit each other's entries on any host of a site; CI builds under a
-  runner-specific `/builds/...` path, so they do not share entries with CI.
+- `compiler-cache.sh` sets `SCCACHE_BASEDIRS` to the checkout (absolute: sccache does
+  not start on a relative one), so keys hold paths relative to it and the suites hit
+  each other's entries on any host of a site wherever the checkout is mounted. CI sets
+  it to `$CI_PROJECT_DIR` (`.gitlab-ci.yml`); its images' sccache ignores it until they
+  carry 0.14 or later.
 - the logs end with `sccache --show-stats` (its `Cache location` names the backend):
   `wasm.log` (ts), `rust/build.log` and the suite's output (rust), `python/build.log`
   (python).
@@ -465,13 +469,17 @@ package.
 The base tag is a declaration of its own: a common-ci-configuration bump that moves
 `EMSCRIPTEN_IMAGE_TAG` (as on a ccc Node bump) has to move `environment.base.image` to
 the new tag in the same commit, and the seed `environment.image` to its digest; a change
-to `base` or `build` is a protected change that waits for approval.
+to `base` or `build` is a protected change that waits for approval. The base may run
+ahead of the template, never behind it: `5.0.2-15` (sccache 0.19.0) is followed while
+the template still names `5.0.2-10` (sccache 0.8.1), which ships the same emscripten,
+Node, pnpm and Playwright. The submodule bump that brings the template to `5.0.2-15` or
+later leaves the base alone unless it moves past it.
 
 Build the image and run a suite by hand the same way AIDEV does (submodules checked out
 recursively):
 
 ```bash
-docker build --build-arg BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-10 \
+docker build --build-arg BASE_IMAGE=registry.gitlab.syncad.com/hive/common-ci-configuration/emsdk:5.0.2-15 \
   -f .aidev/runtime/Dockerfile -t wax-aidev-tests:local .
 docker run --rm --network none --user "$(id -u):$(id -g)" \
   -v "$PWD":/work -w /work wax-aidev-tests:local .aidev/run-checks.sh quick proto wasm tsc bundle build-tests tests

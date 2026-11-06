@@ -59,6 +59,9 @@ variables:
   # cargo and the native CMake builds through sccache) and build uncached when it is down.
   # .aidev/sccache-relay.compose.yml relays AIDEV's suites to it: keep the two equal.
   SCCACHE_REDIS: "redis://192.168.50.109:6379"
+  # Cache keys hold paths relative to the checkout, not the runner-specific /builds/...
+  # path (sccache 0.14 or later; older ones ignore it). Must be absolute.
+  SCCACHE_BASEDIRS: "${CI_PROJECT_DIR}"
   # Python 3.14 compatibility - allow PyO3-based packages to build
   PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
 
