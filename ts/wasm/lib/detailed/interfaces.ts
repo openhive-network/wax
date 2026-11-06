@@ -174,6 +174,15 @@ export interface IWaxOptions extends IWaxBaseExtendibleOptions {
    * @type {string}
    */
   wasmLocation?: string;
+
+  /**
+   * Whether the WASM module may write its logs (e.g. the hive protocol `ilog` / `wlog` / `elog` messages) to the console.
+   * Set to false to silence all of the WASM module output.
+   *
+   * @default true
+   * @type {boolean}
+   */
+  enableLogs?: boolean;
 }
 
 export interface IPrivateKeyData {

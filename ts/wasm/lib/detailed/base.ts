@@ -7,15 +7,21 @@ import type { IOptionalModuleArgs } from "./module_types.js";
 import { assignDefault } from "./util/iterate.js";
 
 export const DEFAULT_WAX_OPTIONS: IWaxOptions = {
-  chainId: "beeab0de00000000000000000000000000000000000000000000000000000000"
+  chainId: "beeab0de00000000000000000000000000000000000000000000000000000000",
+  enableLogs: true
 };
+
+const discardOutput = (): void => {};
+
+export const applyLogOptions = (moduleExt: IOptionalModuleArgs, enableLogs?: boolean): IOptionalModuleArgs =>
+  enableLogs === false ? { ...moduleExt, print: discardOutput, printErr: discardOutput } : moduleExt;
 
 // We have to keep wasmFn as any because createWaxFoundation is exported and will require wasmFn to have a type of module, we do not want to expose
 export const createWaxFoundation = async(wasmFn: typeof waxmodule, ModuleExt: IOptionalModuleArgs = {}, options: Partial<IWaxOptions> = {}): Promise<IWaxBaseInterface> => {
-  const wasmManager = new WasmManager(wasmFn, ModuleExt);
-  const waxModule = await wasmManager.module;
-
   const apiOptions = assignDefault(DEFAULT_WAX_OPTIONS, options);
+
+  const wasmManager = new WasmManager(wasmFn, applyLogOptions(ModuleExt, apiOptions.enableLogs));
+  const waxModule = await wasmManager.module;
 
   const api = new WaxBaseApi(wasmManager, waxModule, apiOptions.chainId);
 
