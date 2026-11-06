@@ -80,7 +80,7 @@ cases="$out/cases.tsv"; : > "$cases"
 
 source .aidev/junit-helpers.sh
 # shellcheck source=compiler-cache.sh
-source .aidev/compiler-cache.sh >&2
+source .aidev/compiler-cache.sh "$out/sccache.tsv" >&2
 # shellcheck source=pnpm-deps.sh
 if ! (cd ts && source ../.aidev/pnpm-deps.sh) > "$out/install.log" 2>&1; then
     tail -40 "$out/install.log" >&2

@@ -108,10 +108,10 @@ export CPLUS_INCLUDE_PATH="${WAX_BOOST_ROOT:?the test image sets WAX_BOOST_ROOT}
 export POETRY_DYNAMIC_VERSIONING_BYPASS=0.0.0+aidev
 # What CI sets for its Python 3.14 jobs.
 [ "$python_version" = 3.12 ] || export PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
-# The wheel's C++ (python/wax/CMakeLists.txt) compiles through sccache when its
-# Redis answers, else uncached.
+# The wheel's C++ (python/wax/CMakeLists.txt) compiles through sccache when a
+# compiler cache answers near enough, else uncached.
 # shellcheck source=compiler-cache.sh
-source .aidev/compiler-cache.sh >&2
+source .aidev/compiler-cache.sh "$out/sccache.tsv" >&2
 
 # Runs CMD with the image's venv NAME (wax, test-tools or pre-commit) for this Python
 # version active.
