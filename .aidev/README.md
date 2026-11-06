@@ -276,8 +276,14 @@ and history are as they were.
   four pytest groups and the visitor example there. The step cases carry the version
   (`build (3.14)`, `protobuf pattern (3.14)`, ...), the steps' testsuite is
   `python-3.14` and the groups' are `wax-3.14`, `helpy-3.14`, `test-tools-unit-3.14`
-  and `test-tools-hived-handle-3.14`, so nothing collides with the `python` suite's
-  names. After a failed build the other steps are skipped cases.
+  and `test-tools-hived-handle-3.14`. AIDEV identifies a case by its classname and
+  name only, not its testsuite, so every pytest case's name ends in ` (3.14)` too
+  (`test_reblog (3.14)`, `test_x[a] (3.14)`), added to each group's junit before the
+  merge (`junit_tag_cases`), while its classname stays as pytest wrote it and still
+  names the test file. No case collides with one of the `python` suite's. The id
+  `tests/.../test_follow_operation.py::test_reblog (3.14)` is not a node id pytest can
+  run; AIDEV records this command suite's cases but never re-runs them by node id.
+  After a failed build the other steps are skipped cases.
 - **pre-commit.** `pre-commit run --config python/.pre-commit-config.yaml --all-files`
   from the repository root, as `pre_commit_checks` runs it, in `venv-pre-commit-3.14`
   plus the cp314 wheel just built, `wax-local-tools` (editable, as wax's `poetry
