@@ -125,6 +125,21 @@ fs.writeFileSync(JUNIT,
 ' < /dev/null
 }
 
+# junit_tag_cases JUNIT SUFFIX
+#   Appends SUFFIX to the name of every <testcase> in JUNIT, in place, leaving its
+#   classname and everything else as written. A JUNIT that does not exist is left out.
+junit_tag_cases() {
+    JUNIT="$1" SUFFIX="$2" node -e '
+const fs = require("fs");
+const { JUNIT, SUFFIX } = process.env;
+if (!fs.existsSync(JUNIT)) process.exit(0);
+const esc = (s) => s.replace(/[<>&"]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "\"": "&quot;" })[c]);
+const xml = fs.readFileSync(JUNIT, "utf8").replace(/<testcase\b(?:[^>"]|"[^"]*")*>/g, (tag) =>
+  tag.replace(/(\sname=")([^"]*)"/, (_, attr, name) => `${attr}${name}${esc(SUFFIX)}"`));
+fs.writeFileSync(JUNIT, xml);
+' < /dev/null
+}
+
 # junit_merge JUNIT NAME=FILE...
 #   Writes JUNIT as one <testsuites> holding the testsuites of every FILE (a
 #   <testsuite> or a <testsuites> report, e.g. pytest's), each named NAME, with the
