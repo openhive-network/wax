@@ -31,7 +31,7 @@ python-dateutil = "^2.8.2"
 abstractcp = "^1.0.0"
 loguru = "^0.7.2"
 hiveio-wax = { path = "../wax", develop = true }
-hiveio-beekeepy = {version = "1.28.6.post20261105164928", source = "gitlab-hive"} # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
+hiveio-beekeepy = {version = "1.28.6.post20261107004332", source = "gitlab-hive"} # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
 msgspec = "^0.20.0"  # configurations of nodes (msgspec models of hiveio_api.validation)
 # The range admits only releases of develop: the lower bound is the hiveio-api that wax pins for the hive submodule,
 # moved with it by python/wax/scripts/bump_hive_submodule.sh, so test-tools never admits an older hiveio-api than wax.
