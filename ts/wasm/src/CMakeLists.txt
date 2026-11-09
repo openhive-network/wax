@@ -82,7 +82,7 @@ set( WAX_BINARYEN_EXTRA_PASSES
 DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "web"
   LINK_LIBRARIES hive_protocol
-  LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  LINK_OPTIONS -sNO_DYNAMIC_EXECUTION=1 -sALLOW_MEMORY_GROWTH=1 -sFILESYSTEM=0 #-gsource-map=inline
   ${WAX_BINARYEN_EXTRA_PASSES}
   # show function names:
   # -O0 -g3 --profiling-funcs
@@ -91,7 +91,7 @@ DEFINE_WASM_TARGET_FOR( wax
 DEFINE_WASM_TARGET_FOR( wax
   TARGET_ENVIRONMENT "node"
   LINK_LIBRARIES hive_protocol
-  LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 #-gsource-map=inline
+  LINK_OPTIONS -sALLOW_MEMORY_GROWTH=1 -sFILESYSTEM=0 #-gsource-map=inline
   ${WAX_BINARYEN_EXTRA_PASSES}
   # show function names:
   # -O0 -g3 --profiling-funcs
