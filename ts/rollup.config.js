@@ -3,19 +3,26 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import replace from '@rollup/plugin-replace';
 import copy from 'rollup-plugin-copy';
+import path from 'node:path';
+
+// Imported on demand by suggestBrainKey(): kept as a separate file, so only its users download it
+const BRAIN_KEY_WORDS = path.resolve('wasm/dist/lib/build_wasm/brain_key_words.js');
 
 export default [
   // Generate .JS bundles for each environment
   {
     input: 'wasm/dist/lib/detailed/index.js',
+    external: [BRAIN_KEY_WORDS],
     output: {
       format: 'es',
-      file: 'wasm/dist/bundle/detailed/index.js'
+      file: 'wasm/dist/bundle/detailed/index.js',
+      paths: { [BRAIN_KEY_WORDS]: '../build_wasm/brain_key_words.js' }
     },
     plugins: [
       copy({
         targets: [
           { src: ['wasm/lib/build_wasm/wax.common.wasm', 'wasm/lib/build_wasm/wax.*.js'], dest: 'wasm/dist/bundle/build_wasm' },
+          { src: [BRAIN_KEY_WORDS], dest: 'wasm/dist/bundle/build_wasm' },
           { src: ['wasm/lib/build_wasm/wax.common.d.ts'], dest: 'wasm/dist/lib/build_wasm' }
         ]
       }),

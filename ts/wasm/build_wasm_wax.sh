@@ -35,6 +35,11 @@ build() {
 
   cmake --install "${BUILD_DIR}" --component wax_config_ts --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
+  # The brain key word list as hive builds it into the library (base64 of the deflate compressed list, a quoted
+  # string): suggestBrainKey() imports it on demand and passes it to the wasm, which does not carry it
+  { printf 'export default '; cat "${BUILD_DIR}/build_protocol_minimal/include/hive/protocol/words.b64"; printf ';\n'; } \
+    > "${EXECUTION_PATH}/ts/wasm/lib/build_wasm/brain_key_words.ts"
+
   cmake --install "${BUILD_DIR}" --component wasm_runtime_components --prefix "${EXECUTION_PATH}/ts/wasm/lib/build_wasm"
 
   # Emscripten still uses redundant createRequire for legacy CJS support - remove it so we have proper bundlers support
