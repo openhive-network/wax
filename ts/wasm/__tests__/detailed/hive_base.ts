@@ -942,12 +942,16 @@ test.describe('Wax object interface foundation tests', () => {
 
   test('Should be able to suggest brain key', async ({ waxTest }) => {
     const retVal = await waxTest.dynamic(async({ base }) => {
-      return base.suggestBrainKey();
+      const brainKey = await base.suggestBrainKey();
+
+      return { ...brainKey, calculatedPublicKey: base.calculatePublicKey(brainKey.wifPrivateKey) };
     });
 
     expect(retVal.associatedPublicKey).toHaveLength(53);
-    expect((retVal.brainKey as string).length).toBeGreaterThan(0);
+    expect(retVal.brainKey.split(' ')).toHaveLength(16);
+    expect(retVal.brainKey).toBe(retVal.brainKey.toUpperCase());
     expect(retVal.wifPrivateKey).toHaveLength(51);
+    expect(retVal.calculatedPublicKey).toBe(retVal.associatedPublicKey);
   });
 
   test('Should be able to convert between raw private key -> WIF formats', async ({ waxTest }) => {

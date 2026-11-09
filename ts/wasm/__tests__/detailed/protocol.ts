@@ -676,14 +676,18 @@ test.describe('WASM Protocol', () => {
     expect(retVal.wif_private_key).toBe("5J89tdX8b1wQJHcqDMDVn1UwvtiYFK53PQEgG5gL5oCEk83Us12");
   });
 
-  test('Should be able to suggest brain key', async ({ wasmTest }) => {
-    const retVal = await wasmTest.dynamic(({ protocol }) => {
-      return protocol.cpp_suggest_brain_key();
-    });
+  test('Should be able to suggest brain key from a given word list', async ({ wasmTest }) => {
+    // base64 of the raw deflate of "alpha\n": the format of the word list hive builds into the library
+    const retVal = await wasmTest(({ protocol }, wordList) => {
+      const data = protocol.cpp_suggest_brain_key_from_word_list(wordList);
 
-    expect(retVal.associated_public_key).toHaveLength(53);
-    expect((retVal.brain_key as string).length).toBeGreaterThan(0);
-    expect(retVal.wif_private_key).toHaveLength(51);
+      return { ...data, calculated_public_key: protocol.cpp_calculate_public_key(data.wif_private_key as string) };
+    }, 'S8wpyEjkAgA=');
+
+    // A single word is picked 16 times and normalized to upper case; the key is sha256(sha512(brain key + " 0"))
+    expect(retVal.brain_key).toBe(Array(16).fill('ALPHA').join(' '));
+    expect(retVal.wif_private_key).toBe('5KFuMCqxy3d7Er3i3PD8qiEicmyAsdxwKrbNA2x7Gvris6GSrm4');
+    expect(retVal.associated_public_key).toBe(retVal.calculated_public_key);
   });
 
   test('Should be able to calculate public key', async ({ wasmTest }) => {
