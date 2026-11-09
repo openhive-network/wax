@@ -34,6 +34,7 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
     -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
     -sEXCEPTION_STACK_TRACES=1
     -sELIMINATE_DUPLICATE_FUNCTIONS=1
+    -sMALLOC=emmalloc
   )
 
   set( exec_wasm_name "${wasm_target_basename}.${arg_TARGET_ENVIRONMENT}" )
