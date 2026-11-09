@@ -460,8 +460,10 @@ export class WaxBaseApi implements IWaxBaseInterface {
     return Number(manabarRegenerationTime);
   }
 
-  public suggestBrainKey(): IBrainKeyData {
-    const data = this.wasmManager.safeWasmCall(() => this.protocol.cpp_suggest_brain_key());
+  public async suggestBrainKey(): Promise<IBrainKeyData> {
+    // The word list is loaded only when a brain key is suggested, the wasm does not carry it
+    const { default: wordList } = await import("../build_wasm/brain_key_words.js");
+    const data = this.wasmManager.safeWasmCall(() => this.protocol.cpp_suggest_brain_key_from_word_list(wordList));
 
     return {
       associatedPublicKey: data.associated_public_key as string,
