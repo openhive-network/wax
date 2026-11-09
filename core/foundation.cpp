@@ -11,6 +11,7 @@
 #include <fc/io/json.hpp>
 #include <fc/crypto/elliptic.hpp>
 #include <fc/crypto/hex.hpp>
+#include <fc/crypto/base64.hpp>
 
 #include <boost/lexical_cast.hpp>
 
@@ -18,6 +19,7 @@
 
 #include <hive/protocol/asset.hpp>
 #include <hive/protocol/key_utils.hpp>
+#include <hive/protocol/words.hpp>
 #include <hive/protocol/transaction.hpp>
 #include <hive/protocol/transaction_util.hpp>
 #include <hive/protocol/crypto_memo.hpp>
@@ -360,19 +362,34 @@ std::string foundation::cpp_convert_wif_public_key_to_raw(const std::string& wif
   );
 }
 
+static brain_key_data to_brain_key_data(const hive::protocol::brain_key_info& bki)
+{
+  brain_key_data ret_val;
+
+  ret_val.brain_key = bki.brain_priv_key;
+  ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(bki.pub_key, HIVE_ADDRESS_PREFIX);
+  ret_val.wif_private_key = bki.wif_priv_key;
+
+  return ret_val;
+}
+
 brain_key_data foundation::cpp_suggest_brain_key() const
 {
   return cpp::safe_exception_wrapper(
     []() ->brain_key_data {
-      brain_key_data ret_val;
+      return to_brain_key_data(hive::protocol::suggest_brain_key());
+    }
+  );
+}
 
-      const auto bki = hive::protocol::suggest_brain_key();
+brain_key_data foundation::cpp_suggest_brain_key_from_word_list(const std::string& word_list_b64) const
+{
+  return cpp::safe_exception_wrapper(
+    [&word_list_b64]() ->brain_key_data {
+      const hive::words::word_list words(fc::base64_decode(word_list_b64));
+      FC_ASSERT(words.get_list_size() > 0, "The brain key word list is empty");
 
-      ret_val.brain_key = bki.brain_priv_key;
-      ret_val.associated_public_key = fc::ecc::public_key::to_base58_with_prefix(bki.pub_key, HIVE_ADDRESS_PREFIX);
-      ret_val.wif_private_key = bki.wif_priv_key;
-
-      return ret_val;
+      return to_brain_key_data(hive::protocol::suggest_brain_key(words));
     }
   );
 }

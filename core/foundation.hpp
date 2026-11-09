@@ -96,6 +96,11 @@ public:
 
   brain_key_data cpp_suggest_brain_key() const;
 
+  /** Like cpp_suggest_brain_key, but takes words from the given word list: the base64 of its deflate compressed
+  *   text, one word per line (the format hive builds into the library).
+  */
+  brain_key_data cpp_suggest_brain_key_from_word_list(const std::string& word_list_b64) const;
+
   /** Returns map of hive::protocol constants in form:
   *   constant_name => constant_value as string.
   */

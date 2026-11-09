@@ -159,7 +159,7 @@ EMSCRIPTEN_BINDINGS(wax_api_instance) {
   class_<foundation_wasm, base<foundation>>("protocol_foundation")
     .constructor<>()
     .function("cpp_calculate_public_key", &foundation_wasm::cpp_calculate_public_key)
-    .function("cpp_suggest_brain_key", &foundation_wasm::cpp_suggest_brain_key)
+    .function("cpp_suggest_brain_key_from_word_list", &foundation_wasm::cpp_suggest_brain_key_from_word_list)
     .function("cpp_get_hive_protocol_config", &foundation_wasm::cpp_get_hive_protocol_config)
 
     .function("cpp_tx_api_to_proto", &foundation_wasm::cpp_tx_api_to_proto)

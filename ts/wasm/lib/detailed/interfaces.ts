@@ -900,12 +900,13 @@ export interface IWaxBaseInterface {
    * Brain key is a long passphrase that provides enough entropy to generate cryptographic
    * keys. This function will suggest a suitably random string that should
    * be easy to write down (and, with effort, memorize).
+   * The word list of brain keys is loaded on the first call, so it is not downloaded with the library.
    *
-   * @returns {IBrainKeyData} Brain key data
+   * @returns {Promise<IBrainKeyData>} Brain key data
    *
    * @throws {WaxError} on any Wax API-related error
    */
-  suggestBrainKey(): IBrainKeyData;
+  suggestBrainKey(): Promise<IBrainKeyData>;
 
   /**
    * Derives private key for a given role from so-called Master Password
