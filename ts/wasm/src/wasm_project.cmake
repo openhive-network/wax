@@ -32,6 +32,7 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
     -Oz
     -fwasm-exceptions
     -sELIMINATE_DUPLICATE_FUNCTIONS=1
+    -sMALLOC=emmalloc
   )
 
   set( exec_wasm_name "${wasm_target_basename}.${arg_TARGET_ENVIRONMENT}" )
