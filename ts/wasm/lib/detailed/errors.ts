@@ -119,13 +119,13 @@ export class WaxInsufficientBalanceError extends WaxAssertionError {
     this.name = "WaxInsufficientBalanceError";
   }
 
-  /** Balance actually available at the time of the assertion. */
-  public get available(): unknown { return this.subject; }
-
-  /** Account whose balance was checked, if reported. */
+  /**
+   * Account whose balance was checked: the subject of hive's `HIVE_CHAIN_BALANCE_ASSERT`.
+   * `undefined` for the few balance assertions whose subject is not an account (e.g. an asset).
+   * The amounts involved are named differently by each assertion; read them from `extras`.
+   */
   public get account(): string | undefined {
-    const account = this.extras.account;
-    return typeof account === "string" ? account : undefined;
+    return typeof this.subject === "string" ? this.subject : undefined;
   }
 }
 

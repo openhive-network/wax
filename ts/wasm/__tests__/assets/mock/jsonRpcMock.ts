@@ -19,6 +19,7 @@ import alphaManabar50 from "./data/vote.manabar-50";
 import alphaManabar100 from "./data/vote.manabar-100";
 import largeinput from "./data/largeinput";
 import tooShortAccountNameBroadcast from "./data/too_short_account_name_broadcast";
+import claimRewardBalanceTooMuch from "./data/claim_reward_balance_too_much";
 
 // Note: with WAX_TEST_API_MODE=live, start-proxy-mock-server.ts fetches and caches
 // database_api.get_dynamic_global_properties from the real API at startup and
@@ -176,6 +177,9 @@ export default {
     // hived rejects such a transaction while validating its operations, before checking its TaPoS, expiration or signatures
     if (Array.isArray(trx?.operations) && trx.operations.some((op: any) => op?.type === "transfer_operation" && op.value?.from === "a"))
       return tooShortAccountNameBroadcast;
+
+    if (Array.isArray(trx?.operations) && trx.operations.some((op: any) => op?.type === "claim_reward_balance_operation" && op.value?.account === "guest4test1"))
+      return claimRewardBalanceTooMuch;
 
     if (max_block_age === undefined || !(typeof max_block_age === "number"))
       return;

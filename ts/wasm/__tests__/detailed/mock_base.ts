@@ -243,6 +243,33 @@ test.describe('Wax base mock tests', () => {
     expect(retVal.stackData).toStrictEqual({ fs: 16, in: 'toolargeinputitis', is: 17 });
   });
 
+  test('Should render asset arguments of a chain balance assertion as text and name its account', async ({ waxTest }) => {
+    const retVal = await waxTest(async({ chain, wax }) => {
+      const tx = await chain.createTransaction();
+      tx.pushOperation({ claim_reward_balance_operation: {
+        account: "guest4test1",
+        reward_hive: chain.hiveCoins(1),
+        reward_hbd: chain.hbdCoins(0),
+        reward_vests: chain.vestsCoins(0)
+      } });
+      try {
+        await chain.api.network_broadcast_api.broadcast_transaction({ max_block_age: -1, trx: tx.toApiJson() });
+      } catch(error) {
+        if (error instanceof wax.WaxInsufficientBalanceError)
+          return { name: error.name, message: error.message, account: error.account };
+        return { name: (error as Error).name, message: (error as Error).message };
+      }
+
+      return {};
+    });
+
+    expect(retVal).toStrictEqual({
+      name: 'WaxInsufficientBalanceError',
+      message: '[Chain Error] Cannot claim that much HIVE. Claim: 1.000 HIVE Actual: 0.500 HIVE',
+      account: 'guest4test1'
+    });
+  });
+
   test('Testing assertion during transaction broadcast', async ({ waxTest }) => {
     const retVal = await waxTest( async ({ chain, wax }) => {
       const testedOp: claim_account = {
