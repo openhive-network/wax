@@ -105,6 +105,54 @@ export class CxxExceptionData {
 }
 
 /**
+ * Symbols of the NAIs a wax build knows, as `cpp_asset_symbol` names them. An unknown NAI is
+ * rendered by the NAI string itself, as `cpp_asset_symbol` does. Kept in sync with Python's
+ * `_NAI_SYMBOLS` (`wax_specialised_errors.py`) so both languages produce the same message.
+ */
+const NAI_SYMBOLS: Readonly<Record<string, string>> = {
+  "@@000000021": "HIVE",
+  "@@000000013": "HBD",
+  "@@000000037": "VESTS",
+};
+
+interface INaiAssetLike {
+  amount: string | number;
+  precision: number;
+  nai: string;
+}
+
+function isNaiAsset(value: unknown): value is INaiAssetLike {
+  if (typeof value !== "object" || value === null)
+    return false;
+  const { amount, precision, nai } = value as Record<string, unknown>;
+  return (typeof amount === "string" || typeof amount === "number") && /^-?\d+$/.test(String(amount))
+    && Number.isInteger(precision) && (precision as number) >= 0
+    && typeof nai === "string";
+}
+
+/**
+ * Render a NAI asset as `"<amount> <symbol>"` (e.g. `"1.000 HIVE"`), the text `chain.waxify` gives an
+ * asset, without locale-dependent digit grouping. Computed in TS rather than through WASM because
+ * messages are built while a WASM exception is being translated.
+ */
+function formatNaiAsset({ amount, precision, nai }: INaiAssetLike): string {
+  let digits = String(amount);
+  const sign = digits.startsWith("-") ? "-" : "";
+  digits = digits.slice(sign.length);
+  if (precision > 0) {
+    digits = digits.padStart(precision + 1, "0");
+    digits = `${digits.slice(0, -precision)}.${digits.slice(-precision)}`;
+  }
+  return `${sign}${digits} ${NAI_SYMBOLS[nai] ?? nai}`;
+}
+
+function renderValue(value: unknown): string {
+  if (typeof value !== "object")
+    return String(value);
+  return isNaiAsset(value) ? formatNaiAsset(value) : JSON.stringify(value);
+}
+
+/**
  * Replace `${key}` placeholders in `fmt` with values from `data`.
  * Missing keys leave the placeholder untouched (Python fallback returns the raw format;
  * here we keep missing placeholders visible for diagnostic value).
@@ -114,7 +162,7 @@ function interpolate(fmt: string, data: Record<string, any>): string {
     if (!(key in data))
       return match;
     const value = data[key];
-    return value === null || value === undefined ? match : String(value);
+    return value === null || value === undefined ? match : renderValue(value);
   });
 }
 

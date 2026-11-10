@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import contextlib
+import json
 import re
 from functools import wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from hiveio_api.fields.hive_datetime import HiveDateTime  # noqa: TCH002
 from hiveio_api.validation.errors import DecodeError
@@ -22,6 +23,47 @@ from wax.exceptions.wax_error import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+# ---------------------------------------------------------------------------
+# Rendering of assertion message arguments
+# ---------------------------------------------------------------------------
+
+_NAI_SYMBOLS: Final[dict[str, str]] = {
+    "@@000000021": "HIVE",
+    "@@000000013": "HBD",
+    "@@000000037": "VESTS",
+}
+"""Symbols of the NAIs a wax build knows, as cpp_asset_symbol names them; kept in sync with TS NAI_SYMBOLS."""
+
+_NAI_AMOUNT_PATTERN: Final = re.compile(r"-?\d+")
+
+
+def _format_nai_asset(value: dict[str, Any]) -> str | None:
+    """Render a NAI asset as "<amount> <symbol>" (e.g. "1.000 HIVE"), or return None when value is not one."""
+    amount, precision, nai = value.get("amount"), value.get("precision"), value.get("nai")
+    if isinstance(amount, bool) or not isinstance(amount, (str, int)):
+        return None
+    if isinstance(precision, bool) or not isinstance(precision, int) or precision < 0 or not isinstance(nai, str):
+        return None
+    digits = str(amount)
+    if not _NAI_AMOUNT_PATTERN.fullmatch(digits):
+        return None
+    sign = "-" if digits.startswith("-") else ""
+    digits = digits.removeprefix("-")
+    if precision > 0:
+        digits = digits.rjust(precision + 1, "0")
+        digits = f"{digits[:-precision]}.{digits[-precision:]}"
+    return f"{sign}{digits} {_NAI_SYMBOLS.get(nai, nai)}"
+
+
+def _render_value(value: object) -> object:
+    """Render NAI assets as text and other containers as compact JSON, the way the TS message does."""
+    if isinstance(value, dict) and (asset := _format_nai_asset(value)) is not None:
+        return asset
+    if isinstance(value, (dict, list)):
+        return json.dumps(value, separators=(",", ":"))
+    return value
+
 
 # ---------------------------------------------------------------------------
 # Data models for parsed C++ exception JSON
@@ -99,7 +141,7 @@ class CxxExceptionData(PreconfiguredBaseModel):
         if not self.stack:
             return ""
         fmt = re.sub(r"\$\{", "{", self.stack[0].format)
-        kwargs = self.stack[0].data
+        kwargs = {key: _render_value(value) for key, value in self.stack[0].data.items()}
         try:
             return fmt.format(**kwargs).strip()
         except (KeyError, IndexError, ValueError):

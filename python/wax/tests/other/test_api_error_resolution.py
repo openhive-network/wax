@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -169,6 +169,45 @@ class TestResolveApiResponseError:
 
         assert isinstance(result, WaxAssertionError)
         assert "Chain" in result.message or "chain" in result.message.lower()
+
+
+def _make_claim_reward_balance_assertion_data() -> dict[str, Any]:
+    """Build hived's assertion data for a claim_reward_balance asking for more HIVE than the account's rewards."""
+    data = _make_assertion_data(category="chain", subject_type="balance", subject="guest4test1")
+    data["extension"]["assertion_expression"] = "op_reward_hive <= acnt.get_hive_rewards()"
+    frame = data["stack"][0]
+    frame["format"] = "Cannot claim that much HIVE. Claim: ${c} Actual: ${a}"
+    frame["data"]["c"] = {"amount": "1000", "nai": "@@000000021", "precision": 3}
+    frame["data"]["a"] = {"amount": "500", "nai": "@@000000021", "precision": 3}
+    return data
+
+
+class TestChainBalanceAssertionMessage:
+    def test_asset_arguments_are_rendered_as_text(self) -> None:
+        response = _make_jsonrpc_error_response(data=_make_claim_reward_balance_assertion_data())
+
+        result = resolve_api_response_error(response)
+
+        assert isinstance(result, WaxInsufficientBalanceError)
+        assert result.message == "[Chain Error] Cannot claim that much HIVE. Claim: 1.000 HIVE Actual: 0.500 HIVE"
+
+    def test_account_is_the_subject_of_the_assertion(self) -> None:
+        response = _make_jsonrpc_error_response(data=_make_claim_reward_balance_assertion_data())
+
+        result = resolve_api_response_error(response)
+
+        assert isinstance(result, WaxInsufficientBalanceError)
+        assert result.account == "guest4test1"
+
+    def test_non_asset_containers_are_rendered_as_json(self) -> None:
+        data = _make_claim_reward_balance_assertion_data()
+        data["stack"][0]["data"]["c"] = {"from": "alice", "amounts": [1, 2]}
+        response = _make_jsonrpc_error_response(data=data)
+
+        result = resolve_api_response_error(response)
+
+        assert isinstance(result, WaxAssertionError)
+        assert 'Claim: {"from":"alice","amounts":[1,2]} Actual: 0.500 HIVE' in result.message
 
 
 # ---------------------------------------------------------------------------

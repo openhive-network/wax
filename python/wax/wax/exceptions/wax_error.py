@@ -117,12 +117,11 @@ class WaxInsufficientBalanceError(WaxAssertionError):
     """Raised when an account has insufficient balance for the requested operation."""
 
     @property
-    def available(self) -> Any | None:  # noqa: ANN401
-        """Balance actually available at the time of the assertion."""
-        return self.subject
-
-    @property
     def account(self) -> str | None:
-        """Account whose balance was checked, if reported."""
-        account = self.extras.get("account")
-        return account if isinstance(account, str) else None
+        """
+        Account whose balance was checked: the subject of hive's HIVE_CHAIN_BALANCE_ASSERT.
+
+        None for the few balance assertions whose subject is not an account (e.g. an asset).
+        The amounts involved are named differently by each assertion; read them from `extras`.
+        """
+        return self.subject if isinstance(self.subject, str) else None
