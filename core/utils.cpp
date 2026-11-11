@@ -62,32 +62,36 @@ assertion_id_data_container_t init_assertion_data()
   }
 }
 
+std::string get_assertion_category( uint64_t assertion_code )
+{
+  static const assertion_id_data_container_t assertion_data( init_assertion_data() );
+
+  const auto it = assertion_data.find( assertion_code );
+  return it != assertion_data.end() ? it->second : std::string();
+}
+
 uint64_t throw_recognized_wax_assertion( fc::assert_exception& e )
 {
-  static assertion_id_data_container_t assertion_data( init_assertion_data() );
   auto ae = e.get_extension( FC_ASSERT_EXPRESSION_KEY );
   uint64_t assertion_code = fc::exception::hash_expr( ae );
-  
-  const auto it = assertion_data.find( assertion_code );
-  if( it !=  assertion_data.end() )
+
+  const std::string category = get_assertion_category( assertion_code );
+  if( category == "protocol" )
   {
-    if( it->second == "protocol" )
-    {
-      //wlog("Throwing recognized wax_protocol_assertion ${assertion_code}", (assertion_code));
-      throw wax_protocol_assertion( assertion_code, e );
-    }
-    else if( it->second == "chain" )
-    {
-      //wlog("Throwing recognized wax_chain_assertion ${assertion_code}", (assertion_code));
-      throw wax_chain_assertion( assertion_code, e );
-    }
-    // TODO: Uncomment once API assertions are recognized.
-    /*else if( it->second == "api" )
-    {
-      //wlog("Throwing recognized wax_api_assertion ${assertion_code}", (assertion_code));
-      throw wax_api_assertion( assertion_code, e );
-    }*/
+    //wlog("Throwing recognized wax_protocol_assertion ${assertion_code}", (assertion_code));
+    throw wax_protocol_assertion( assertion_code, e );
   }
+  else if( category == "chain" )
+  {
+    //wlog("Throwing recognized wax_chain_assertion ${assertion_code}", (assertion_code));
+    throw wax_chain_assertion( assertion_code, e );
+  }
+  // TODO: Uncomment once API assertions are recognized.
+  /*else if( category == "api" )
+  {
+    //wlog("Throwing recognized wax_api_assertion ${assertion_code}", (assertion_code));
+    throw wax_api_assertion( assertion_code, e );
+  }*/
 
   // Let unrecognized assertion to be thrown outside.
   return assertion_code;

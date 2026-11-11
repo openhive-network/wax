@@ -212,18 +212,35 @@ def _cache_classification(assert_hash: str, category: str, subject_type: str) ->
     _ASSERT_HASH_CLASSIFICATION_CACHE[assert_hash] = (category, subject_type)
 
 
+_UINT64_MAX = 2**64 - 1
+
+
+def _lookup_assertion_category(assert_hash: str) -> str:
+    """Look the hash up in the static assert_hash → category table of the C++ core (the one TS reaches via wasm)."""
+    if not assert_hash.isdecimal() or int(assert_hash) > _UINT64_MAX:
+        return "unknown"
+    # Imported lazily: the bridge modules import this module while they initialise.
+    from wax.cpp_python_bridge import get_assertion_category
+
+    return get_assertion_category(int(assert_hash)) or "unknown"
+
+
 def _build_exception(data: CxxExceptionData, category: str) -> WaxAssertionError:
     """Instantiate the most specific exception class for the given data and category."""
     subject_type = data.subject_type
 
     # When the stack data doesn't carry category/subject_type (e.g. API responses
     # from hived versions without HIVE_SPECIALISED_ASSERT metadata), fall back to
-    # the assert_hash cache populated by earlier C++ bridge resolutions.
+    # the assert_hash cache populated by earlier C++ bridge resolutions, then to
+    # the static assert_hash → category table of the C++ core.
     # Only use cache when "category" is genuinely absent from stack frames,
     # not when it's explicitly set to "unknown".
     _category_absent = not any("category" in frame.data for frame in data.stack)
-    if category == "unknown" and _category_absent and data.assert_hash in _ASSERT_HASH_CLASSIFICATION_CACHE:
-        category, subject_type = _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash]
+    if category == "unknown" and _category_absent:
+        if data.assert_hash in _ASSERT_HASH_CLASSIFICATION_CACHE:
+            category, subject_type = _ASSERT_HASH_CLASSIFICATION_CACHE[data.assert_hash]
+        else:
+            category = _lookup_assertion_category(data.assert_hash)
 
     # Inject the resolved category / subject_type back into the top stack frame
     # so that the WaxAssertionError properties (which read from raw data) return

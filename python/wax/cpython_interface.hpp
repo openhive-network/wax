@@ -22,6 +22,7 @@ namespace cpp
     void cpp_tx_api_to_proto(PyObject* ptr)const;
 
     cpp::hive_exception_data cpp_translate_to_wax_exception_data(std::exception_ptr ex)const;
+    std::string cpp_get_assertion_category(uint64_t assertion_hash)const;
   };
 
 } /// namespace cpp
