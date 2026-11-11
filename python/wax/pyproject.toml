@@ -37,7 +37,7 @@ generate-setup-file = true
 python = ">=3.12,<4"
 protobuf = "^6.33.0"
 httpx = {extras = ["http2"], version = "^0.28.0"}
-loguru = "^0.7.2"
+loguru = "^0.8.0"
 python-dateutil = "^2.8.2"
 requests = "^2.32.3"
 typing-extensions = "^4.0.0"

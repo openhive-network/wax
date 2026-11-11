@@ -29,7 +29,7 @@ poetry-dynamic-versioning = { version = "1.9.1", extras = ["plugin"] }
 python = ">=3.12,<4"
 python-dateutil = "^2.8.2"
 abstractcp = "^1.0.0"
-loguru = "^0.7.2"
+loguru = "^0.8.0"
 hiveio-wax = { path = "../wax", develop = true }
 hiveio-beekeepy = {version = "1.28.6.post20261105164928", source = "gitlab-hive"} # Allow also dev versions to be installed. Prevent infinite loop while trying to install wax referencing dev. version of beekeepy
 msgspec = "^0.20.0"  # configurations of nodes (msgspec models of hiveio_api.validation)
