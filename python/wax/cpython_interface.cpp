@@ -42,6 +42,11 @@ hive_exception_data protocol::cpp_translate_to_wax_exception_data(std::exception
   }
 }
 
+std::string protocol::cpp_get_assertion_category(uint64_t assertion_hash)const
+{
+  return get_assertion_category(assertion_hash);
+}
+
 hive_transaction_handle protocol::cpp_deserialize_transaction(std::string hex)const
 {
   return safe_exception_wrapper([&]() -> hive_transaction_handle {

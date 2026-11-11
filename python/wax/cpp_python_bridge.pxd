@@ -263,6 +263,7 @@ cdef extern from "cpython_interface.hpp" namespace "cpp":
         string cpp_get_default_comment_options_operation() except +
 
         hive_exception_data cpp_translate_to_wax_exception_data(exception_ptr eptr)
+        string cpp_get_assertion_category(uint64_t assertion_hash)
         hive_transaction_handle cpp_deserialize_transaction(string hex)except +
         hive_operation_handle cpp_deserialize_operation(string hex)except +
 

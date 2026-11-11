@@ -8,6 +8,7 @@
 #include <exception>
 #include <functional>
 #include <stdexcept>
+#include <string>
 
 //#define WAX_EXCEPTION_LOGGING
 #ifdef WAX_EXCEPTION_LOGGING
@@ -20,6 +21,11 @@
 
 namespace cpp
 {
+/** Returns the category ("protocol" or "chain") of the assertion identified by its `assert_hash`,
+    or an empty string when wax does not recognize the assertion.
+*/
+std::string get_assertion_category( uint64_t assertion_code );
+
 uint64_t throw_recognized_wax_assertion( fc::assert_exception& e );
 
 /** Classifies the current exception and re-throws it as a type safely handled by Python/WASM runtimes.

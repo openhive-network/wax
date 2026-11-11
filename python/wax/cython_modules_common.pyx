@@ -83,6 +83,16 @@ def parse_cxx_exception(ex: object) -> tuple | None:
         return (wax_exception_name, wax_exception_what)
 
 
+def get_assertion_category(assert_hash: int) -> str | None:
+    """Return the category ("protocol" or "chain") wax assigns to the assertion of the given hash.
+
+    Returns None when the hash is not a recognized wax assertion.
+    """
+    cdef protocol obj
+    category = obj.cpp_get_assertion_category(assert_hash).decode()
+    return category or None
+
+
 cdef object convert_binary_data_node_to_python(binary_data_node node):
     """Recursively convert C++ binary_data_node to Python python_binary_data_node."""
     cdef list children = []

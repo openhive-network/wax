@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -22,6 +24,7 @@ from wax.exceptions.wax_specialised_errors import resolve_api_response_error, re
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
+    from pathlib import Path
 
     from wax import IHiveChainInterface
     from wax.api.collection import WaxApiCollection
@@ -208,6 +211,108 @@ class TestChainBalanceAssertionMessage:
 
         assert isinstance(result, WaxAssertionError)
         assert 'Claim: {"from":"alice","amounts":[1,2]} Actual: 0.500 HIVE' in result.message
+
+
+def _make_adjust_balance_response() -> dict[str, Any]:
+    """
+    Build hived's answer to a transfer above the sender's HIVE balance.
+
+    It comes from the plain FC_ASSERT in database::adjust_balance, so its data carries no category/subject_type.
+    """
+    return {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "error": {
+            "code": -32003,
+            "message": (
+                "Assert Exception:a.get_hive_balance() >= -delta: Account guest4test does not have sufficient funds "
+                "for balance adjustment. Required: -1000.000 HIVE, Available: 0.001 HIVE"
+            ),
+            "data": {
+                "assert_hash": "2567773645678479546",
+                "code": 10,
+                "extension": {"assertion_expression": "a.get_hive_balance() >= -delta"},
+                "message": "Assert Exception",
+                "name": "assert_exception",
+                "stack": [
+                    {
+                        "context": {
+                            "file": "database.cpp",
+                            "hostname": "",
+                            "level": "error",
+                            "line": 3192,
+                            "method": "adjust_balance",
+                            "thread_name": "th_4",
+                            "timestamp": "2026-11-11T00:00:00",
+                        },
+                        "data": {
+                            "a": {"amount": "1", "nai": "@@000000021", "precision": 3},
+                            "acc": "guest4test",
+                            "r": {"amount": "-1000000", "nai": "@@000000021", "precision": 3},
+                        },
+                        "format": (
+                            "Account ${acc} does not have sufficient funds for balance adjustment. "
+                            "Required: ${r}, Available: ${a}"
+                        ),
+                    }
+                ],
+            },
+        },
+    }
+
+
+_ADJUST_BALANCE_MESSAGE = (
+    "[Chain Error] Account guest4test does not have sufficient funds for balance adjustment. "
+    "Required: -1000.000 HIVE, Available: 0.001 HIVE"
+)
+
+
+class TestAssertionWithoutCategoryData:
+    def test_chain_assertion_is_classified_by_assert_hash_in_fresh_process(self, tmp_path: Path) -> None:
+        # ARRANGE
+        code = (
+            "import json, sys\n"
+            "from wax.exceptions.wax_specialised_errors import resolve_api_response_error\n"
+            "error = resolve_api_response_error(json.loads(sys.argv[1]))\n"
+            "print(type(error).__name__)\n"
+            "print(error.message)\n"
+        )
+
+        # ACT
+        result = subprocess.run(  # in another directory - not to import sources of wax from the current one
+            [sys.executable, "-c", code, json.dumps(_make_adjust_balance_response())],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd=tmp_path,
+        )
+
+        # ASSERT
+        assert result.stdout.splitlines() == ["WaxAssertionError", _ADJUST_BALANCE_MESSAGE]
+
+    def test_chain_assertion_exposes_resolved_category(self) -> None:
+        result = resolve_api_response_error(_make_adjust_balance_response())
+
+        assert type(result) is WaxAssertionError
+        assert result.category == "chain"
+        assert result.message == _ADJUST_BALANCE_MESSAGE
+
+    def test_hash_outside_the_table_stays_unhandled(self) -> None:
+        response = _make_adjust_balance_response()
+        response["error"]["data"]["assert_hash"] = "1"
+
+        result = resolve_api_response_error(response)
+
+        assert isinstance(result, WaxUnhandledAssertionError)
+        assert result.message.startswith("[Unknown Error] Account guest4test")
+
+    def test_non_numeric_hash_stays_unhandled(self) -> None:
+        response = _make_adjust_balance_response()
+        response["error"]["data"]["assert_hash"] = "not-a-hash"
+
+        result = resolve_api_response_error(response)
+
+        assert isinstance(result, WaxUnhandledAssertionError)
 
 
 # ---------------------------------------------------------------------------

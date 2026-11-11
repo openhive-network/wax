@@ -8,7 +8,7 @@
 # and defined in _decorators.pxi - they are not part of the public API.
 
 # Re-export from common module (parse_cxx_exception for specialised error handling)
-from wax.cython_modules_common import parse_cxx_exception
+from wax.cython_modules_common import parse_cxx_exception, get_assertion_category
 
 # Re-export from handles module (handle classes and creation functions)
 # NOTE: Sub-modules are installed as wax/cython_modules_*.so (hard links to main .so)
