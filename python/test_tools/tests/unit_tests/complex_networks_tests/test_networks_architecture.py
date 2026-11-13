@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from test_tools.__private.complex_networks import NetworksArchitecture, prepare_time_offsets
-from test_tools.__private.complex_networks.networks_architecture import NetworkWrapper
+
+if TYPE_CHECKING:
+    from test_tools.__private.complex_networks.networks_architecture import NetworkWrapper
 
 FIVE_NETWORKS_OF_FOUR_WITNESS_NODES_CONFIG = {
     "networks": [
