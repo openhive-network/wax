@@ -198,7 +198,6 @@ class NetworksArchitecture:
                 self.nodes_number += api_node_active
                 for cnt_full_api_node in range(api_node_active):
                     current_net.api_node.append(ApiWrapper(f"ApiNode-{cnt_full_api_node}", api_node_prepare))
-                self.nodes_number += 1
 
             full_api_node_active, full_api_node_prepare = self.get_api_init("FullApiNode", network)
             if full_api_node_active:
