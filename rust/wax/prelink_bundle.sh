@@ -40,17 +40,22 @@ fi
 (cd "${SCRIPT_DIR}" && WAX_FROM_SOURCE=1 CARGO_TARGET_DIR="${TARGET_DIR}" \
   cargo build --quiet ${CARGO_FLAGS})
 
-OUT_DIR=$(ls -dt "${TARGET_DIR}/${WAX_PROFILE}"/build/hiveio-wax-*/out 2>/dev/null | head -1)
-if [ -z "${OUT_DIR}" ]; then
-  echo "No build output under ${TARGET_DIR}/${WAX_PROFILE}/build" >&2
-  exit 1
-fi
+# Prints the newest build-script output file $2 of package $1. Cargo up to
+# 1.99 lays build-script out dirs out as build/<pkg>-<hash>/out, 1.100 and
+# later as build/<pkg>/<hash>/out. Several hashes coexist side by side, and
+# only the one whose build script ran to completion holds the file.
+find_build_output() {
+  local pkg="$1" file="$2"
+  local build_dir="${TARGET_DIR}/${WAX_PROFILE}/build"
+  ls -t "${build_dir}/${pkg}"-*/out/"${file}" "${build_dir}/${pkg}"/*/out/"${file}" 2>/dev/null | head -1
+}
 
-BRIDGE_ARCHIVE="${OUT_DIR}/libcpp_rust_bridge.a"
-if [ ! -f "${BRIDGE_ARCHIVE}" ]; then
-  echo "Bridge archive not found: ${BRIDGE_ARCHIVE}" >&2
+BRIDGE_ARCHIVE=$(find_build_output hiveio-wax libcpp_rust_bridge.a)
+if [ -z "${BRIDGE_ARCHIVE}" ]; then
+  echo "No build output (libcpp_rust_bridge.a) under ${TARGET_DIR}/${WAX_PROFILE}/build" >&2
   exit 1
 fi
+OUT_DIR="${BRIDGE_ARCHIVE%/*}"
 
 # Locates a static library: BOOST_ROOT/OPENSSL_ROOT_DIR first (same precedence
 # as build.rs), then the compiler's default search path.
@@ -164,7 +169,7 @@ ar rcs "${ARTIFACT}" "${BUNDLE}"
 # bundle deliberately leaves those symbols undefined — the final binary must
 # hold exactly one copy, the one matching the resolved cxx crate version.
 # The smoke test stands in for cargo here and supplies it explicitly.
-CXXBRIDGE_RUNTIME=$(ls -dt "${TARGET_DIR}/${WAX_PROFILE}"/build/cxx-*/out/libcxxbridge1.a 2>/dev/null | head -1)
+CXXBRIDGE_RUNTIME=$(find_build_output cxx libcxxbridge1.a)
 if [ -z "${CXXBRIDGE_RUNTIME}" ]; then
   echo "libcxxbridge1.a not found under ${TARGET_DIR}/${WAX_PROFILE}/build" >&2
   exit 1
