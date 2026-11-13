@@ -1,3 +1,4 @@
+# private-test-exempt: NetworkWrapper is the element type of NetworksArchitecture.networks and is not exported from test_tools.complex_networks; promoting it would widen the public surface for a type used only by this test's helper
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
