@@ -65,7 +65,7 @@
     "express": "^4.21.2",
     "express-http-proxy": "^2.1.1",
     "husky": "catalog:husky",
-    "npm-run-all": "^4.1.5",
+    "npm-run-all2": "^5.0.0",
     "playwright": "catalog:playwright-toolset",
     "protobufjs": "catalog:proto-toolset",
     "reflect-metadata": "^0.2.2",
