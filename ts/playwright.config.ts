@@ -96,6 +96,11 @@ export default defineConfig<IWaxedTest, IWaxedWorker>({
       testMatch: "signers_csp*"
     },
     {
+      name: "wax_signers_peakvault",
+      testDir: "./wasm/dist",
+      testMatch: "signers_peakvault*"
+    },
+    {
       name: "wax_utils",
       testDir: "./wasm/dist/detailed",
       testMatch: "utils*"
