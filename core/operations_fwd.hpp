@@ -53,7 +53,7 @@ class transfer_from_savings_operation; // 33
 class cancel_transfer_from_savings_operation; // 34
 class custom_binary_operation; // 35
 class decline_voting_rights_operation; // 36
-class reset_account_operation; // 37
+class delegate_rc_operation; // 37
 class set_reset_account_operation; // 38
 class claim_reward_balance_operation; // 39
 class delegate_vesting_shares_operation; // 40
@@ -177,7 +177,7 @@ namespace hive { namespace protocol {
         cancel_transfer_from_savings_operation, // 34
         custom_binary_operation, // 35
         decline_voting_rights_operation, // 36
-        reset_account_operation, // 37
+        delegate_rc_operation, // 37
         set_reset_account_operation, // 38
         claim_reward_balance_operation, // 39
         delegate_vesting_shares_operation, // 40
