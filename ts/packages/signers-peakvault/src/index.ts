@@ -1,7 +1,48 @@
-import type { ISignatureTransaction, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
+import type { ISignatureTransaction, ITransactionBase, TAccountName, TBinaryBuffer, TPublicKey, TRole, TSignature } from "@hiveio/wax";
 import { AEncryptionProvider, isPublicKey } from "@hiveio/wax";
 
 type KeyRole = string;
+
+interface ILegacyTransactionJson {
+  operations: [string, unknown][];
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+/**
+ * `legacy` with each number that `api` (the same value in wax's protobuf JSON) writes as a string replaced by that string.
+ * Protobuf JSON writes exactly the 64-bit integers as strings; parts whose shapes differ between the two forms (assets, extensions) are left as they are.
+ */
+const adoptInt64Strings = (legacy: unknown, api: unknown): unknown => {
+  if (typeof legacy === "number" && typeof api === "string")
+    return api;
+  if (Array.isArray(legacy) && Array.isArray(api))
+    return legacy.map((item, index) => adoptInt64Strings(item, api[index]));
+  if (isRecord(legacy) && isRecord(api))
+    return Object.fromEntries(Object.entries(legacy).map(([key, item]) => [key, adoptInt64Strings(item, api[key])]));
+  return legacy;
+};
+
+/**
+ * The transaction's legacy JSON in the shape Peak Vault's `requestSignTx` validates: wax's legacy JSON writes a 64-bit integer
+ * (e.g. `update_proposal_votes.proposal_ids`) as a number when it fits in 32 bits, while Peak Vault expects a string.
+ * The signed digest is unaffected, as a string and a number carrying the same integer serialize identically.
+ * A transaction without `toApiJson` (not created by wax) is passed in its plain legacy form.
+ */
+const toPeakVaultLegacyTransaction = (transaction: ISignatureTransaction): ILegacyTransactionJson => {
+  const legacy: ILegacyTransactionJson = JSON.parse(transaction.toLegacyApi());
+  if (!("toApiJson" in transaction))
+    return legacy;
+
+  // Not `toApi()`: like the legacy JSON, it writes a small 64-bit integer as a number.
+  const api = (transaction as ITransactionBase).toApiJson();
+  const operations = legacy.operations.map(
+    ([name, value], index): [string, unknown] => [name, adoptInt64Strings(value, api.operations[index]?.value)]
+  );
+
+  return { ...legacy, operations };
+};
 
 const mapRoles: Record<TRole, KeyRole | undefined> = {
   active: 'active',
@@ -131,7 +172,7 @@ class PeakVaultProvider extends AEncryptionProvider {
    */
   protected async generateSignatures(transaction: ISignatureTransaction): Promise<TSignature[]> {
     PeakVaultProvider.ensurePeakVaultInstalled();
-    const data = await (window as any).peakvault.requestSignTx(this.accountName, JSON.parse(transaction.toLegacyApi()), this.role);
+    const data = await (window as any).peakvault.requestSignTx(this.accountName, toPeakVaultLegacyTransaction(transaction), this.role);
     return data.result.signatures;
   }
 }

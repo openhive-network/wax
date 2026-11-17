@@ -38,7 +38,7 @@ def test_the_approved_scope_is_run_checks_offline_projects() -> None:
     block = run_checks.split("\nOFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
     unmapped = run_checks.split("\nUNMAPPED_OFFLINE_PROJECTS=(", 1)[1].split(")", 1)[0]
     assert SCOPE == tuple(block.split())
-    assert len(SCOPE) == 11
+    assert len(SCOPE) == 12
     assert "wax_testsuite" in unmapped.split()
     assert "wax_testsuite" not in SCOPE
 
@@ -67,6 +67,7 @@ def test_markdown_outside_ts_is_irrelevant_even_under_a_whole_scope_prefix() -> 
         ("encrypted_operations.ts", "wax_encrypted_operations"),
         ("non_encrypted_operations.ts", "wax_non_encrypted_operations"),
         ("signers_csp.ts", "wax_signers_csp"),
+        ("signers_peakvault.ts", "wax_signers_peakvault"),
         ("custom_chain_online_tx.ts", "wax_custom_chain_online_tx"),
         ("hive_chain_custom_opts.ts", "wax_testsuite_custom_chain_options"),
     ],

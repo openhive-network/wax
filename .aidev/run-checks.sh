@@ -55,6 +55,7 @@ OFFLINE_PROJECTS=(
     wax_testsuite_protocol_benchmarks
     wax_hive_assertion
     wax_signers_csp
+    wax_signers_peakvault
     wax_custom_chain_online_tx
     wax_testsuite_custom_chain_options
 )

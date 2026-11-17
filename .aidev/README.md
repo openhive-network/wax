@@ -42,7 +42,7 @@ neither a step nor an offline project exits 2 before anything runs.
 
 | Slot | Suite `ts` (`run-checks.sh <slot>`, blocking) | Suite `rust` (`run-rust.sh <slot>-rust`, blocking) | Suite `python` (`run-python.sh <slot>-python`, blocking) | Suite `python314` (`run-python.sh <slot>-python314 --python 3.14 --pre-commit`, blocking) |
 |---|---|---|---|---|
-| quick | proto wasm tsc bundle build-tests tests, the eleven `OFFLINE_PROJECTS` | — | — | — |
+| quick | proto wasm tsc bundle build-tests tests, the twelve `OFFLINE_PROJECTS` | — | — | — |
 | baseline | include-refs proto wasm tsc bundle npm-pack build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
 | full, canary | include-refs proto wasm tsc bundle npm-pack proto-pattern build-tests tests | `detailed` tests, change-scoped | wheel, pytest suites, pattern, example on 3.12, change-scoped | the same on 3.14, then the pre-commit hooks, change-scoped |
 | coverage | proto wasm tsc bundle build-tests tests | — | — | — |
@@ -89,9 +89,9 @@ Nothing else of `ts/`, `examples/` other than `examples/python/`, docs or CI fil
 any of them. When a build script of one of them starts reading a new path outside
 these, add it to `select-suite.sh` and to this table.
 
-`verification.quick` lists the eleven offline projects as its `targets` (the approved
+`verification.quick` lists the twelve offline projects as its `targets` (the approved
 scope), in `OFFLINE_PROJECTS` order. AIDEV appends them to `args`, so quick runs exactly
-those eleven. The slots that name no project also run `UNMAPPED_OFFLINE_PROJECTS`
+those twelve. The slots that name no project also run `UNMAPPED_OFFLINE_PROJECTS`
 (`wax_testsuite`), which is not in the approved scope.
 
 ### Test selection (`selector.py`, `observe`)
