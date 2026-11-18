@@ -114,7 +114,7 @@ pub struct AccountCreated {
 /// Operations account_update_operation and account_update2_operation share a limit of allowed updates of the owner authority:
 /// two executions per 60 minutes (HIVE_OWNER_UPDATE_LIMIT) (meaning each of them can be executed twice or both can be executed once during that time period).
 /// After 30 days (HIVE_OWNER_AUTH_RECOVERY_PERIOD) using the account recovery process to change the owner authority is no longer possible.
-/// The operation account_update_operation allows changing authorities, it doesn’t allow changing the posting_json_metadata.
+/// The operation account_update_operation allows changing authorities, it doesn't allow changing the posting_json_metadata.
 ///
 /// Description <https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/10_account_update.md?ref_type=heads>
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -308,16 +308,16 @@ pub struct AuthorReward {
 ///
 /// A user who votes for the post or the comment may receive the curation reward. It is paid 100% HP. Its share depends on:
 /// - voting power
-/// - weight of the vote – a user may decide about the weight of the vote
-/// - the time when they vote – the sooner you vote, the higher the share in the curation reward (the first 24 h
-///    the weight of the vote is 100% - early voting, next 48 hours the weight is divided by 2, then – till the 7th day - it is divided by 8)
+/// - weight of the vote - a user may decide about the weight of the vote
+/// - the time when they vote - the sooner you vote, the higher the share in the curation reward (the first 24 h
+///    the weight of the vote is 100% - early voting, next 48 hours the weight is divided by 2, then - till the 7th day - it is divided by 8)
 ///
 /// When a post or a comment receives a reward, it is divided between the author's reward and the curation reward.
 /// The curation reward is shared among curators.
 ///
 /// The calculated reward should be more than 0.02 HBD to be paid, if it is less, it is not paid.
 ///
-/// A downvoting user doesn’t receive the curation reward.
+/// A downvoting user doesn't receive the curation reward.
 /// Downvoting may affect the author of the comment's reputation when a user who downvotes has a higher reputation than the author.
 ///
 /// Description <https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/00_vote.md?ref_type=heads>
@@ -340,7 +340,7 @@ pub struct Vote {
     pub weight: u32,
 }
 /// Using comment operation a user may create a post or a comment.
-/// From the blockchain point of view, it is the same operation – always comment.
+/// From the blockchain point of view, it is the same operation - always comment.
 /// If a comment has no parent, it is a post.
 /// The parent of the comment may be a post or a comment.
 /// Users may comment their own comments.
@@ -455,7 +455,7 @@ pub struct WithdrawVesting {
 /// It allows to sell Hive and buy HBD or sell HBD and buy Hive.
 /// It is a way for a user to declare they want to sell {amount_to_sell} Hive/HBD for at least {min_to_receive} HBD/Hive.
 /// The user may be a taker (if a user creates an order and the order matches some order(s))
-/// or a maker (if a user creates an order and the order doesn’t match and the order is waiting for a match on the market).
+/// or a maker (if a user creates an order and the order doesn't match and the order is waiting for a match on the market).
 /// If there is a partial match, a user may be a taker and maker for the same order.
 /// If a taker creates an order for all orders on the market the order(s) that are the best deal for the taker are matched.
 /// If there are two orders with the same price, the older one is matched.
@@ -572,7 +572,7 @@ pub struct LegacyChainProperties {
 /// In order to update witness properties it is recommended to use witness_set_properties_operation.
 ///
 /// If a user wants to become a witness, the operation witness_update_operation should be created.
-/// If the witness doesn’t want to be a witness any more, the operation witness_update_operation with empty { block_signing_key }
+/// If the witness doesn't want to be a witness any more, the operation witness_update_operation with empty { block_signing_key }
 /// should be created.
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct WitnessUpdate {
@@ -648,7 +648,7 @@ pub struct WitnessBlockApprove {
     pub block_id: ::prost::alloc::string::String,
 }
 /// The post or comment may be deleted by the author. If the post or comment is deleted, the {permlink} may be reused.
-/// The delete doesn’t mean that the comment is removed from the blockchain.
+/// The delete doesn't mean that the comment is removed from the blockchain.
 ///
 /// Description <https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/17_delete_comment.md?ref_type=heads>
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -756,7 +756,7 @@ pub struct CommentOptions {
     ///                                                  If the sum of the weights is less than 100%,
     ///                                                  the rest of the reward is received by the author.
     ///                                                  It should be defined less than 128 accounts.
-    ///                                                  The allowed range of the weight is from 0 to 10000 (0 – 100%).
+    ///                                                  The allowed range of the weight is from 0 to 10000 (0 - 100%).
     ///                                                  The beneficiaries should be listed in alphabetical order, no duplicates.
     #[prost(message, repeated, tag = "7")]
     pub extensions: ::prost::alloc::vec::Vec<CommentOptionsExtension>,
@@ -853,7 +853,7 @@ pub struct CreateClaimedAccount {
     /// @param {string} new_account_name - Account name.
     ///                                     Valid account name may consist of many parts separated by a dot,
     ///                                     total may have up to 16 characters, parts have to start from a letter,
-    ///                                     may be followed by numbers, or “-“.
+    ///                                     may be followed by numbers, or "-".
     #[prost(string, required, tag = "2")]
     pub new_account_name: ::prost::alloc::string::String,
     /// @param {authority} owner
@@ -881,7 +881,7 @@ pub struct CreateClaimedAccount {
 ///     During an account creation, the account that created a new account is set as a recovery
 ///     account by default, but it can be changed by the user (using operation change_recovery_account_operation).
 ///     If the account was created by account temp, then a recovery account is empty and
-///     it is set as a top witness – it is not good a recovery account.
+///     it is set as a top witness - it is not good a recovery account.
 ///     Note: it takes HIVE_OWNER_AUTH_RECOVERY_PERIOD (30 days) after sending change_recovery_account_operation.
 ///     for the new recovery agent to become active. During that period the previous agent remains active for the account.
 /// 2. The compromised owner authority is still recent.
@@ -917,7 +917,7 @@ pub struct RequestAccountRecovery {
     /// @param {string} account_to_recover - The account to be recovered.
     #[prost(string, required, tag = "2")]
     pub account_to_recover: ::prost::alloc::string::String,
-    /// @param {authority} new_owner_authority - The new owner authority – the public, not private key.
+    /// @param {authority} new_owner_authority - The new owner authority - the public, not private key.
     ///                                           The new authority should be satisfiable.
     #[prost(message, required, tag = "3")]
     pub new_owner_authority: Authority,
@@ -1042,7 +1042,7 @@ pub struct EscrowDispute {
     pub escrow_id: u32,
 }
 /// The operation is used to release the funds of the escrow.
-/// The escrow may be released by { from }, { to } or { agent } – depending on the following conditions:
+/// The escrow may be released by { from }, { to } or { agent } - depending on the following conditions:
 /// If there is no dispute and escrow has not expired, either party can release funds to the other.
 /// If escrow expires and there is no dispute, either party can release funds to either party.
 /// If there is a dispute regardless of expiration, the agent can release funds to either party
@@ -1146,7 +1146,7 @@ pub struct Pow2 {
 /// The operation escrow_approve_operation is used to approve the escrow.
 /// The approval should be done by { to } and by the { agent }.
 /// The escrow approval is irreversible.
-/// If { agent } or { to } haven’t approved the escrow before the { ratification_deadline} or either
+/// If { agent } or { to } haven't approved the escrow before the { ratification_deadline} or either
 /// of them explicitly rejected the escrow, the escrow is rejected.
 /// If {agent} and {to} have approved the escrow, the {fee} is transferred from temporary balance to {agent} account.
 ///
@@ -1230,7 +1230,7 @@ pub struct CancelTransferFromSavings {
     pub request_id: u32,
 }
 /// Using the operation decline_voting_rights_operation, a user may decide to decline
-/// their voting rights – for content, witnesses and proposals.
+/// their voting rights - for content, witnesses and proposals.
 /// Additionally, a user cannot set a proxy (operation account_witness_proxy_operation).
 /// The operation is done with a HIVE_OWNER_AUTH_RECOVERY_PERIOD day delay.
 /// After HIVE_OWNER_AUTH_RECOVERY_PERIOD days it is irreversible.
@@ -1488,8 +1488,8 @@ pub mod recurrent_transfer_extension {
 /// - If amount is set to 0, the recurrent transfer will be deleted and the virtual operation
 ///    fill_recurrent_transfer_operation is not generated
 /// - If there is already a recurrent transfer matching 'from' and 'to', the recurrent transfer will be replaced, but:
-/// - If the 'recurrence' is not changed, the next execution will be according to “old definition”
-/// - If the 'recurrence' is changed, then the next execution will be “update date” + 'recurrence' there is no execution on the update date.
+/// - If the 'recurrence' is not changed, the next execution will be according to "old definition"
+/// - If the 'recurrence' is changed, then the next execution will be "update date" + 'recurrence' there is no execution on the update date.
 /// - Up to HF28 there can be only one recurrent transfer for sender 'from' and receiver 'to'.
 ///    Since H28 users may define more recurrent transfers to the same sender and receiver using pair_id in the 'executions'.
 /// - The one account may define up to 255 recurrent transfers to other accounts.
