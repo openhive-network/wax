@@ -1,3 +1,170 @@
+---
+lockfileVersion: '9.0'
+
+importers:
+
+  .:
+    configDependencies: {}
+    packageManagerDependencies:
+      pnpm:
+        specifier: 12.21.0
+        version: 12.21.0
+
+packages:
+
+  '@pnpm/exe.android-arm64@12.21.0':
+    resolution: {integrity: sha512-iaWidxR5B9NUBpwMznCQu1yUpKB6BjTY5BYX2lORj76VsfINdj8Z8XWSzSNrGI8qlxa28Jzdp5fiaspzOaJZlA==}
+    cpu: [arm64]
+    os: [android]
+
+  '@pnpm/exe.android-x64@12.21.0':
+    resolution: {integrity: sha512-35e5v3wlwjIYxDywq+R6/z8CE4gLOEgRxt18yqz1tMRLmx2mnW+CFJI2Q8+srTNjn7gykXUC0x1k195JNikC5A==}
+    cpu: [x64]
+    os: [android]
+
+  '@pnpm/exe.darwin-arm64@12.21.0':
+    resolution: {integrity: sha512-F5OyMX/6zLSowpTZEQRojbCmPS1Pq+fyRaIinslsIe6Glh3qbyQ52u+Fe0eEzSaRuIbWZkXmAAXSWh6Q5Wrlgg==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@pnpm/exe.darwin-x64@12.21.0':
+    resolution: {integrity: sha512-EzpvcsaE6hrrgYeEiAFYd2rSgFybYyxXhkAY7K3y6Hg3loVfcyJ81hHczpFzi8lW5RXtUlFECRPZ8ZAMRFQYYg==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@pnpm/exe.freebsd-x64@12.21.0':
+    resolution: {integrity: sha512-wNjuEnmdLks4aayPu/QZWQ5tQM9Jn+odUp/vwQM8BXRYoulkTZhtZTHoD60N6mUdLWef1hgUeUh8llNGEUsimw==}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@pnpm/exe.linux-arm64-musl@12.21.0':
+    resolution: {integrity: sha512-Ceit9zn4g5ZqCJtx1fV8eJE7p8aeXMrGZ+Dc01vRqZLIUNgNeI+Ur0ruyqxtsnJx6rGADyXzohumxPLHjaJ5AQ==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@pnpm/exe.linux-arm64@12.21.0':
+    resolution: {integrity: sha512-4Oj/iF2TDCe2lcH0n4TupPR5sSdrNLclJB6xBElLMPCUOAvBhdf2rRlSaO5M4erJ6g4Fyy7YTXTpcmfFsKyxEA==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-ppc64@12.21.0':
+    resolution: {integrity: sha512-s2o7rdSDeUTBFsNqxptpZXlTgT6cojmMVUOvTQvFNSv6Easian02ha4tR32fwwD97Au4YzIIjMCwywCF4D82Sw==}
+    cpu: [ppc64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-riscv64@12.21.0':
+    resolution: {integrity: sha512-EYv3GzxeBTITCuM3yGHHbpRFpUvyulkXpQ6LsjKAQNL3iaba1E6h9iDmlouLb3Io4AMMsfdk0/uG6poQ41uewA==}
+    cpu: [riscv64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-s390x@12.21.0':
+    resolution: {integrity: sha512-8VXGNGVNEfs7pL9GTZOzFxjFEnMt4WL3rLOADR5/kPQ7ROTV9GfpVI2DPO/zArXFSkvfc9Zad/WypHLbvzoaTQ==}
+    cpu: [s390x]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.linux-x64-musl@12.21.0':
+    resolution: {integrity: sha512-MnC5vpIXYubhDZCgCwlfJMg7Cg6HupN2IuouT9gD/tUmOfVdQYqeyYccWbthyo/Jeto8de1oQlxeRN1+1Hl2DQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@pnpm/exe.linux-x64@12.21.0':
+    resolution: {integrity: sha512-8eufCjHXspKbNS/kh8q4Q0gqJoOuvC4Q5pgos6XS8By/nAMtP+jf8F1Cw9er840kfAX+PJ/ts+A9qnLE91rvXQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@pnpm/exe.netbsd-x64@12.21.0':
+    resolution: {integrity: sha512-eyh1M8hQZCkLWxuva7S/fc1SbFbgqg0/5di0dgWmyiuc2Io3dbWVihDun8X+XM8zsR5uhIDvvZpbS9aZQbCovg==}
+    cpu: [x64]
+    os: [netbsd]
+
+  '@pnpm/exe.win32-arm64@12.21.0':
+    resolution: {integrity: sha512-7xTxxUXo/grRLivSeIl6B21gnsz7ooe5EMPcJmQqwxc8WLJVReN8MzrlHru8bqXfVr4X3+6ZGZscntKenlCBqQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@pnpm/exe.win32-x64@12.21.0':
+    resolution: {integrity: sha512-9TpkJemVApxJ1Z1w0ZFGN+AuSx4nJOqXSJUqMqDvaXTYwGOzvBiiWdFP9GN0ketiWCQS1Q0/pza2E7I3pP0OBQ==}
+    cpu: [x64]
+    os: [win32]
+
+  pnpm@12.21.0:
+    resolution: {integrity: sha512-Zv2CeO4ok1zpUXktNDZ/869cQyonVkRYIwKVM4NbjaUpu+C+UTCv1W7QcT+4eJ5Hutgtk71a4v5UsVVi1idu8A==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+snapshots:
+
+  '@pnpm/exe.android-arm64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.android-x64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.darwin-arm64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.darwin-x64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.freebsd-x64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-arm64-musl@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-arm64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-ppc64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-riscv64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-s390x@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-x64-musl@12.21.0':
+    optional: true
+
+  '@pnpm/exe.linux-x64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.netbsd-x64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.win32-arm64@12.21.0':
+    optional: true
+
+  '@pnpm/exe.win32-x64@12.21.0':
+    optional: true
+
+  pnpm@12.21.0:
+    optionalDependencies:
+      '@pnpm/exe.android-arm64': 12.21.0
+      '@pnpm/exe.android-x64': 12.21.0
+      '@pnpm/exe.darwin-arm64': 12.21.0
+      '@pnpm/exe.darwin-x64': 12.21.0
+      '@pnpm/exe.freebsd-x64': 12.21.0
+      '@pnpm/exe.linux-arm64': 12.21.0
+      '@pnpm/exe.linux-arm64-musl': 12.21.0
+      '@pnpm/exe.linux-ppc64': 12.21.0
+      '@pnpm/exe.linux-riscv64': 12.21.0
+      '@pnpm/exe.linux-s390x': 12.21.0
+      '@pnpm/exe.linux-x64': 12.21.0
+      '@pnpm/exe.linux-x64-musl': 12.21.0
+      '@pnpm/exe.netbsd-x64': 12.21.0
+      '@pnpm/exe.win32-arm64': 12.21.0
+      '@pnpm/exe.win32-x64': 12.21.0
+
+---
 lockfileVersion: '9.0'
 
 settings:
@@ -18,8 +185,6 @@ catalogs:
       version: 6.0.3
 
 overrides:
-  axios: ^1.8.4
-  '@hiveio/wax': file:../../../ts
   '@hiveio/beekeeper': 1.28.9-rc0-stable.261028200530
 
 importers:
@@ -40,7 +205,7 @@ importers:
         version: file:../../../ts/packages/signers-keychain
       '@hiveio/wax-signers-metamask':
         specifier: file:../../../ts/packages/signers-metamask
-        version: file:../../../ts/packages/signers-metamask(typescript@6.0.3)(webextension-polyfill@0.12.0)
+        version: file:../../../ts/packages/signers-metamask(supports-color@7.2.0)(typescript@6.0.3)(webextension-polyfill@0.12.0)
       '@hiveio/wax-signers-peakvault':
         specifier: file:../../../ts/packages/signers-peakvault
         version: file:../../../ts/packages/signers-peakvault
@@ -329,6 +494,8 @@ packages:
   '@parcel/node-resolver-core@3.5.2':
     resolution: {integrity: sha512-cUSsfwd+Phatm5oeiJIzev6TojbDGL09/GUzoWKwpx3exT2VqcrFfHEt4GQLBUJsTf/bqk5FzyzK548ue09loQ==}
     engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      '@parcel/core': '*'
 
   '@parcel/optimizer-css@2.14.2':
     resolution: {integrity: sha512-wg9BlMvBUo4kwKVuQ8ec/GlNyCMyx9Xg36Y8DBgj55sBHhk7M4/+C8yTGbxDlu6NU0+/Tx0yuypCe/Fq17wWaA==}
@@ -405,6 +572,8 @@ packages:
   '@parcel/resolver-default@2.14.2':
     resolution: {integrity: sha512-HzfLPK1NUiYYuONlfPg92Lv0qfF/GtZ3hP4bNI7L0MI/eOtkd19dDxXADVaF4bTY2WmnL7m2pfaZ0+Y1+zuJuw==}
     engines: {node: '>= 16.0.0', parcel: ^2.14.2}
+    peerDependencies:
+      '@parcel/core': '*'
 
   '@parcel/runtime-browser-hmr@2.14.2':
     resolution: {integrity: sha512-YJrnc52/2RMx4FaT4rt/1SCZIux9l/v3YFc9v+jCl+NEpBhDou//GBI3RPRJ0EPUgFOwmj3IZ9uPzm5WxokhGA==}
@@ -1138,6 +1307,11 @@ packages:
     resolution: {integrity: sha512-dqB4/Oo8L7HfWyrxAQKnizQ/XzQM2iAY5fEaZUgS4wh+B3FE4LO5JVgobhVBBrIOoT02sV4gUEQhNJeU3raSuA==}
     engines: {node: '>= 16.0.0'}
     hasBin: true
+    peerDependencies:
+      '@parcel/core': '*'
+    peerDependenciesMeta:
+      '@parcel/core':
+        optional: true
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -1337,16 +1511,16 @@ snapshots:
   '@hiveio/wax-signers-beekeeper@file:../../../ts/packages/signers-beekeeper':
     dependencies:
       '@hiveio/beekeeper': 1.28.9-rc0-stable.261028200530
-      '@hiveio/wax': file:../../../ts
+      '@hiveio/wax': link:../..
 
   '@hiveio/wax-signers-keychain@file:../../../ts/packages/signers-keychain':
     dependencies:
-      '@hiveio/wax': file:../../../ts
+      '@hiveio/wax': link:../..
 
-  '@hiveio/wax-signers-metamask@file:../../../ts/packages/signers-metamask(typescript@6.0.3)(webextension-polyfill@0.12.0)':
+  '@hiveio/wax-signers-metamask@file:../../../ts/packages/signers-metamask(supports-color@7.2.0)(typescript@6.0.3)(webextension-polyfill@0.12.0)':
     dependencies:
-      '@hiveio/wax': file:../../../ts
-      '@metamask/providers': 21.0.0(typescript@6.0.3)(webextension-polyfill@0.12.0)
+      '@hiveio/wax': link:../..
+      '@metamask/providers': 21.0.0(supports-color@7.2.0)(typescript@6.0.3)(webextension-polyfill@0.12.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -1354,7 +1528,7 @@ snapshots:
 
   '@hiveio/wax-signers-peakvault@file:../../../ts/packages/signers-peakvault':
     dependencies:
-      '@hiveio/wax': file:../../../ts
+      '@hiveio/wax': link:../..
 
   '@hiveio/wax@file:../../../ts':
     dependencies:
@@ -1384,12 +1558,12 @@ snapshots:
   '@lmdb/lmdb-win32-x64@2.8.5':
     optional: true
 
-  '@metamask/json-rpc-engine@10.5.0(typescript@6.0.3)':
+  '@metamask/json-rpc-engine@10.5.0(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
-      '@metamask/messenger': 1.2.0(typescript@6.0.3)
-      '@metamask/rpc-errors': 7.0.3
+      '@metamask/messenger': 1.2.0(supports-color@7.2.0)(typescript@6.0.3)
+      '@metamask/rpc-errors': 7.0.3(supports-color@7.2.0)
       '@metamask/safe-event-emitter': 3.1.3
-      '@metamask/utils': 11.12.1
+      '@metamask/utils': 11.12.1(supports-color@7.2.0)
       '@types/deep-freeze-strict': 1.1.2
       deep-freeze-strict: 1.1.1
       klona: 2.0.6
@@ -1397,19 +1571,19 @@ snapshots:
       - supports-color
       - typescript
 
-  '@metamask/json-rpc-middleware-stream@8.0.8(typescript@6.0.3)':
+  '@metamask/json-rpc-middleware-stream@8.0.8(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
-      '@metamask/json-rpc-engine': 10.5.0(typescript@6.0.3)
+      '@metamask/json-rpc-engine': 10.5.0(supports-color@7.2.0)(typescript@6.0.3)
       '@metamask/safe-event-emitter': 3.1.3
-      '@metamask/utils': 11.12.1
+      '@metamask/utils': 11.12.1(supports-color@7.2.0)
       readable-stream: 3.6.2
     transitivePeerDependencies:
       - supports-color
       - typescript
 
-  '@metamask/messenger@1.2.0(typescript@6.0.3)':
+  '@metamask/messenger@1.2.0(supports-color@7.2.0)(typescript@6.0.3)':
     dependencies:
-      '@metamask/utils': 11.12.1
+      '@metamask/utils': 11.12.1(supports-color@7.2.0)
       typescript: 6.0.3
       yargs: 17.7.3
     transitivePeerDependencies:
@@ -1420,14 +1594,14 @@ snapshots:
       once: 1.4.0
       readable-stream: 3.6.2
 
-  '@metamask/providers@21.0.0(typescript@6.0.3)(webextension-polyfill@0.12.0)':
+  '@metamask/providers@21.0.0(supports-color@7.2.0)(typescript@6.0.3)(webextension-polyfill@0.12.0)':
     dependencies:
-      '@metamask/json-rpc-engine': 10.5.0(typescript@6.0.3)
-      '@metamask/json-rpc-middleware-stream': 8.0.8(typescript@6.0.3)
+      '@metamask/json-rpc-engine': 10.5.0(supports-color@7.2.0)(typescript@6.0.3)
+      '@metamask/json-rpc-middleware-stream': 8.0.8(supports-color@7.2.0)(typescript@6.0.3)
       '@metamask/object-multiplex': 2.1.0
-      '@metamask/rpc-errors': 7.0.3
+      '@metamask/rpc-errors': 7.0.3(supports-color@7.2.0)
       '@metamask/safe-event-emitter': 3.1.3
-      '@metamask/utils': 11.12.1
+      '@metamask/utils': 11.12.1(supports-color@7.2.0)
       detect-browser: 5.3.0
       extension-port-stream: 4.2.0(webextension-polyfill@0.12.0)
       fast-deep-equal: 3.1.3
@@ -1438,9 +1612,9 @@ snapshots:
       - supports-color
       - typescript
 
-  '@metamask/rpc-errors@7.0.3':
+  '@metamask/rpc-errors@7.0.3(supports-color@7.2.0)':
     dependencies:
-      '@metamask/utils': 11.12.1
+      '@metamask/utils': 11.12.1(supports-color@7.2.0)
       fast-safe-stringify: 2.1.1
     transitivePeerDependencies:
       - supports-color
@@ -1454,7 +1628,7 @@ snapshots:
 
   '@metamask/superstruct@3.4.1': {}
 
-  '@metamask/utils@11.12.1':
+  '@metamask/utils@11.12.1(supports-color@7.2.0)':
     dependencies:
       '@ethereumjs/tx': 4.2.0
       '@metamask/scure-bip39': 2.1.1
@@ -1463,7 +1637,7 @@ snapshots:
       '@scure/base': 1.2.6
       '@types/debug': 4.1.13
       '@types/lodash': 4.17.27
-      debug: 4.4.3
+      debug: 4.4.3(supports-color@7.2.0)
       lodash: 4.18.1
       pony-cause: 2.1.11
       semver: 7.8.5
@@ -1666,6 +1840,7 @@ snapshots:
   '@parcel/node-resolver-core@3.5.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))':
     dependencies:
       '@mischnic/json-sourcemap': 0.1.1
+      '@parcel/core': 2.14.2(@swc/helpers@0.5.23)
       '@parcel/diagnostic': 2.14.2
       '@parcel/fs': 2.14.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))
       '@parcel/rust': 2.14.2
@@ -1673,7 +1848,6 @@ snapshots:
       nullthrows: 1.1.1
       semver: 7.8.5
     transitivePeerDependencies:
-      - '@parcel/core'
       - napi-wasm
 
   '@parcel/optimizer-css@2.14.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))':
@@ -1867,10 +2041,10 @@ snapshots:
 
   '@parcel/resolver-default@2.14.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))':
     dependencies:
+      '@parcel/core': 2.14.2(@swc/helpers@0.5.23)
       '@parcel/node-resolver-core': 3.5.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))
       '@parcel/plugin': 2.14.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))
     transitivePeerDependencies:
-      - '@parcel/core'
       - napi-wasm
 
   '@parcel/runtime-browser-hmr@2.14.2(@parcel/core@2.14.2(@swc/helpers@0.5.23))':
@@ -2336,9 +2510,11 @@ snapshots:
 
   crc-32@1.2.2: {}
 
-  debug@4.4.3:
+  debug@4.4.3(supports-color@7.2.0):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
+      supports-color: 7.2.0
 
   deep-freeze-strict@1.1.1: {}
 
