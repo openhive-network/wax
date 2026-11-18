@@ -20,6 +20,7 @@ from wax.proto.operations import (
     custom,
     custom_json,
     decline_voting_rights,
+    delegate_rc,
     delegate_vesting_shares,
     delete_comment,
     escrow_approve,
@@ -222,6 +223,10 @@ class AbstractOperationVisitor(ABC):
         pass
 
     @abstractmethod
+    def delegate_rc(self, op: delegate_rc) -> None:
+        pass
+
+    @abstractmethod
     def claim_reward_balance(self, op: claim_reward_balance) -> None:
         pass
 
@@ -379,6 +384,9 @@ class OperationVisitor(AbstractOperationVisitor):
         pass
 
     def decline_voting_rights(self, op: decline_voting_rights) -> None:
+        pass
+
+    def delegate_rc(self, op: delegate_rc) -> None:
         pass
 
     def claim_reward_balance(self, op: claim_reward_balance) -> None:

@@ -29,6 +29,7 @@ import { custom_json } from "./custom_json.js";
 import { decline_voting_rights } from "./decline_voting_rights.js";
 import { declined_voting_rights } from "./declined_voting_rights.js";
 import { delayed_voting } from "./delayed_voting.js";
+import { delegate_rc } from "./delegate_rc.js";
 import { delegate_vesting_shares } from "./delegate_vesting_shares.js";
 import { delete_comment } from "./delete_comment.js";
 import { dhf_conversion } from "./dhf_conversion.js";
@@ -130,6 +131,7 @@ export interface operation {
     transfer_from_savings_operation?: transfer_from_savings | undefined;
     cancel_transfer_from_savings_operation?: cancel_transfer_from_savings | undefined;
     decline_voting_rights_operation?: decline_voting_rights | undefined;
+    delegate_rc_operation?: delegate_rc | undefined;
     claim_reward_balance_operation?: claim_reward_balance | undefined;
     delegate_vesting_shares_operation?: delegate_vesting_shares | undefined;
     account_create_with_delegation_operation?: account_create_with_delegation | undefined;

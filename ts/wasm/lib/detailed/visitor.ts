@@ -3,7 +3,7 @@ import {
   account_create_with_delegation, account_update, account_update2, account_witness_proxy,
   account_witness_vote, cancel_transfer_from_savings, change_recovery_account, claim_account,
   claim_reward_balance, collateralized_convert, comment_options, convert, create_claimed_account,
-  create_proposal, custom, custom_json, decline_voting_rights, delegate_vesting_shares, delete_comment,
+  create_proposal, custom, custom_json, decline_voting_rights, delegate_rc, delegate_vesting_shares, delete_comment,
   escrow_approve, escrow_dispute, escrow_release, escrow_transfer, feed_publish, limit_order_create,
   limit_order_create2, pow, pow2, recover_account, remove_proposal, request_account_recovery,
   set_withdraw_vesting_route, transfer, transfer_from_savings, transfer_to_savings,
@@ -66,6 +66,7 @@ export class OperationVisitor<R = void> implements TOperationVisitor<R> {
   transfer_from_savings_operation?(op: transfer_from_savings): R;
   cancel_transfer_from_savings_operation?(op: cancel_transfer_from_savings): R;
   decline_voting_rights_operation?(op: decline_voting_rights): R;
+  delegate_rc_operation?(op: delegate_rc): R;
   claim_reward_balance_operation?(op: claim_reward_balance): R;
   delegate_vesting_shares_operation?(op: delegate_vesting_shares): R;
   account_create_with_delegation_operation?(op: account_create_with_delegation): R;

@@ -484,6 +484,15 @@ pub fn decline_voting_rights_op() -> OperationValue {
     })
 }
 
+pub fn delegate_rc_op() -> OperationValue {
+    OperationValue::DelegateRcOperation(proto::DelegateRc {
+        from_account: "gtg".into(),
+        delegatees: vec!["initminer".into()],
+        max_rc: 5_000_000_000,
+        extensions: Vec::new(),
+    })
+}
+
 pub fn claim_reward_balance_op() -> OperationValue {
     OperationValue::ClaimRewardBalanceOperation(proto::ClaimRewardBalance {
         account: "gtg".into(),

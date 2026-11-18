@@ -93,7 +93,7 @@ fn assert_pushed_unchanged(ctx: &WaxTestCtx, value: OperationValue) {
 // Tests
 // ---------------------------------------------------------------------------
 
-// TS line 55: "Vote opeartion Test".
+// TS line 56: "Vote opeartion Test".
 #[test]
 fn vote_operation() {
     wax_test(None, |ctx| {
@@ -109,7 +109,7 @@ fn vote_operation() {
     });
 }
 
-// TS line 82: "Witness Update Test".
+// TS line 83: "Witness Update Test".
 #[test]
 fn witness_update() {
     wax_test(None, |ctx| {
@@ -130,7 +130,7 @@ fn witness_update() {
     });
 }
 
-// TS line 135: "Witness Set Properties Test".
+// TS line 136: "Witness Set Properties Test".
 #[test]
 fn witness_set_properties() {
     wax_test(None, |ctx| {
@@ -160,7 +160,7 @@ fn witness_set_properties() {
     });
 }
 
-// TS line 170: "Witness Block Aprove Test".
+// TS line 171: "Witness Block Aprove Test".
 #[test]
 fn witness_block_approve() {
     wax_test(None, |ctx| {
@@ -176,7 +176,7 @@ fn witness_block_approve() {
     });
 }
 
-// TS line 194: "Withdraw Vesting Test".
+// TS line 195: "Withdraw Vesting Test".
 #[test]
 fn withdraw_vesting() {
     wax_test(None, |ctx| {
@@ -190,7 +190,7 @@ fn withdraw_vesting() {
     });
 }
 
-// TS line 225: "Update Proposal Test".
+// TS line 226: "Update Proposal Test".
 #[test]
 fn update_proposal() {
     wax_test(None, |ctx| {
@@ -216,7 +216,7 @@ fn update_proposal() {
     });
 }
 
-// TS line 272: "Update Proposal Votes Test".
+// TS line 273: "Update Proposal Votes Test".
 #[test]
 fn update_proposal_votes() {
     wax_test(None, |ctx| {
@@ -234,7 +234,7 @@ fn update_proposal_votes() {
     });
 }
 
-// TS line 299: "Transfer Operation Test".
+// TS line 300: "Transfer Operation Test".
 #[test]
 fn transfer_operation() {
     wax_test(None, |ctx| {
@@ -250,7 +250,7 @@ fn transfer_operation() {
     });
 }
 
-// TS line 334: "Transfer To Vesting Test".
+// TS line 335: "Transfer To Vesting Test".
 #[test]
 fn transfer_to_vesting() {
     wax_test(None, |ctx| {
@@ -267,7 +267,7 @@ fn transfer_to_vesting() {
     });
 }
 
-// TS line 367: "Transfer To Savings Test".
+// TS line 368: "Transfer To Savings Test".
 #[test]
 fn transfer_to_savings() {
     wax_test(None, |ctx| {
@@ -285,7 +285,7 @@ fn transfer_to_savings() {
     });
 }
 
-// TS line 402: "Transfer From Savings Test".
+// TS line 403: "Transfer From Savings Test".
 #[test]
 fn transfer_from_savings() {
     wax_test(None, |ctx| {
@@ -304,7 +304,7 @@ fn transfer_from_savings() {
     });
 }
 
-// TS line 439: "Transaction Test".
+// TS line 440: "Transaction Test".
 #[test]
 fn transaction_tapos_fields() {
     wax_test(None, |ctx| {
@@ -324,7 +324,7 @@ fn transaction_tapos_fields() {
     });
 }
 
-// TS line 456: "Set Withdraw Vesting Route Test".
+// TS line 457: "Set Withdraw Vesting Route Test".
 #[test]
 fn set_withdraw_vesting_route() {
     wax_test(None, |ctx| {
@@ -342,7 +342,7 @@ fn set_withdraw_vesting_route() {
     });
 }
 
-// TS line 483: "Request Account Recovery Test".
+// TS line 484: "Request Account Recovery Test".
 #[test]
 fn request_account_recovery() {
     wax_test(None, |ctx| {
@@ -364,7 +364,7 @@ fn request_account_recovery() {
     });
 }
 
-// TS line 518: "Remove Proposal Test".
+// TS line 519: "Remove Proposal Test".
 #[test]
 fn remove_proposal() {
     wax_test(None, |ctx| {
@@ -379,7 +379,7 @@ fn remove_proposal() {
     });
 }
 
-// TS line 543: "Recurrent Transfer Test".
+// TS line 544: "Recurrent Transfer Test".
 #[test]
 fn recurrent_transfer() {
     wax_test(None, |ctx| {
@@ -406,7 +406,7 @@ fn recurrent_transfer() {
     });
 }
 
-// TS line 580: "Recover Account Test".
+// TS line 581: "Recover Account Test".
 #[test]
 fn recover_account() {
     wax_test(None, |ctx| {
@@ -430,7 +430,7 @@ fn recover_account() {
     });
 }
 
-// TS line 623: "POW Test".
+// TS line 624: "POW Test".
 //
 // TS NOTE: `pow.nonce` is proto `uint64`, which ts-proto surfaces as a string
 // ("2679032206"); in Rust it is a plain `u64`.
@@ -459,7 +459,7 @@ fn pow() {
     });
 }
 
-// TS line 678: "POW2 Test".
+// TS line 679: "POW2 Test".
 #[test]
 fn pow2() {
     wax_test(None, |ctx| {
@@ -492,7 +492,7 @@ fn pow2() {
     });
 }
 
-// TS line 737: "Limit Order Create Test".
+// TS line 738: "Limit Order Create Test".
 #[test]
 fn limit_order_create() {
     wax_test(None, |ctx| {
@@ -512,7 +512,7 @@ fn limit_order_create() {
     });
 }
 
-// TS line 784: "Limit Order Create 2 Test".
+// TS line 785: "Limit Order Create 2 Test".
 #[test]
 fn limit_order_create2() {
     wax_test(None, |ctx| {
@@ -535,7 +535,7 @@ fn limit_order_create2() {
     });
 }
 
-// TS line 845: "Limit Order Cancel Test".
+// TS line 846: "Limit Order Cancel Test".
 #[test]
 fn limit_order_cancel() {
     wax_test(None, |ctx| {
@@ -551,7 +551,7 @@ fn limit_order_cancel() {
     });
 }
 
-// TS line 867: "Feed Publish Test".
+// TS line 868: "Feed Publish Test".
 #[test]
 fn feed_publish() {
     wax_test(None, |ctx| {
@@ -568,7 +568,7 @@ fn feed_publish() {
     });
 }
 
-// TS line 912: "Escrow Transfer Test".
+// TS line 913: "Escrow Transfer Test".
 #[test]
 fn escrow_transfer() {
     wax_test(None, |ctx| {
@@ -590,7 +590,7 @@ fn escrow_transfer() {
     });
 }
 
-// TS line 975: "Escrow Release Test".
+// TS line 976: "Escrow Release Test".
 #[test]
 fn escrow_release() {
     wax_test(None, |ctx| {
@@ -610,7 +610,7 @@ fn escrow_release() {
     });
 }
 
-// TS line 1026: "Escrow Dispute Test".
+// TS line 1027: "Escrow Dispute Test".
 #[test]
 fn escrow_dispute() {
     wax_test(None, |ctx| {
@@ -627,7 +627,7 @@ fn escrow_dispute() {
     });
 }
 
-// TS line 1055: "Escrow Approve Test".
+// TS line 1056: "Escrow Approve Test".
 #[test]
 fn escrow_approve() {
     wax_test(None, |ctx| {
@@ -645,7 +645,7 @@ fn escrow_approve() {
     });
 }
 
-// TS line 1086: "Delete Comment Test".
+// TS line 1087: "Delete Comment Test".
 #[test]
 fn delete_comment() {
     wax_test(None, |ctx| {
@@ -659,7 +659,7 @@ fn delete_comment() {
     });
 }
 
-// TS line 1109: "Delegate Vesting Shares Test".
+// TS line 1110: "Delegate Vesting Shares Test".
 #[test]
 fn delegate_vesting_shares() {
     wax_test(None, |ctx| {
@@ -676,7 +676,7 @@ fn delegate_vesting_shares() {
     });
 }
 
-// TS line 1142: "Decline Voting Rights Test".
+// TS line 1143: "Decline Voting Rights Test".
 #[test]
 fn decline_voting_rights() {
     wax_test(None, |ctx| {
@@ -692,7 +692,25 @@ fn decline_voting_rights() {
     });
 }
 
-// TS line 1165: "Custom Operation Test".
+// TS line 1166: "Delegate RC Test".
+#[test]
+fn delegate_rc() {
+    wax_test(None, |ctx| {
+        assert_pushed_unchanged(
+            ctx,
+            OperationValue::DelegateRcOperation(
+                proto::DelegateRc {
+                    from_account: "example-user".into(),
+                    delegatees: vec!["other-user1".into(), "other-user2".into()],
+                    max_rc: 5_000_000_000,
+                    extensions: Vec::new(),
+                },
+            ),
+        );
+    });
+}
+
+// TS line 1193: "Custom Operation Test".
 #[test]
 fn custom_operation() {
     wax_test(None, |ctx| {
@@ -707,7 +725,7 @@ fn custom_operation() {
     });
 }
 
-// TS line 1190: "Custom JSON Test".
+// TS line 1218: "Custom JSON Test".
 #[test]
 fn custom_json() {
     wax_test(None, |ctx| {
@@ -723,7 +741,7 @@ fn custom_json() {
     });
 }
 
-// TS line 1217: "Create Proposal Test".
+// TS line 1245: "Create Proposal Test".
 #[test]
 fn create_proposal() {
     wax_test(None, |ctx| {
@@ -743,7 +761,7 @@ fn create_proposal() {
     });
 }
 
-// TS line 1260: "Create Claimed Account Test".
+// TS line 1288: "Create Claimed Account Test".
 #[test]
 fn create_claimed_account() {
     wax_test(None, |ctx| {
@@ -765,7 +783,7 @@ fn create_claimed_account() {
     });
 }
 
-// TS line 1319: "Convert Test".
+// TS line 1347: "Convert Test".
 #[test]
 fn convert() {
     wax_test(None, |ctx| {
@@ -780,7 +798,7 @@ fn convert() {
     });
 }
 
-// TS line 1352: "Comment Test".
+// TS line 1380: "Comment Test".
 #[test]
 fn comment() {
     wax_test(None, |ctx| {
@@ -799,7 +817,7 @@ fn comment() {
     });
 }
 
-// TS line 1385: "Comment Options Test".
+// TS line 1413: "Comment Options Test".
 #[test]
 fn comment_options() {
     wax_test(None, |ctx| {
@@ -835,7 +853,7 @@ fn comment_options() {
     });
 }
 
-// TS line 1432: "Collateralized Convert Test".
+// TS line 1460: "Collateralized Convert Test".
 #[test]
 fn collateralized_convert() {
     wax_test(None, |ctx| {
@@ -852,7 +870,7 @@ fn collateralized_convert() {
     });
 }
 
-// TS line 1465: "Claim Reward Balance Test".
+// TS line 1493: "Claim Reward Balance Test".
 #[test]
 fn claim_reward_balance() {
     wax_test(None, |ctx| {
@@ -870,7 +888,7 @@ fn claim_reward_balance() {
     });
 }
 
-// TS line 1492: "Claim Account Test".
+// TS line 1520: "Claim Account Test".
 #[test]
 fn claim_account() {
     wax_test(None, |ctx| {
@@ -885,7 +903,7 @@ fn claim_account() {
     });
 }
 
-// TS line 1525: "Change Recovery Account Test".
+// TS line 1553: "Change Recovery Account Test".
 #[test]
 fn change_recovery_account() {
     wax_test(None, |ctx| {
@@ -902,7 +920,7 @@ fn change_recovery_account() {
     });
 }
 
-// TS line 1550: "Cancel Transfer From Savings Test".
+// TS line 1578: "Cancel Transfer From Savings Test".
 #[test]
 fn cancel_transfer_from_savings() {
     wax_test(None, |ctx| {
@@ -918,7 +936,7 @@ fn cancel_transfer_from_savings() {
     });
 }
 
-// TS line 1573: "Account Witness Vote Test".
+// TS line 1601: "Account Witness Vote Test".
 #[test]
 fn account_witness_vote() {
     wax_test(None, |ctx| {
@@ -935,7 +953,7 @@ fn account_witness_vote() {
     });
 }
 
-// TS line 1598: "Account Witness Proxy Test".
+// TS line 1626: "Account Witness Proxy Test".
 #[test]
 fn account_witness_proxy() {
     wax_test(None, |ctx| {
@@ -951,7 +969,7 @@ fn account_witness_proxy() {
     });
 }
 
-// TS line 1621: "Account Update2 Test".
+// TS line 1649: "Account Update2 Test".
 #[test]
 fn account_update2() {
     wax_test(None, |ctx| {
@@ -979,7 +997,7 @@ fn account_update2() {
     });
 }
 
-// TS line 1680: "Account Update Test".
+// TS line 1708: "Account Update Test".
 #[test]
 fn account_update() {
     wax_test(None, |ctx| {
@@ -1009,7 +1027,7 @@ fn account_update() {
     });
 }
 
-// TS line 1735: "Account Create Test".
+// TS line 1763: "Account Create Test".
 #[test]
 fn account_create() {
     wax_test(None, |ctx| {
@@ -1029,7 +1047,7 @@ fn account_create() {
     });
 }
 
-// TS line 1802: "Account Creation with Delegation Test".
+// TS line 1830: "Account Creation with Delegation Test".
 #[test]
 fn account_create_with_delegation() {
     wax_test(None, |ctx| {

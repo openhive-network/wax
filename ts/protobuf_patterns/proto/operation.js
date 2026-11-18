@@ -30,6 +30,7 @@ import { custom_json } from "./custom_json.js";
 import { decline_voting_rights } from "./decline_voting_rights.js";
 import { declined_voting_rights } from "./declined_voting_rights.js";
 import { delayed_voting } from "./delayed_voting.js";
+import { delegate_rc } from "./delegate_rc.js";
 import { delegate_vesting_shares } from "./delegate_vesting_shares.js";
 import { delete_comment } from "./delete_comment.js";
 import { dhf_conversion } from "./dhf_conversion.js";
@@ -189,6 +190,9 @@ export const operation = {
                 : undefined,
             decline_voting_rights_operation: isSet(object.decline_voting_rights_operation)
                 ? decline_voting_rights.fromJSON(object.decline_voting_rights_operation)
+                : undefined,
+            delegate_rc_operation: isSet(object.delegate_rc_operation)
+                ? delegate_rc.fromJSON(object.delegate_rc_operation)
                 : undefined,
             claim_reward_balance_operation: isSet(object.claim_reward_balance_operation)
                 ? claim_reward_balance.fromJSON(object.claim_reward_balance_operation)
@@ -459,6 +463,9 @@ export const operation = {
         }
         if (message.decline_voting_rights_operation !== undefined) {
             obj.decline_voting_rights_operation = decline_voting_rights.toJSON(message.decline_voting_rights_operation);
+        }
+        if (message.delegate_rc_operation !== undefined) {
+            obj.delegate_rc_operation = delegate_rc.toJSON(message.delegate_rc_operation);
         }
         if (message.claim_reward_balance_operation !== undefined) {
             obj.claim_reward_balance_operation = claim_reward_balance.toJSON(message.claim_reward_balance_operation);
@@ -767,6 +774,10 @@ export const operation = {
         message.decline_voting_rights_operation =
             (object.decline_voting_rights_operation !== undefined && object.decline_voting_rights_operation !== null)
                 ? decline_voting_rights.fromPartial(object.decline_voting_rights_operation)
+                : undefined;
+        message.delegate_rc_operation =
+            (object.delegate_rc_operation !== undefined && object.delegate_rc_operation !== null)
+                ? delegate_rc.fromPartial(object.delegate_rc_operation)
                 : undefined;
         message.claim_reward_balance_operation =
             (object.claim_reward_balance_operation !== undefined && object.claim_reward_balance_operation !== null)

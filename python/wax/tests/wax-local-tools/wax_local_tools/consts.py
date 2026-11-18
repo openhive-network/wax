@@ -104,6 +104,10 @@ VALID_OPERATIONS: Final[dict[str, str]] = {
     "decline_voting_rights_operation": (
         '{"type":"decline_voting_rights_operation","value":{"account":"bilalhaider","decline":true}}'
     ),
+    "delegate_rc_operation": (
+        '{"type":"delegate_rc_operation","value":{"from":"bulldog1205","delegatees":["shamlands"],"max_rc":20000000000,'
+        '"extensions":[]}}'
+    ),
     "claim_reward_balance_operation": '{"type":"claim_reward_balance_operation","value":{"account":"bradleyarrow","reward_hive":{"amount":"0","precision":3,"nai":"@@000000021"},"reward_hbd":{"amount":"104","precision":3,"nai":"@@000000013"},"reward_vests":{"amount":"531747227","precision":6,"nai":"@@000000037"}}}',
     "delegate_vesting_shares_operation": '{"type":"delegate_vesting_shares_operation","value":{"delegator":"elamaria","delegatee":"music1sound","vesting_shares":{"amount":"90111193694","precision":6,"nai":"@@000000037"}}}',
     "account_create_with_delegation_operation": '{"type":"account_create_with_delegation_operation","value":{"fee":{"amount":"35000","precision":3,"nai":"@@000000021"},"delegation":{"amount":"0","precision":6,"nai":"@@000000037"},"creator":"steem","new_account_name":"hendratayogas","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM51YSoy7MdrAWgeTsQo4xYVR7L4BKucjqDPefsB7ZojBZgU7CCN",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM5jgwX1VPT4oZpescjwTmf6k8T8oYmg3RrhjaDnSapis9sFojAL",1]]},"posting":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM5BcLMqLSBXa3DX7ThbbDYFEwcHbvUYWoF8PgTaSVAdNUikBQK1",1]]},"memo_key":"STM5Fj3bNfLCvhFC6U67kfNCg6d8CfpxW2AJRJ9KhELEaoBMK9Ltf","json_metadata":"","extensions":[]}}',

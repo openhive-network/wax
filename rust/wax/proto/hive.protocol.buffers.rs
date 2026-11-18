@@ -1247,6 +1247,31 @@ pub struct DeclineVotingRights {
     #[prost(bool, required, tag = "2")]
     pub decline: bool,
 }
+/// The operation delegate_rc_operation sets the amount of resource credits (RC) that { from } delegates
+/// to each account listed in { delegatees }. Only RC is delegated - the vesting shares (HP), their voting power
+/// and governance rights stay with { from }. If there is no delegation yet, a new one is created, if there is,
+/// it is increased or decreased to { max_rc }; { max_rc } = 0 removes the delegation.
+/// Since HF 26 the operation can be embedded in custom_json_operation with id "rc", since HF 29 it can also be
+/// used as a regular operation. Account history shows effective embedded delegations as delegate_rc_operation
+/// placed right after their custom_json_operation.
+///
+/// Description <https://gitlab.syncad.com/hive/hive/-/blob/develop/doc/devs/operations/37_delegate_rc.md?ref_type=heads>
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DelegateRc {
+    /// @param {string} from_account - The account delegating RC.
+    #[prost(string, required, tag = "1")]
+    pub from_account: ::prost::alloc::string::String,
+    /// @param {string} delegatees - Accounts receiving RC (up to 100, without { from }).
+    #[prost(string, repeated, tag = "2")]
+    pub delegatees: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    /// @param {number} max_rc - The amount of RC delegated to each of { delegatees }. 0 removes the delegation.
+    ///                           Otherwise it has to be at least 1/3 of the fee for creating a new account (expressed in VESTS).
+    #[prost(int64, required, tag = "3")]
+    pub max_rc: i64,
+    /// @param {future_extensions} extensions
+    #[prost(message, repeated, tag = "4")]
+    pub extensions: ::prost::alloc::vec::Vec<FutureExtensions>,
+}
 /// An operation claim_reward_balance_operation is used to transfer previously collected
 /// author and/or curation rewards from sub balance for the reward to regular balances.
 /// Rewards expressed in Hive and HBD are transferred to liquid balances, rewards in HP increase vesting balance.
@@ -1519,7 +1544,9 @@ pub struct RecurrentTransfer {
     #[prost(uint32, required, tag = "5")]
     pub recurrence: u32,
     /// @param {number} executions - How many times the recurrent payment will be executed.
-    ///                               Executions must be at least 2, if you set executions to 1 the recurrent transfer will not be executed.
+    ///                               Executions must be at least 2 when creating a new recurrent transfer.
+    ///                               Since HF 29 executions may be set to 1 when modifying an existing recurrent transfer
+    ///                               (e.g. to update the amount or memo on the last remaining payment).
     #[prost(uint32, required, tag = "6")]
     pub executions: u32,
     /// @param {recurrent_transfer_extension} extensions - Extensions. Since HF 28 it may contain the 'pair_id'.
@@ -2261,7 +2288,7 @@ pub struct DeclinedVotingRights {
 pub struct Operation {
     #[prost(
         oneof = "operation::Value",
-        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142"
+        tags = "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 37, 38, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142"
     )]
     pub value: ::core::option::Option<operation::Value>,
 }
@@ -2341,6 +2368,8 @@ pub mod operation {
         CancelTransferFromSavingsOperation(super::CancelTransferFromSavings),
         #[prost(message, tag = "37")]
         DeclineVotingRightsOperation(super::DeclineVotingRights),
+        #[prost(message, tag = "38")]
+        DelegateRcOperation(super::DelegateRc),
         #[prost(message, tag = "40")]
         ClaimRewardBalanceOperation(super::ClaimRewardBalance),
         #[prost(message, tag = "41")]

@@ -20,6 +20,7 @@ import type {
   custom,
   custom_json,
   decline_voting_rights,
+  delegate_rc,
   delegate_vesting_shares,
   delete_comment,
   escrow_approve,
@@ -1158,6 +1159,33 @@ test.describe('Wax transaction hive operations regression tests', () => {
       decline_voting_rights_operation: {
         account: "example-user",
         decline: true
+      }
+    });
+  });
+
+  test('Delegate RC Test', async ({ waxTest }) => {
+    const retVal = await waxTest(({ chain }) => {
+      const txB = chain.createTransactionWithTaPoS("04c1c7a566fc0da66aee465714acee7346b48ac2", "2023-08-01T15:38:48");
+
+      const testedOp: delegate_rc = {
+        from: "example-user",
+        delegatees: ["other-user1", "other-user2"],
+        max_rc: "5000000000",
+        extensions: []
+      };
+
+      const op: operation = { delegate_rc_operation: testedOp };
+      txB.pushOperation(op).validate();
+
+      return txB.transaction.operations[0];
+    });
+
+    expect(retVal).toStrictEqual({
+      delegate_rc_operation: {
+        from: "example-user",
+        delegatees: ["other-user1", "other-user2"],
+        max_rc: "5000000000",
+        extensions: []
       }
     });
   });

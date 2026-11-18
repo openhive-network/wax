@@ -46,6 +46,7 @@ try:
     from wax._private.proto.limit_order_cancel_pb2 import limit_order_cancel
     from wax._private.proto.feed_publish_pb2 import feed_publish
     from wax._private.proto.decline_voting_rights_pb2 import decline_voting_rights
+    from wax._private.proto.delegate_rc_pb2 import delegate_rc
     from wax._private.proto.claim_account_pb2 import claim_account
     from wax._private.proto.claim_reward_balance_pb2 import claim_reward_balance
     from wax._private.proto.escrow_approve_pb2 import escrow_approve
@@ -101,6 +102,7 @@ __all__ = [
     "limit_order_cancel",
     "feed_publish",
     "decline_voting_rights",
+    "delegate_rc",
     "claim_account",
     "claim_reward_balance",
     "escrow_approve",

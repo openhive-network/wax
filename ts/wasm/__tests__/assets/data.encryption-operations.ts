@@ -451,6 +451,15 @@ export const declineVotingRightsOp = {
   },
 };
 
+export const delegateRcOp = {
+  delegate_rc_operation: {
+    from: 'gtg',
+    delegatees: ['initminer'],
+    max_rc: '5000000000',
+    extensions: [],
+  },
+};
+
 export const claimRewardBalanceOp = {
   claim_reward_balance_operation: {
     account: 'gtg',

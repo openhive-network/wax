@@ -4909,6 +4909,143 @@ impl<'de> serde::Deserialize<'de> for DelayedVoting {
         deserializer.deserialize_struct("hive.protocol.buffers.delayed_voting", FIELDS, GeneratedVisitor)
     }
 }
+impl serde::Serialize for DelegateRc {
+    #[allow(deprecated)]
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        use serde::ser::SerializeStruct;
+        let mut len = 2;
+        if !self.delegatees.is_empty() {
+            len += 1;
+        }
+        if !self.extensions.is_empty() {
+            len += 1;
+        }
+        let mut struct_ser = serializer.serialize_struct("hive.protocol.buffers.delegate_rc", len)?;
+        struct_ser.serialize_field("from", &self.from_account)?;
+        if !self.delegatees.is_empty() {
+            struct_ser.serialize_field("delegatees", &self.delegatees)?;
+        }
+        #[allow(clippy::needless_borrow)]
+        #[allow(clippy::needless_borrows_for_generic_args)]
+        struct_ser.serialize_field("max_rc", ToString::to_string(&self.max_rc).as_str())?;
+        if !self.extensions.is_empty() {
+            struct_ser.serialize_field("extensions", &self.extensions)?;
+        }
+        struct_ser.end()
+    }
+}
+impl<'de> serde::Deserialize<'de> for DelegateRc {
+    #[allow(deprecated)]
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        const FIELDS: &[&str] = &[
+            "from_account",
+            "from",
+            "delegatees",
+            "max_rc",
+            "extensions",
+        ];
+
+        #[allow(clippy::enum_variant_names)]
+        enum GeneratedField {
+            FromAccount,
+            Delegatees,
+            MaxRc,
+            Extensions,
+        }
+        impl<'de> serde::Deserialize<'de> for GeneratedField {
+            fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct GeneratedVisitor;
+
+                impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+                    type Value = GeneratedField;
+
+                    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                        write!(formatter, "expected one of: {:?}", &FIELDS)
+                    }
+
+                    #[allow(unused_variables)]
+                    fn visit_str<E>(self, value: &str) -> std::result::Result<GeneratedField, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        match value {
+                            "from" | "from_account" => Ok(GeneratedField::FromAccount),
+                            "delegatees" => Ok(GeneratedField::Delegatees),
+                            "max_rc" => Ok(GeneratedField::MaxRc),
+                            "extensions" => Ok(GeneratedField::Extensions),
+                            _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
+                        }
+                    }
+                }
+                deserializer.deserialize_identifier(GeneratedVisitor)
+            }
+        }
+        struct GeneratedVisitor;
+        impl<'de> serde::de::Visitor<'de> for GeneratedVisitor {
+            type Value = DelegateRc;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                formatter.write_str("struct hive.protocol.buffers.delegate_rc")
+            }
+
+            fn visit_map<V>(self, mut map_: V) -> std::result::Result<DelegateRc, V::Error>
+                where
+                    V: serde::de::MapAccess<'de>,
+            {
+                let mut from_account__ = None;
+                let mut delegatees__ = None;
+                let mut max_rc__ = None;
+                let mut extensions__ = None;
+                while let Some(k) = map_.next_key()? {
+                    match k {
+                        GeneratedField::FromAccount => {
+                            if from_account__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("from"));
+                            }
+                            from_account__ = Some(map_.next_value()?);
+                        }
+                        GeneratedField::Delegatees => {
+                            if delegatees__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("delegatees"));
+                            }
+                            delegatees__ = Some(map_.next_value()?);
+                        }
+                        GeneratedField::MaxRc => {
+                            if max_rc__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("max_rc"));
+                            }
+                            max_rc__ = 
+                                Some(map_.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
+                        GeneratedField::Extensions => {
+                            if extensions__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("extensions"));
+                            }
+                            extensions__ = Some(map_.next_value()?);
+                        }
+                    }
+                }
+                Ok(DelegateRc {
+                    from_account: from_account__.ok_or_else(|| serde::de::Error::missing_field("from"))?,
+                    delegatees: delegatees__.unwrap_or_default(),
+                    max_rc: max_rc__.ok_or_else(|| serde::de::Error::missing_field("max_rc"))?,
+                    extensions: extensions__.unwrap_or_default(),
+                })
+            }
+        }
+        deserializer.deserialize_struct("hive.protocol.buffers.delegate_rc", FIELDS, GeneratedVisitor)
+    }
+}
 impl serde::Serialize for DelegateVestingShares {
     #[allow(deprecated)]
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
@@ -9520,6 +9657,9 @@ impl serde::Serialize for Operation {
                 operation::Value::DeclineVotingRightsOperation(v) => {
                     struct_ser.serialize_field("decline_voting_rights_operation", v)?;
                 }
+                operation::Value::DelegateRcOperation(v) => {
+                    struct_ser.serialize_field("delegate_rc_operation", v)?;
+                }
                 operation::Value::ClaimRewardBalanceOperation(v) => {
                     struct_ser.serialize_field("claim_reward_balance_operation", v)?;
                 }
@@ -9730,6 +9870,7 @@ impl<'de> serde::Deserialize<'de> for Operation {
             "transfer_from_savings_operation",
             "cancel_transfer_from_savings_operation",
             "decline_voting_rights_operation",
+            "delegate_rc_operation",
             "claim_reward_balance_operation",
             "delegate_vesting_shares_operation",
             "account_create_with_delegation_operation",
@@ -9824,6 +9965,7 @@ impl<'de> serde::Deserialize<'de> for Operation {
             TransferFromSavingsOperation,
             CancelTransferFromSavingsOperation,
             DeclineVotingRightsOperation,
+            DelegateRcOperation,
             ClaimRewardBalanceOperation,
             DelegateVestingSharesOperation,
             AccountCreateWithDelegationOperation,
@@ -9935,6 +10077,7 @@ impl<'de> serde::Deserialize<'de> for Operation {
                             "transfer_from_savings_operation" => Ok(GeneratedField::TransferFromSavingsOperation),
                             "cancel_transfer_from_savings_operation" => Ok(GeneratedField::CancelTransferFromSavingsOperation),
                             "decline_voting_rights_operation" => Ok(GeneratedField::DeclineVotingRightsOperation),
+                            "delegate_rc_operation" => Ok(GeneratedField::DelegateRcOperation),
                             "claim_reward_balance_operation" => Ok(GeneratedField::ClaimRewardBalanceOperation),
                             "delegate_vesting_shares_operation" => Ok(GeneratedField::DelegateVestingSharesOperation),
                             "account_create_with_delegation_operation" => Ok(GeneratedField::AccountCreateWithDelegationOperation),
@@ -10261,6 +10404,13 @@ impl<'de> serde::Deserialize<'de> for Operation {
                                 return Err(serde::de::Error::duplicate_field("decline_voting_rights_operation"));
                             }
                             value__ = map_.next_value::<::std::option::Option<_>>()?.map(operation::Value::DeclineVotingRightsOperation)
+;
+                        }
+                        GeneratedField::DelegateRcOperation => {
+                            if value__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("delegate_rc_operation"));
+                            }
+                            value__ = map_.next_value::<::std::option::Option<_>>()?.map(operation::Value::DelegateRcOperation)
 ;
                         }
                         GeneratedField::ClaimRewardBalanceOperation => {

@@ -43,6 +43,7 @@ export { custom } from "../proto/custom.js";
 export { decline_voting_rights } from "../proto/decline_voting_rights.js";
 export { declined_voting_rights } from "../proto/declined_voting_rights.js";
 export { delayed_voting } from "../proto/delayed_voting.js";
+export { delegate_rc } from "../proto/delegate_rc.js";
 export { delegate_vesting_shares } from "../proto/delegate_vesting_shares.js";
 export { delete_comment } from "../proto/delete_comment.js";
 export { dhf_conversion } from "../proto/dhf_conversion.js";

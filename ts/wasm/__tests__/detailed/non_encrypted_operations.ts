@@ -19,6 +19,7 @@ import {
   createClaimedAccountOp,
   createProposalOp,
   declineVotingRightsOp,
+  delegateRcOp,
   delegateVestingSharesOp,
   deleteCommentOp,
   escrowApproveOp,
@@ -309,6 +310,16 @@ test.describe('Wax encrypted operations tests', () => {
     }, utilFunctionTest, declineVotingRightsOp);
 
     expect(retVal.operations[0]).toEqual(declineVotingRightsOp);
+  });
+
+  test('Should be able to pass through encryption on transaction with delegate rc operation which does not support encryption', async ({ waxTest }) => {
+    const retVal = await waxTest(async (globals, utilFunctionTest, delegateRcOp) => {
+      return await utilFunctionTest(globals, tx => {
+        tx.pushOperation(delegateRcOp);
+      });
+    }, utilFunctionTest, delegateRcOp);
+
+    expect(retVal.operations[0]).toEqual(delegateRcOp);
   });
 
   test('Should be able to pass through encryption on transaction with claim reward balance operation which does not support encryption', async ({ waxTest }) => {
