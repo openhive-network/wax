@@ -31,6 +31,9 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
   TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE
     -Oz
     -fwasm-exceptions
+    # The callers restore the stack pointer after an exception: one leaving the wasm skips the epilogues popping it
+    # (what stackSave/stackRestore call; exporting those runtime methods would need tsc for --emit-tsd)
+    -sEXPORTED_FUNCTIONS=_emscripten_stack_get_current,__emscripten_stack_restore
     -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
     -sEXCEPTION_STACK_TRACES=1
     -sELIMINATE_DUPLICATE_FUNCTIONS=1
