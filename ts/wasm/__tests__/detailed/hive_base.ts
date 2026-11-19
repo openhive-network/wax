@@ -122,6 +122,26 @@ test.describe('Wax object interface foundation tests', () => {
   });
 
 
+  test('Should keep working after many errors thrown by the wasm', async ({ waxTest }) => {
+    const retVal = await waxTest(async ({ base, wax }) => {
+      // More errors than the C++ stack would survive if each of them left its frames on the stack
+      // (a broken wasm traps and its RuntimeError reaches here as a non-typed WaxError)
+      let typedErrors = 0;
+      for (let i = 0; i < 10000; ++i) {
+        try {
+          base.calculatePublicKey("invalid_key");
+        } catch (error) {
+          if (error instanceof wax.WaxAssertionError)
+            ++typedErrors;
+        }
+      }
+
+      return { typedErrors, publicKey: base.calculatePublicKey("5JkFnXrLM2ap9t3AmAxBJvQHF7xSKtnTrCTginQCkhzU5S7ecPT") };
+    });
+
+    expect(retVal).toEqual({ typedErrors: 10000, publicKey: "STM5RqVBAVNp5ufMCetQtvLGLJo7unX9nyCBMMrTXRWQ9i1Zzzizh" });
+  });
+
   test('Should be able to convert HIVE to HBD - numbers', async ({ waxTest }) => {
     const retVal = await waxTest(async ({ base }) => {
       const feedPriceQuote = 1000;
