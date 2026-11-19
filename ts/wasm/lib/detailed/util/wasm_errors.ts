@@ -62,9 +62,14 @@ export class WasmManager {
   }
 
   public safeWasmCall<T>(wasmFunction: () => T): T {
+    // An exception leaving the wasm skips the function epilogues which pop the C++ stack, so its pointer would move
+    // down with every error until the stack overflows the data of the wasm
+    const stackPointer = this.mainModule?._emscripten_stack_get_current();
     try {
       return wasmFunction();
     } catch (error) {
+      if (stackPointer !== undefined)
+        this.mainModule?.__emscripten_stack_restore(stackPointer);
       this.handleWasmStdException(error);
     }
   }

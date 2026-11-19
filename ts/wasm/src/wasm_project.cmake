@@ -63,6 +63,10 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
     -sEXPORT_ES6=1 -sINITIAL_MEMORY=67108864 -sWASM_ASYNC_COMPILATION=1
     --minify=0 --emit-symbol-map -sENVIRONMENT=${WASM_ENV}
     --emit-tsd "${CMAKE_CURRENT_BINARY_DIR}/${exec_common_name}.d.ts"
+    # The callers restore the stack pointer after an exception: one leaving the wasm skips the epilogues popping it
+    # (what stackSave/stackRestore call; exporting those runtime methods would need tsc for --emit-tsd). Only on the
+    # wax targets: in CommonBuildOptions it would replace the export of main of the generator tools.
+    -sEXPORTED_FUNCTIONS=_emscripten_stack_get_current,__emscripten_stack_restore
   )
 
   if (arg_LINK_OPTIONS)
