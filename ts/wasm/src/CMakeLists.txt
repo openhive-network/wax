@@ -33,6 +33,9 @@ SET(HIVE_ROOT_PATH "${WAX_ROOT_PATH}/hive")
 
 # Exclude VOPs from wasm build
 add_compile_definitions(HIVE_PROTOCOL_SKIP_VOPS)
+# boost::lexical_cast of integers without the locale (nothing in the wasm changes the classic one), so the wasm has no
+# iostream and locale machinery of libc++; set before fc and hive are added, for all of them
+add_compile_definitions(BOOST_LEXICAL_CAST_ASSUME_C_LOCALE)
 
 include( ${HIVE_ROOT_PATH}/cmake/hive_targets.cmake )
 include( ${CMAKE_CURRENT_SOURCE_DIR}/wasm_project.cmake )
