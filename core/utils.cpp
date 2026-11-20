@@ -3,6 +3,9 @@
 #include <boost/lexical_cast.hpp>
 #include <fc/io/json.hpp>
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -12,19 +15,78 @@
 
 namespace cpp {
 
-using assertion_id_data_container_t = std::map< uint64_t, std::string >;
+namespace {
 
-assertion_id_data_container_t init_assertion_data()
+constexpr bool is_same_category( const char* a, const char* b )
 {
-  assertion_id_data_container_t container;
-  //container.insert( std::make_pair( 2247020312206164887ull, "protocol") );
+  while( *a != '\0' && *a == *b )
+  {
+    ++a;
+    ++b;
+  }
+  return *a == *b;
+}
 
-  // TODO: Add remaining generated inlines or replace the code with general solution.
+/// Counts per category the generated lines `container.insert( std::make_pair( hash, "category") );`.
+struct assertion_hash_counter
+{
+  size_t protocol = 0;
+  size_t chain = 0;
+
+  constexpr void insert( const std::pair< unsigned long long, const char* >& entry )
+  {
+    if( is_same_category( entry.second, "protocol" ) )
+      ++protocol;
+    else if( is_same_category( entry.second, "chain" ) )
+      ++chain;
+  }
+};
+
+constexpr assertion_hash_counter count_assertion_hashes()
+{
+  assertion_hash_counter container;
 #include "protocol_assertion_hashes_wax.inl"
 #include "chain_assertion_hashes_wax.inl"
-
   return container;
 }
+
+constexpr assertion_hash_counter assertion_hash_count = count_assertion_hashes();
+
+/// The hashes of the generated lines per category, filled at compile time: constant tables instead of a map filled
+/// by hundreds of inserts at the first exception.
+struct assertion_hash_tables
+{
+  std::array< uint64_t, assertion_hash_count.protocol > protocol{};
+  std::array< uint64_t, assertion_hash_count.chain > chain{};
+  size_t protocol_size = 0;
+  size_t chain_size = 0;
+
+  constexpr void insert( const std::pair< unsigned long long, const char* >& entry )
+  {
+    if( is_same_category( entry.second, "protocol" ) )
+      protocol[ protocol_size++ ] = entry.first;
+    else if( is_same_category( entry.second, "chain" ) )
+      chain[ chain_size++ ] = entry.first;
+  }
+};
+
+constexpr assertion_hash_tables build_assertion_hash_tables()
+{
+  assertion_hash_tables container;
+#include "protocol_assertion_hashes_wax.inl"
+#include "chain_assertion_hashes_wax.inl"
+  return container;
+}
+
+constexpr assertion_hash_tables assertion_hashes = build_assertion_hash_tables();
+
+template< size_t N >
+bool contains( const std::array< uint64_t, N >& hashes, uint64_t hash )
+{
+  return std::find( hashes.begin(), hashes.end(), hash ) != hashes.end();
+}
+
+} /// namespace
 
 [[noreturn]] static void classify_and_rethrow_current_exception()
 {
@@ -118,30 +180,21 @@ static std::pair<std::string, std::string> describe_current_exception()
 
 uint64_t throw_recognized_wax_assertion( fc::assert_exception& e )
 {
-  static assertion_id_data_container_t assertion_data( init_assertion_data() );
   auto ae = e.get_extension( FC_ASSERT_EXPRESSION_KEY );
   uint64_t assertion_code = fc::exception::hash_expr( ae );
-  
-  const auto it = assertion_data.find( assertion_code );
-  if( it !=  assertion_data.end() )
+
+  /// protocol first: in the former map the first insert of a hash won, and the protocol list was inserted first
+  if( contains( assertion_hashes.protocol, assertion_code ) )
   {
-    if( it->second == "protocol" )
-    {
-      //wlog("Throwing recognized wax_protocol_assertion ${assertion_code}", (assertion_code));
-      throw wax_protocol_assertion( assertion_code, e );
-    }
-    else if( it->second == "chain" )
-    {
-      //wlog("Throwing recognized wax_chain_assertion ${assertion_code}", (assertion_code));
-      throw wax_chain_assertion( assertion_code, e );
-    }
-    // TODO: Uncomment once API assertions are recognized.
-    /*else if( it->second == "api" )
-    {
-      //wlog("Throwing recognized wax_api_assertion ${assertion_code}", (assertion_code));
-      throw wax_api_assertion( assertion_code, e );
-    }*/
+    //wlog("Throwing recognized wax_protocol_assertion ${assertion_code}", (assertion_code));
+    throw wax_protocol_assertion( assertion_code, e );
   }
+  if( contains( assertion_hashes.chain, assertion_code ) )
+  {
+    //wlog("Throwing recognized wax_chain_assertion ${assertion_code}", (assertion_code));
+    throw wax_chain_assertion( assertion_code, e );
+  }
+  // TODO: Add an "api" table once API assertions are recognized (throw wax_api_assertion).
 
   // Let unrecognized assertion to be thrown outside.
   return assertion_code;
