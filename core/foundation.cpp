@@ -603,7 +603,7 @@ void foundation::cpp_transform_api_error_response_into_exception(const std::stri
 
   try
   {
-    fc::variant json = fc::json::from_string(data, fc::json::format_validation_mode::full);
+    fc::variant json = fc::json::from_string<fc::json::legacy_parser>(data, fc::json::format_validation_mode::full);
 
     if (json.get_type() != fc::variant::object_type)
     {
@@ -1003,7 +1003,7 @@ std::string foundation::cpp_legacy_tx_to_json(const std::string& tx_str)const
       hive::protocol::serialization_mode_controller::mode_guard guard(hive::protocol::transaction_serialization_type::legacy);
       hive::protocol::serialization_mode_controller::set_pack(hive::protocol::transaction_serialization_type::legacy);
 
-      fc::variant v = fc::json::from_string(tx_str, fc::json::format_validation_mode::full);
+      fc::variant v = fc::json::from_string<fc::json::legacy_parser>(tx_str, fc::json::format_validation_mode::full);
       fc::from_variant(v, tx);
     }
 
