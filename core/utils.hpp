@@ -22,10 +22,19 @@ namespace cpp
 {
 uint64_t throw_recognized_wax_assertion( fc::assert_exception& e );
 
-/** Classifies the current exception and re-throws it as a type safely handled by Python/WASM runtimes.
+/** Classifies the current exception and re-throws it as a type safely handled by Python/WASM runtimes; in the wasm
+    build passes it to JS by `throw_current_exception_to_js`.
     Defined in utils.cpp to avoid duplicating exception handling code across template instantiations.
 */
 [[noreturn]] void safe_exception_handler();
+
+#ifdef __EMSCRIPTEN__
+/** Throws a JS Error with the message of the current C++ exception and its type name in `cppExceptionName`, in place
+    of letting the C++ exception reach JS (which needs emscripten's exception helpers to read it and never frees it).
+    The C++ exception is freed while the JS Error leaves the catch block.
+*/
+[[noreturn]] void throw_current_exception_to_js();
+#endif
 
 /** Allows to wrap given function call into exception handler which at most throw std::exception (safely handled by Python/WASM runtimes)
 */

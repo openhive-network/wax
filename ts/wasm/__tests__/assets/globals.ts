@@ -27,13 +27,9 @@ export interface IWaxGlobals {
   createSigner(baseOrChain: IWaxBaseInterface | IHiveChainInterface, wallet: IBeekeeperUnlockedWallet, publicKey: TPublicKey): BeekeeperProvider;
 }
 
-interface MainModuleEmscriptenExtended extends MainModule {
-  getExceptionMessage: (e: any) => [string, string];
-}
-
 export interface IWasmGlobals {
   protocol: protocol_foundation;
-  provider: MainModuleEmscriptenExtended;
+  provider: MainModule;
 }
 
 declare global {
@@ -97,7 +93,7 @@ globalThis.createWasmTestFor = async function createWasmTestFor(env: TEnvType) {
   // Provide results
   return {
     protocol: new provider.protocol_foundation(),
-    provider: provider as MainModuleEmscriptenExtended
+    provider
   };
 };
 

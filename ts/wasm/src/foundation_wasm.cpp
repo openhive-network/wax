@@ -73,3 +73,23 @@ void foundation_wasm::cpp_tx_api_to_proto(emscripten::val emval)const
     );
   });
 }
+
+cpp::json_asset foundation_wasm::cpp_general_asset(const uint32_t asset_num, const int64_t amount)const
+{
+  return cpp::safe_exception_wrapper([&]() -> cpp::json_asset {
+    return foundation::cpp_general_asset(asset_num, amount);
+  });
+}
+
+void foundation_wasm::cpp_transform_api_error_response_into_exception(const std::string& data)const
+{
+  /// Its exceptions are already the wax ones (a safe_exception_wrapper would turn them into std::runtime_error).
+  try
+  {
+    foundation::cpp_transform_api_error_response_into_exception(data);
+  }
+  catch (...)
+  {
+    cpp::throw_current_exception_to_js();
+  }
+}
