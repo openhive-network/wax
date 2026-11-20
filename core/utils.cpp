@@ -3,6 +3,13 @@
 #include <boost/lexical_cast.hpp>
 #include <fc/io/json.hpp>
 
+#include <string>
+#include <utility>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten/val.h>
+#endif
+
 namespace cpp {
 
 using assertion_id_data_container_t = std::map< uint64_t, std::string >;
@@ -19,7 +26,7 @@ assertion_id_data_container_t init_assertion_data()
   return container;
 }
 
-[[noreturn]] void safe_exception_handler()
+[[noreturn]] static void classify_and_rethrow_current_exception()
 {
   std::exception_ptr eptr = std::current_exception();
   try
@@ -60,6 +67,53 @@ assertion_id_data_container_t init_assertion_data()
     WAX_EXCEPTION_WLOG("Caught nonstandard exception");
     throw std::runtime_error("Nonstandard exception");
   }
+}
+
+#ifdef __EMSCRIPTEN__
+/** Names the current exception by catching it by type: the types `classify_and_rethrow_current_exception` and
+    `foundation::cpp_transform_api_error_response_into_exception` throw, derived classes before their bases.
+*/
+static std::pair<std::string, std::string> describe_current_exception()
+{
+  try
+  {
+    std::rethrow_exception(std::current_exception());
+  }
+  catch (const wax_protocol_assertion& e)  { return { "cpp::wax_protocol_assertion", e.what() }; }
+  catch (const wax_chain_assertion& e)     { return { "cpp::wax_chain_assertion", e.what() }; }
+  catch (const wax_api_assertion& e)       { return { "cpp::wax_api_assertion", e.what() }; }
+  catch (const wax_unknown_assertion& e)   { return { "cpp::wax_unknown_assertion", e.what() }; }
+  catch (const wax_assertion& e)           { return { "cpp::wax_assertion", e.what() }; }
+  catch (const wax_private_key_leak& e)    { return { "cpp::wax_private_key_leak", e.what() }; }
+  catch (const boost::bad_lexical_cast& e) { return { "boost::bad_lexical_cast", e.what() }; }
+  catch (const std::runtime_error& e)      { return { "std::runtime_error", e.what() }; }
+  catch (const std::exception& e)          { return { "std::exception", e.what() }; }
+  catch (...)                              { return { "unknown", "Nonstandard exception" }; }
+}
+
+[[noreturn]] void throw_current_exception_to_js()
+{
+  const auto [name, message] = describe_current_exception();
+  emscripten::val error = emscripten::val::global("Error").new_(emscripten::val(message));
+  error.set("cppExceptionName", emscripten::val(name));
+  error.throw_();
+}
+#endif
+
+[[noreturn]] void safe_exception_handler()
+{
+#ifdef __EMSCRIPTEN__
+  try
+  {
+    classify_and_rethrow_current_exception();
+  }
+  catch (...)
+  {
+    throw_current_exception_to_js();
+  }
+#else
+  classify_and_rethrow_current_exception();
+#endif
 }
 
 uint64_t throw_recognized_wax_assertion( fc::assert_exception& e )

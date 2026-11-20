@@ -66,7 +66,7 @@ test.describe('Wax tests verifying unique assertion exceptions from hive', () =>
 });
 
 test.describe('WASM Protocol assertions', () => {
-  const validateOperation = async ({ protocol, provider }: { protocol: IWasmGlobals["protocol"]; provider: IWasmGlobals["provider"] }, testedOp: operation) => {
+  const validateOperation = async ({ protocol }: { protocol: IWasmGlobals["protocol"] }, testedOp: operation) => {
     // Create transaction
     const handle = protocol.cpp_create_operation_handle(testedOp, false);
 
@@ -75,8 +75,9 @@ test.describe('WASM Protocol assertions', () => {
     }
     catch (e) {
       console.log(`WaxBaseApi: C++ exception thrown during initialization: ${e}`);
-      const d = provider.getExceptionMessage(e);
-      console.log(`Received error details from getExceptionMessage:\nexception-type: ${d[0]},\nexception-message: ${d[1]}`);
+      const cppError = e as Error & { cppExceptionName: string };
+      const d = [cppError.cppExceptionName, cppError.message];
+      console.log(`Received error details:\nexception-type: ${d[0]},\nexception-message: ${d[1]}`);
       if(e && typeof e === "object") {
         const error: object = e as object;
         try {
@@ -103,7 +104,7 @@ test.describe('WASM Protocol assertions', () => {
     throw new Error("No error detected");
   };
 
-  test('Testing getExceptionMessage as wasmTest', async ({ wasmTest }) => {
+  test('Testing the C++ exception name and message as wasmTest', async ({ wasmTest }) => {
     // Validate invalid claim_account operation
     const retVal = await wasmTest(validateOperation, {
       "type": "claim_account_operation",

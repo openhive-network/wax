@@ -31,8 +31,6 @@ function( DEFINE_WASM_TARGET_FOR wasm_target_basename )
   TARGET_LINK_OPTIONS( CommonBuildOptions INTERFACE
     -Oz
     -fwasm-exceptions
-    -sEXPORT_EXCEPTION_HANDLING_HELPERS=1
-    -sEXCEPTION_STACK_TRACES=1
     -sELIMINATE_DUPLICATE_FUNCTIONS=1
   )
 

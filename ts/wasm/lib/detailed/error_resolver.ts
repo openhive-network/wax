@@ -12,7 +12,7 @@ import {
 type WaxAssertionConstructor = new (raw: CxxExceptionData, category?: string) => WaxAssertionError;
 
 /**
- * Maps the C++ exception class name (from `getExceptionMessage()` first tuple element)
+ * Maps the C++ exception class name (`cppExceptionName` of the Error thrown by the wasm)
  * to a category used when the JSON stack data doesn't carry one.
  *
  * In practice C++ enriches every thrown assertion with its category via

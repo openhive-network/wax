@@ -3,10 +3,6 @@ import { resolveException } from "../error_resolver.js";
 import type { MainModule } from "../../build_wasm/wax.common"
 import type { IOptionalModuleArgs } from "../../detailed/module_types.js"
 
-interface MainModuleEmscriptenExtended extends MainModule {
-  getExceptionMessage: (e: any) => [string, string];
-}
-
 export type TWaxStdExceptionData = {
   msg: string;
   data: object;
@@ -16,7 +12,7 @@ export type TWaxStdExceptionData = {
 export type TCustomExceptionHandlerFunction = (error: TWaxStdExceptionData) => void;
 
 export class WasmManager {
-  private mainModule?: MainModuleEmscriptenExtended;
+  private mainModule?: MainModule;
 
   public handleWasmStdException(error: any): never {
     // If it is an error caused by the JS implementation called from the inside of WASM, just rethrow our high-level, already wrapped error
@@ -26,13 +22,11 @@ export class WasmManager {
     if (!this.mainModule)
       throw new WaxError("Internal error: Main module not initialized, but exception handling method called", error);
 
-    let errorMessageList: [string, string] | undefined = undefined;
-    try {
-      errorMessageList = this.mainModule.getExceptionMessage(error)
-    } catch {}
+    // A C++ exception reaches JS as an Error with the C++ type name in `cppExceptionName` (core/utils.hpp)
+    const exceptionName: unknown = typeof error === "object" && error !== null ? error.cppExceptionName : undefined;
 
-    if (errorMessageList !== undefined) {
-      const [exceptionName, payload] = errorMessageList;
+    if (typeof exceptionName === "string") {
+      const payload: string = error.message;
       switch (exceptionName) {
         case "cpp::wax_chain_assertion":
         case "cpp::wax_protocol_assertion":
@@ -50,13 +44,10 @@ export class WasmManager {
 
     //console.log("Non-typed Error during Wasm call...", e);
     let generalMessage = '';
-    if (typeof error === "object" && error && "message" in error) {
-      if (typeof error.message === "string")
-        generalMessage = error.message;
-      else if (typeof error.message === "object" && error.message && error.message[0]) {
-        generalMessage = `${error.message[0]}: ${error.message[1]}`;
-      }
-    }
+    if (typeof exceptionName === "string")
+      generalMessage = `${exceptionName}: ${error.message}`;
+    else if (typeof error === "object" && error && "message" in error && typeof error.message === "string")
+      generalMessage = error.message;
 
     throw new WaxError(`Non-typed Error during Wasm call: ${generalMessage}`, error);
   }
@@ -77,7 +68,7 @@ export class WasmManager {
         resolve(this.mainModule);
 
       this.wasmFn(this.options).then(module => {
-        this.mainModule = module as MainModuleEmscriptenExtended;
+        this.mainModule = module;
 
         resolve(this.mainModule);
       }).catch(error => {
