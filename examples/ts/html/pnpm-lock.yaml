@@ -21,15 +21,15 @@ catalogs:
       version: 6.0.3
 
 overrides:
-  '@hiveio/beekeeper': 1.28.9-rc0-stable.261028200530
+  '@hiveio/beekeeper': 1.28.9-rc0-stable.261107004332
 
 importers:
 
   .:
     dependencies:
       '@hiveio/beekeeper':
-        specifier: 1.28.9-rc0-stable.261028200530
-        version: 1.28.9-rc0-stable.261028200530
+        specifier: 1.28.9-rc0-stable.261107004332
+        version: 1.28.9-rc0-stable.261107004332
       '@hiveio/wax':
         specifier: file:../../../ts
         version: file:../../../ts
@@ -237,8 +237,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hiveio/beekeeper@1.28.9-rc0-stable.261028200530':
-    resolution: {integrity: sha1-nzTNga2OqN6212HzkKyHGZoMuAk=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.9-rc0-stable.261028200530.tgz}
+  '@hiveio/beekeeper@1.28.9-rc0-stable.261107004332':
+    resolution: {integrity: sha1-ifkOP0eWUWOz3pf8Th5gGA4Ux+Q=, tarball: https://gitlab.syncad.com/api/v4/projects/558/packages/npm/@hiveio/beekeeper/-/@hiveio/beekeeper-1.28.9-rc0-stable.261107004332.tgz}
     engines: {node: '>=24'}
 
   '@hiveio/wax-signers-beekeeper@file:../../../ts/packages/signers-beekeeper':
@@ -1441,11 +1441,11 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@hiveio/beekeeper@1.28.9-rc0-stable.261028200530': {}
+  '@hiveio/beekeeper@1.28.9-rc0-stable.261107004332': {}
 
   '@hiveio/wax-signers-beekeeper@file:../../../ts/packages/signers-beekeeper':
     dependencies:
-      '@hiveio/beekeeper': 1.28.9-rc0-stable.261028200530
+      '@hiveio/beekeeper': 1.28.9-rc0-stable.261107004332
       '@hiveio/wax': link:../..
 
   '@hiveio/wax@file:../../../ts':
