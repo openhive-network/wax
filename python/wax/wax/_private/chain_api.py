@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any, Final, Generic, cast
+from typing import TYPE_CHECKING, Any, Final, Generic, cast, overload
 
 from hiveio_api.fields.hive_datetime import HiveDateTime
 
@@ -13,7 +13,13 @@ from wax._private.online_transaction import OnlineTransaction
 from wax.api.collection import WaxApiCollection
 from wax.exceptions.chain_errors import AccountNotFoundError
 from wax.exceptions.validation_errors import InvalidAccountNameError
-from wax.interfaces import ApiCollectionT, ExtendedApiCollectionT, IHiveChainInterface, IOnlineTransaction
+from wax.interfaces import (
+    ApiCollectionT,
+    ExtendedApiCollectionT,
+    ExtendedWaxApiCollectionT,
+    IHiveChainInterface,
+    IOnlineTransaction,
+)
 from wax.models.authority import WaxAccountAuthorityInfo, WaxAuthorities, WaxAuthority
 from wax.models.basic import ChainReferenceData
 
@@ -77,7 +83,17 @@ class HiveChainApi(IHiveChainInterface, WaxBaseApi, Generic[ApiCollectionT]):
     def api(self) -> ApiCollectionT:  # type: ignore[override]
         return self._api
 
-    def extends(self, new_api: type[ExtendedApiCollectionT]) -> HiveChainApi[ExtendedApiCollectionT | ApiCollectionT]:  # type: ignore[override]
+    @overload  # type: ignore[override]
+    def extends(self, new_api: type[ExtendedWaxApiCollectionT]) -> HiveChainApi[ExtendedWaxApiCollectionT]: ...
+
+    @overload
+    def extends(
+        self, new_api: type[ExtendedApiCollectionT]
+    ) -> HiveChainApi[ExtendedApiCollectionT | ApiCollectionT]: ...
+
+    def extends(
+        self, new_api: type[ExtendedApiCollectionT]
+    ) -> HiveChainApi[ExtendedApiCollectionT] | HiveChainApi[ExtendedApiCollectionT | ApiCollectionT]:
         current_api: type[ApiCollectionT | ExtendedApiCollectionT] = self._api_collection
 
         class NewApi(new_api, current_api):  # type: ignore[valid-type, misc]

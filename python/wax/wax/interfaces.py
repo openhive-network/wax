@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any, Generic, Self, TypeAlias
+from typing import TYPE_CHECKING, Any, Generic, Self, TypeAlias, overload
 
 from typing_extensions import TypeVar
 
@@ -38,6 +38,8 @@ ApiCollectionT = TypeVar("ApiCollectionT", default=WaxApiCollection)
 """TypeVar for API collection, available by default in the IHiveChainInterface."""
 ExtendedApiCollectionT = TypeVar("ExtendedApiCollectionT")
 """TypeVar for API collection that will be added to the IHiveChainInterface by the user."""
+ExtendedWaxApiCollectionT = TypeVar("ExtendedWaxApiCollectionT", bound=WaxApiCollection)
+"""TypeVar for API collection derived from WaxApiCollection - it has the APIs of wax, the chain is typed by it."""
 
 
 class IAuthorityDataProvider(ABC):
@@ -721,19 +723,32 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
             InvalidEndpointUrlFormatError: When the url is incorrect.
         """
 
+    @overload
+    def extends(self, new_api: type[ExtendedWaxApiCollectionT]) -> IHiveChainInterface[ExtendedWaxApiCollectionT]: ...
+
+    @overload
+    def extends(
+        self, new_api: type[ExtendedApiCollectionT]
+    ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]: ...
+
     @abstractmethod
     def extends(
         self, new_api: type[ExtendedApiCollectionT]
-    ) -> IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
+    ) -> IHiveChainInterface[ExtendedApiCollectionT] | IHiveChainInterface[ExtendedApiCollectionT | ApiCollectionT]:
         """
         Extends the current API collection with a new one.
 
         The new chain shares the connection with this chain - the endpoint (`endpoint_url` set on one of them applies to
         both); the connection is closed by the teardown of this chain (the teardown of the new chain leaves it open).
 
-        APIs of the collection are its attributes set to API classes in `__init__` (as in the example), or API classes
-        of its `_API_MAP` (`{"my_custom_api": MyCustomApi}`, as in `WaxApiCollection`) - merged with the APIs of this
-        chain, an API of the same name is replaced.
+        APIs of the collection are API classes of its `_API_MAP` (`{"my_custom_api": MyCustomApi}`, as in
+        `WaxApiCollection`, maps of base classes are merged) or its attributes set to API classes in `__init__` - merged
+        with the APIs of this chain, an API of the same name is replaced. The chain has instances of the APIs.
+
+        Type checkers see the APIs by annotations of the collection - annotate each API as its instance
+        (`my_custom_api: MyCustomApi`): its endpoints are then bound methods with `callbacks` and
+        `set_validation_mask`. A collection derived from `WaxApiCollection` types the new chain by itself (it has the
+        APIs of wax as well), other collections by the union of them and the collection of this chain.
 
         Args:
             new_api: New API collection class to be added.
@@ -742,14 +757,16 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
             IHiveChainInterface: New chain instance with the extended API collection.
 
         Examples:
-            class MyCustomApiCollection:
-                def __init__(self):
-                   self.my_custom_api = MyCustomApi
+            class MyCustomApiCollection(WaxApiCollection):
+                my_custom_api: MyCustomApi
+
+                _API_MAP: ClassVar[Mapping[str, type]] = {"my_custom_api": MyCustomApi}
 
             chain = create_hive_chain()
-            extended_chain = chain.extends(ExtendedApiCollection)
+            extended_chain = chain.extends(MyCustomApiCollection)
 
             response = await extended_chain.api.my_custom_api.custom_endpoint()  # With full intellisense support
+            accounts = await extended_chain.api.database_api.find_accounts(accounts=["alice"])  # APIs of wax as well
         """
 
     @abstractmethod
@@ -767,11 +784,12 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
 
         Examples:
             class MyCustomApiCollection:
-                def __init__(self):
-                   self.my_custom_api = MyCustomApi
+                my_custom_api: MyCustomApi
+
+                _API_MAP: ClassVar[Mapping[str, type]] = {"my_custom_api": MyCustomApi}
 
             chain = create_hive_chain()
-            extended_chain = chain.extend_rest(ExtendedApiCollection)
+            extended_chain = chain.extend_rest(MyCustomApiCollection)
 
             response = await extended_chain.api.my_custom_api.custom_endpoint()  # With full intellisense support
         """
