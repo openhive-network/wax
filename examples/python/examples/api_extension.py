@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from collections.abc import Mapping
+from typing import Any, ClassVar
 
 from beekeepy.handle.remote import AbstractAsyncApi
 from wax import create_hive_chain
 from wax.api.collection import DatabaseApi as BaseDatabaseApi
+from wax.api.collection import WaxApiCollection
 
 
 # You can extend the base API classes to add your own methods and override existing methods to change their behavior.
@@ -25,22 +27,29 @@ class BlockApi(AbstractAsyncApi):
     async def get_block_header(self, *, block_num: int) -> Any: ...
 
 
-# As the final step you need to create a new class that will contain all your custom APIs.
-class MyFirstApiCollection:
-    def __init__(self) -> None:
-        self.block_api = BlockApi
-        self.database_api = DatabaseApi
+# As the final step you need to create a new class that will contain all your custom APIs - in its `_API_MAP`.
+# Annotate each API as its instance (wax creates the instances from the classes of `_API_MAP`), so type checkers and
+# editors see its endpoints. Derived from `WaxApiCollection`, the collection keeps the APIs of wax typed as well.
+class MyFirstApiCollection(WaxApiCollection):
+    block_api: BlockApi
+    database_api: DatabaseApi
+
+    _API_MAP: ClassVar[Mapping[str, type]] = {
+        "block_api": BlockApi,
+        "database_api": DatabaseApi,
+    }
 
 
 my_wax = create_hive_chain()
 # Created by you api collection needs to be passed to the `extends` method.
 # This will create a new class that will contain all your custom APIs.
-# After extension all your APIs are available in the `api` property of the `ChainApi` class.
+# After extension all your APIs are available in the `api` property of the extended chain (typed by your collection).
 wax_extended = my_wax.extends(MyFirstApiCollection)
 
 
 async def main() -> None:
     response = await wax_extended.api.block_api.get_block_header(block_num=123)
     print(f"Block header: {response}")
+
 
 asyncio.run(main())
