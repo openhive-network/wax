@@ -54,7 +54,7 @@ importers:
         version: 0.12.4
       '@types/node':
         specifier: ^24
-        version: 24.19.2
+        version: 24.19.4
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
@@ -741,8 +741,8 @@ packages:
   '@types/http-server@0.12.4':
     resolution: {integrity: sha512-vsn4pvP2oRFALLuM5Rca6qUmSPG7u0VNjOuqvL57l3bKldQRWdUZPeSiARhzagDxgfNCHn/o8WlWk4KinBauUg==}
 
-  '@types/node@24.19.2':
-    resolution: {integrity: sha512-93d49wCWJkCyN87MxLpNN6KXPCwFw7bVUg79mGUV1OS40JGWwVCr8n61DXCSqz7CV6/VfPkb7xec7uP2M+QHWQ==}
+  '@types/node@24.19.4':
+    resolution: {integrity: sha512-s04odlR3ksJrLu7QLi+pddkWLD0RmSbcP9KuWn2/ozQKAp/YgwBC/6x9kJj8yAzZnGPfxePm7zm7nysVPCRagw==}
 
   '@types/relateurl@0.2.33':
     resolution: {integrity: sha512-bTQCKsVbIdzLqZhLkF5fcJQreE4y1ro4DIyVrlDNSCJRRwHhB8Z+4zXXa8jN6eDvc2HbRsEYgbvrnGvi54EpSw==}
@@ -2199,13 +2199,13 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.19.2
+      '@types/node': 24.19.4
 
   '@types/http-server@0.12.4':
     dependencies:
       '@types/connect': 3.4.38
 
-  '@types/node@24.19.2':
+  '@types/node@24.19.4':
     dependencies:
       undici-types: 7.24.6
 
