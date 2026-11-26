@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
-from typing import TYPE_CHECKING, ClassVar, Protocol, cast
+from typing import TYPE_CHECKING, ClassVar, Protocol, assert_type, cast
 
 import hiveio_api
 import pytest
@@ -19,6 +19,7 @@ from wax._private.api.api_caller import WaxApiCaller
 from wax.api.collection import WaxApiCollection
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import ClassVar as ClassVarForTypeChecking
 
     from hiveio_api.block_api import BlockApi as BlockApiForTypeChecking
@@ -42,6 +43,14 @@ class TwoApisCollection:
     def __init__(self) -> None:
         self.block_api = BlockApi
         self.condenser_api = CondenserApi
+
+
+class WaxApisWithBlockApi(WaxApiCollection):
+    """Collection derived from WaxApiCollection - the chain extended with it is typed by it (with the APIs of wax)."""
+
+    block_api: BlockApi
+
+    _API_MAP: ClassVar[Mapping[str, type]] = {"block_api": BlockApi}
 
 
 class MappedApiCollection:
@@ -107,6 +116,18 @@ def assert_have_base_apis_available(
     api = cast("WaxApiCollection", extended_chain.api)
     assert isinstance(api.database_api, BaseDatabaseApi), "Extended API should have database_api."
     assert isinstance(api.network_broadcast_api, NetworkBroadcastApi), "Extended API should have network_broadcast_api."
+
+
+def test_chain_extended_with_collection_derived_from_wax_collection_is_typed_by_it(
+    remote_chain: IHiveChainInterface,
+) -> None:
+    # ACT
+    extended_chain = remote_chain.extends(WaxApisWithBlockApi)
+
+    # ASSERT - the type is checked by type checkers of the tests (no cast needed to reach the APIs)
+    assert_type(extended_chain, "IHiveChainInterface[WaxApisWithBlockApi]")
+    assert isinstance(extended_chain.api.block_api, BlockApi)
+    assert isinstance(extended_chain.api.database_api, BaseDatabaseApi), "the APIs of wax are typed and available"
 
 
 def test_extension_has_its_own_collection_of_apis(remote_chain: IHiveChainInterface[ApiCollectionT]) -> None:
