@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Mapping
-from typing import Any, ClassVar
+from typing import Any
 
 from beekeepy.handle.remote import AbstractAsyncApi
-from wax import create_hive_chain
+from wax import create_hive_chain, declare_api
 from wax.api.collection import DatabaseApi as BaseDatabaseApi
 from wax.api.collection import WaxApiCollection
 
@@ -27,17 +26,12 @@ class BlockApi(AbstractAsyncApi):
     async def get_block_header(self, *, block_num: int) -> Any: ...
 
 
-# As the final step you need to create a new class that will contain all your custom APIs - in its `_API_MAP`.
-# Annotate each API as its instance (wax creates the instances from the classes of `_API_MAP`), so type checkers and
-# editors see its endpoints. Derived from `WaxApiCollection`, the collection keeps the APIs of wax typed as well.
+# As the final step you need to create a new class that will contain all your custom APIs - each declared by
+# `declare_api`: wax creates its instance, type checkers and editors see the attribute as the instance (its endpoints).
+# Derived from `WaxApiCollection`, the collection keeps the APIs of wax typed as well.
 class MyFirstApiCollection(WaxApiCollection):
-    block_api: BlockApi
-    database_api: DatabaseApi
-
-    _API_MAP: ClassVar[Mapping[str, type]] = {
-        "block_api": BlockApi,
-        "database_api": DatabaseApi,
-    }
+    block_api = declare_api(BlockApi)
+    database_api = declare_api(DatabaseApi)
 
 
 my_wax = create_hive_chain()
