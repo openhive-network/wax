@@ -26,8 +26,8 @@ def api_collection_factory(template: type[CollectionT], owner: AsyncSendable) ->
     """
     Create the API collection of the given type (template) - with instances of its APIs owned by the owner.
 
-    APIs are declared by `_API_MAP` of collection classes (maps of collections joined by `extends` are merged) and by
-    API classes assigned to the collection in its `__init__` (as in the example of `extends`). Later declarations take
+    APIs are declared by `_API_MAP` of collection classes (recorded there by `declare_api`; maps of collections joined
+    by `extends` are merged) and by API classes assigned to the collection in its `__init__`. Later declarations take
     precedence, so an extension can replace an API of the same name.
     """
     collection = template()

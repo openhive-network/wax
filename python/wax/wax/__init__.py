@@ -136,6 +136,7 @@ from ._private.cython_wrappers import (  # noqa: E402
     validate_proto_transaction,
     validate_transaction,
 )
+from .api.collection import declare_api  # noqa: E402
 
 # Functions without str parameters - no wrapping needed
 from .cpp_python_bridge import (  # noqa: E402
@@ -251,6 +252,7 @@ __all__ = [
     "cython_modules_handles",
     "cython_modules_transactions",
     "cython_modules_validation",
+    "declare_api",
     "decode_encrypted_memo",
     "deserialize_proto_transaction",
     "deserialize_transaction",

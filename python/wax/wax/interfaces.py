@@ -741,14 +741,15 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
         The new chain shares the connection with this chain - the endpoint (`endpoint_url` set on one of them applies to
         both); the connection is closed by the teardown of this chain (the teardown of the new chain leaves it open).
 
-        APIs of the collection are API classes of its `_API_MAP` (`{"my_custom_api": MyCustomApi}`, as in
-        `WaxApiCollection`, maps of base classes are merged) or its attributes set to API classes in `__init__` - merged
-        with the APIs of this chain, an API of the same name is replaced. The chain has instances of the APIs.
+        APIs of the collection are declared by `declare_api` (as in the example) - merged with the APIs of this chain,
+        an API of the same name is replaced; the chain has instances of the APIs. Type checkers see each declared API as
+        its instance - its endpoints are bound methods with `callbacks` and `set_validation_mask`. A collection derived
+        from `WaxApiCollection` types the new chain by itself (it has the APIs of wax as well), other collections by the
+        union of them and the collection of this chain.
 
-        Type checkers see the APIs by annotations of the collection - annotate each API as its instance
-        (`my_custom_api: MyCustomApi`): its endpoints are then bound methods with `callbacks` and
-        `set_validation_mask`. A collection derived from `WaxApiCollection` types the new chain by itself (it has the
-        APIs of wax as well), other collections by the union of them and the collection of this chain.
+        Collections may declare APIs also by `_API_MAP` (`{"my_custom_api": MyCustomApi}`, where `declare_api` records
+        them; maps of base classes are merged) or by API classes set to attributes in `__init__` - type checkers see
+        such attributes by annotations of the collection only.
 
         Args:
             new_api: New API collection class to be added.
@@ -758,9 +759,7 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
 
         Examples:
             class MyCustomApiCollection(WaxApiCollection):
-                my_custom_api: MyCustomApi
-
-                _API_MAP: ClassVar[Mapping[str, type]] = {"my_custom_api": MyCustomApi}
+                my_custom_api = declare_api(MyCustomApi)
 
             chain = create_hive_chain()
             extended_chain = chain.extends(MyCustomApiCollection)
@@ -784,9 +783,7 @@ class IHiveChainInterface(IWaxBaseInterface, SelfContextSync, SelfContextAsync, 
 
         Examples:
             class MyCustomApiCollection:
-                my_custom_api: MyCustomApi
-
-                _API_MAP: ClassVar[Mapping[str, type]] = {"my_custom_api": MyCustomApi}
+                my_custom_api = declare_api(MyCustomApi)
 
             chain = create_hive_chain()
             extended_chain = chain.extend_rest(MyCustomApiCollection)
