@@ -15,11 +15,11 @@ from hiveio_api.network_broadcast_api import NetworkBroadcastApi
 from beekeepy.communication import AioHttpCommunicator, Request, Response
 from beekeepy.handle.remote import AbstractAsyncApi
 from beekeepy.interfaces import HttpUrl
+from wax import declare_api
 from wax._private.api.api_caller import WaxApiCaller
 from wax.api.collection import WaxApiCollection
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
     from typing import ClassVar as ClassVarForTypeChecking
 
     from hiveio_api.block_api import BlockApi as BlockApiForTypeChecking
@@ -48,9 +48,7 @@ class TwoApisCollection:
 class WaxApisWithBlockApi(WaxApiCollection):
     """Collection derived from WaxApiCollection - the chain extended with it is typed by it (with the APIs of wax)."""
 
-    block_api: BlockApi
-
-    _API_MAP: ClassVar[Mapping[str, type]] = {"block_api": BlockApi}
+    block_api = declare_api(BlockApi)
 
 
 class MappedApiCollection:
@@ -78,6 +76,10 @@ class DatabaseApi(BaseDatabaseApi):  # the name of the class gives the name of t
 class DatabaseApiCollection:
     def __init__(self) -> None:
         self.database_api = DatabaseApi
+
+
+class DeclaredDatabaseApiCollection(WaxApiCollection):
+    database_api = declare_api(DatabaseApi)
 
 
 class ExtendedApis(Protocol):
@@ -128,6 +130,37 @@ def test_chain_extended_with_collection_derived_from_wax_collection_is_typed_by_
     assert_type(extended_chain, "IHiveChainInterface[WaxApisWithBlockApi]")
     assert isinstance(extended_chain.api.block_api, BlockApi)
     assert isinstance(extended_chain.api.database_api, BaseDatabaseApi), "the APIs of wax are typed and available"
+
+
+def test_declared_apis_are_recorded_in_the_class_of_the_collection() -> None:
+    # ASSERT - the factory of collections reads the maps, the declaration is not an attribute of the class
+    assert vars(WaxApisWithBlockApi)["_API_MAP"] == {"block_api": BlockApi}
+    assert "block_api" not in vars(WaxApisWithBlockApi)
+    assert "block_api" not in WaxApiCollection._API_MAP, "the map of the base class is not changed"
+
+
+async def test_declared_api_replaces_api_of_the_same_name(
+    remote_chain: IHiveChainInterface, sent_requests: list[dict[str, object]]
+) -> None:
+    # ARRANGE
+    extended_chain = remote_chain.extends(DeclaredDatabaseApiCollection)
+
+    # ACT - typed by the declaration, no cast needed
+    result = await extended_chain.api.database_api.get_config()
+
+    # ASSERT
+    assert isinstance(extended_chain.api.database_api, DatabaseApi)
+    assert result == "database_api.get_config"
+    assert [request["method"] for request in sent_requests] == ["database_api.get_config"]
+
+
+def test_declaration_used_outside_of_collection_tells_where_it_belongs() -> None:
+    # ARRANGE
+    declaration = declare_api(BlockApi)
+
+    # ACT & ASSERT
+    with pytest.raises(AttributeError, match="declares an API in the body of an API collection"):
+        _ = declaration.get_block
 
 
 def test_extension_has_its_own_collection_of_apis(remote_chain: IHiveChainInterface[ApiCollectionT]) -> None:
