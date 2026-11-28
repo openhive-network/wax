@@ -1,6 +1,8 @@
 # The one service the slots' stack starts: the relay to the compiler caches, so a
-# suite reaches CI's sccache Redis (SCCACHE_REDIS in .gitlab-ci.yml; keep the two
-# equal) as redis://sccache:6379 and, on a host AIDEV hands a site WebDAV cache
+# suite reaches the old CI sccache Redis at 192.168.50.109 as redis://sccache:6379
+# (deliberately not CI's current SCCACHE_REDIS in .gitlab-ci.yml, whose Redis
+# accepts only the CI builders; decided by efrias 2026-11-27: the suites are assumed
+# not to need it, and a relay that stops answering means an uncached build) and, on a host AIDEV hands a site WebDAV cache
 # (AIDEV_SCCACHE_WEBDAV_ENDPOINT in this stack's compose environment), that cache
 # as http://sccache:8090/. The suite container joins the stack's `default`
 # network, which is internal: it reaches the relay and nothing else, as offline as

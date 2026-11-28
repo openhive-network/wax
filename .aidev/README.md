@@ -329,8 +329,11 @@ advisory` on the three `python314` suites only.
 
 Almost all of a suite's time is compiling the C++ of `core/` and hive (the wasm build in
 `ts`, natively through cargo in `rust` and through the wheel in `python`) and the Rust
-crates. The suites use the host's site sccache cache when AIDEV hands one over, else CI's
-sccache Redis (`SCCACHE_REDIS` in `.gitlab-ci.yml`), as hive's checks do:
+crates. The suites use the host's site sccache cache when AIDEV hands one over, else the
+old CI sccache Redis at `192.168.50.109`, as hive's checks do. The relay is deliberately not
+pointed at CI's current `SCCACHE_REDIS` (`sccache.syncad.com`, in `.gitlab-ci.yml`): that
+name resolves only from the CI builders and its Redis accepts only them. When the old
+address stops answering the suites build uncached:
 
 - AIDEV hands every slot one backend, in the suite's environment and in the stack's
   compose environment: `AIDEV_SCCACHE_WEBDAV_ENDPOINT` (a disk-backed WebDAV cache,

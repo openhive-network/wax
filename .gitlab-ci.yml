@@ -57,8 +57,10 @@ variables:
   # Distributed compiler cache (sccache with Redis backend) for the WASM, Rust and Python
   # builds. The jobs probe it first (ts/scripts/sccache_redis_probe.sh, which also routes
   # cargo and the native CMake builds through sccache) and build uncached when it is down.
-  # .aidev/sccache-relay.compose.yml relays AIDEV's suites to it: keep the two equal.
-  SCCACHE_REDIS: "redis://192.168.50.109:6379"
+  # Addressed by name so the Redis can move without a CI change; the name resolves only from
+  # the builders, and the Redis accepts only them. .aidev/sccache-relay.compose.yml is left on
+  # the old address on purpose (efrias, 2026-11-27): do not make the two equal.
+  SCCACHE_REDIS: "redis://sccache.syncad.com:6379"
   # Cache keys hold paths relative to the checkout, not the runner-specific /builds/...
   # path (sccache 0.14 or later; older ones ignore it). Must be absolute.
   SCCACHE_BASEDIRS: "${CI_PROJECT_DIR}"
